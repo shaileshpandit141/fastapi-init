@@ -8,3 +8,8 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Security related files
+.env
+.env.prod
+
