@@ -42,7 +42,7 @@ uvicorn app.main:app --reload
 ```
 
 - API docs: `http://localhost:8000/docs`
-- Health check or example endpoints live under `/api/v1/...` as defined in the routers.[3]
+- Health check or example endpoints live under `/api/v1/...` as defined in the routers.
 
 On production, run the same commands in your container or CI/CD pipeline against PostgreSQL.
 
@@ -53,3 +53,12 @@ On production, run the same commands in your container or CI/CD pipeline against
 - Write tests in `tests/` using `pytest` and `httpx` for API calls, following patterns from SQLModel + FastAPI tutorials.
 
 You can extend this starter with authentication (JWT), better logging, structured settings per environment, and Docker‑based local stacks using patterns from existing FastAPI + SQLModel template repositories.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please open an issue or PR for improvements.
+
+## 👤 Author
+
+Created by **Shailesh Pandit**
+📧 [shaileshpandit141@gmail.com](mailto:shaileshpandit141@gmail.com)
