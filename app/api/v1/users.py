@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from typing import Annotated
 
-from core.security import hash_password
+from config.security import hash_password
 from db.session import AsyncSession, get_session
 from fastapi import APIRouter, Depends, status
 from models.user import CreateUserSchema, User, UserReadSchema

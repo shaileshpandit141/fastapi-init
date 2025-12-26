@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 
 from sqlmodel import Field, SQLModel
-from utils import get_current_utc
+from utils.get_current_utc import get_current_utc
 
 # ------------------------------
 # Enums
