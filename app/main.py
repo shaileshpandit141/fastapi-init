@@ -1,7 +1,6 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-from api.v1.health import router as health_router
 from api.v1.users import router as users_router
 from config.settings import settings
 from db.engine import engine, init_db
@@ -29,6 +28,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+# Define root url to check health
+@app.get("/", tags=["health"])
+async def check_health() -> dict[str, str]:
+    return {"status": "ok"}
+
+
 # Include routers
-app.include_router(health_router, prefix="/api/v1")
 app.include_router(users_router, prefix="/api/v1")
