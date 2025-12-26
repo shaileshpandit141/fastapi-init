@@ -8,6 +8,9 @@ from app.core.config import settings
 
 # Import all models
 # -----------------
+from app.models import (
+    user,  # noqa: F401
+)
 
 config = context.config
 

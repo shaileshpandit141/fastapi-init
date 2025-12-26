@@ -10,14 +10,17 @@ class Settings(BaseSettings):
     app_origins: list[str] = ["127.0.0.1", "localhost"]
 
     # DBs
-    sqlite_db: str = "sqlite+aiosqlite:///./dev.db"
-    postgres_db: str | None = None
+    sqlite_async: str = "sqlite+aiosqlite:///./db.sqlite3"
+    sqlite_sync: str = "sqlite:///./db.sqlite3"
+
+    postgres_async: str | None = None
+    postgres_sync: str | None = None
 
     @property
     def database_url(self) -> str:
-        if self.env == "prod" and self.postgres_db:
-            return self.postgres_db
-        return self.sqlite_db
+        if self.env == "prod" and self.postgres_sync:
+            return self.postgres_sync
+        return self.sqlite_sync
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
