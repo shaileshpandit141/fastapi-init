@@ -1,10 +1,9 @@
+from core.config import settings
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import SQLModel
 
-from app.core.config import settings
-
 engine = create_async_engine(
-    settings.database_url,
+    settings.async_db_url,
     echo=settings.env == "dev",
     future=True,
 )

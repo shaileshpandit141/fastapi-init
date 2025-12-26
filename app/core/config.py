@@ -1,27 +1,22 @@
+from typing import Literal
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    env: str = "dev"  # dev | prod
+    env: Literal["dev", "prod"] = "dev"  # dev | prod
 
+    # App Config
     app_name: str = "FastAPI Init"
     app_host: str = "127.0.0.1"
     app_port: int = 8000
     app_origins: list[str] = ["127.0.0.1", "localhost"]
 
     # DBs
-    sqlite_async: str = "sqlite+aiosqlite:///./db.sqlite3"
-    sqlite_sync: str = "sqlite:///./db.sqlite3"
+    async_db_url: str = "sqlite+aiosqlite:///../db.sqlite3"  # used by app/db/engine.py
+    sync_db_url: str = "sqlite:///./db.sqlite3"  # used by migrations/env.py
 
-    postgres_async: str | None = None
-    postgres_sync: str | None = None
-
-    @property
-    def database_url(self) -> str:
-        if self.env == "prod" and self.postgres_sync:
-            return self.postgres_sync
-        return self.sqlite_sync
-
+    # Model Config
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 

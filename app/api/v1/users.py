@@ -1,12 +1,11 @@
 from collections.abc import Sequence
 from typing import Annotated
 
+from db.depends import get_session
 from fastapi import APIRouter, Depends, status
+from models.user import User
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
-
-from app.db.depends import get_session
-from app.models.user import User
 
 router = APIRouter(prefix="/users", tags=["users"])
 
