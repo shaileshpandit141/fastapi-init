@@ -5,8 +5,9 @@ class Settings(BaseSettings):
     env: str = "dev"  # dev | prod
 
     app_name: str = "FastAPI Init"
-    app_host: list[str] = ["127.0.0.1", "localhost"]
+    app_host: str = "127.0.0.1"
     app_port: int = 8000
+    app_origins: list[str] = ["127.0.0.1", "localhost"]
 
     # DBs
     sqlite_db: str = "sqlite+aiosqlite:///./dev.db"
