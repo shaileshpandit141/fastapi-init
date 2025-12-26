@@ -1,10 +1,14 @@
-from models.user import UserEmailBase, UserIdBase
+from models.user import UserEmailBase
 from sqlmodel import Field
 
 
-class UserListSchema(UserIdBase, UserEmailBase):
-    pass
+class UserReadSchema(UserEmailBase):
+    is_superuser: bool
 
 
-class UserCreateSchema(UserEmailBase):
-    password: str = Field(max_length=255)
+class CreateUserSchema(UserEmailBase):
+    password: str = Field(
+        min_length=8,
+        max_length=72,
+        description="bcrypt max length",
+    )

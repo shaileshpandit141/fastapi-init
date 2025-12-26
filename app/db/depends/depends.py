@@ -1,6 +1,6 @@
 from collections.abc import AsyncGenerator
 
-from .session import SessionLocal
+from db.session import SessionLocal
 
 
 async def get_session() -> AsyncGenerator:
