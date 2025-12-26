@@ -44,9 +44,7 @@ uvicorn app.main:app --reload
 - API docs: `http://localhost:8000/docs`
 - Health check or example endpoints live under `/api/v1/...` as defined in the routers.[3]
 
-On production, run the same commands in your container or CI/CD pipeline against PostgreSQL.[6][10][1]
-
-***
+On production, run the same commands in your container or CI/CD pipeline against PostgreSQL.
 
 ## Development workflow
 
