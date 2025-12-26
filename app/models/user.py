@@ -56,7 +56,6 @@ class UserReadSchema(SQLModel):
     email: str
     role: UserRole
     status: UserStatus
-    created_at: datetime
     updated_at: datetime
 
 

@@ -1,8 +1,8 @@
 from collections.abc import AsyncGenerator
 
-from db.session import SessionLocal
+from .loacl_session import LocalSession
 
 
 async def get_session() -> AsyncGenerator:
-    async with SessionLocal() as session:
+    async with LocalSession() as session:
         yield session
