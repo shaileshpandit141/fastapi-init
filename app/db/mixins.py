@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import text
 from sqlmodel import Field, SQLModel
@@ -14,16 +14,12 @@ class UUIDMixin(SQLModel):
     )
 
 
-class TimestampMixin(SQLModel):
+class TimestampMixin:
     created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
         nullable=False,
-        sa_column_kwargs={"server_default": text("timezone('utc', now())")},
     )
-
     updated_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
         nullable=False,
-        sa_column_kwargs={
-            "server_default": text("timezone('utc', now())"),
-            "onupdate": text("timezone('utc', now())"),
-        },
     )
