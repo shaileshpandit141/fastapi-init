@@ -36,7 +36,38 @@ def create_access_token(
         settings.access_secret_key,
         algorithm=settings.algorithm,
     )
+
     return encoded_jwt
+
+
+def verify_access_token(token: str) -> UUID:
+    credentials_exception = HTTPException(
+        status_code=401,
+        detail="Invalid or expired access token",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    try:
+        payload = jwt.decode(
+            token,
+            settings.access_secret_key,
+            algorithms=[settings.algorithm],
+        )
+        if payload.get("type") != "access":
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid token type",
+            )
+
+        # Get auth subject detail
+        uuid: str | None = payload.get("sub")
+        if uuid is None:
+            raise credentials_exception
+
+        # Return UUID instance
+        return UUID(uuid)
+    except JWTError:
+        raise credentials_exception
 
 
 def create_refresh_token(
@@ -56,35 +87,55 @@ def create_refresh_token(
         settings.refresh_secret_key,
         algorithm=settings.algorithm,
     )
+
     return encoded_jwt
 
 
-async def get_current_user(
-    session: Annotated[AsyncSession, Depends(get_session)],
-    token: str = Depends(oauth2_scheme),
-) -> User:
+def verify_refresh_token(token: str) -> UUID:
     credentials_exception = HTTPException(
         status_code=401,
-        detail="Invalid or expired access token",
-        headers={"WWW-Authenticate": "Bearer"},
+        detail="Invalid or expired refresh token",
     )
+
     try:
         payload = jwt.decode(
             token,
-            settings.access_secret_key,
+            settings.refresh_secret_key,
             algorithms=[settings.algorithm],
         )
+        if payload.get("type") != "refresh":
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid token type",
+            )
 
         # Get auth subject detail
-        uuid: str | None = UUID(payload.get("sub"))
+        uuid: str | None = payload.get("sub")
         if uuid is None:
             raise credentials_exception
+
+        # Return UUID instance
+        return UUID(uuid)
     except JWTError:
         raise credentials_exception
+
+
+async def get_current_user(
+    token: Annotated[str, Depends(oauth2_scheme)],
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> User:
+
+    # Verify token signature
+    uuid = verify_access_token(token=token)
 
     # Featch user detail
     user = await session.get(User, uuid)
     if user is None:
-        raise credentials_exception
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid or expired access token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
+    # Return current user
     return user
