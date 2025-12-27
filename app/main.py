@@ -12,7 +12,7 @@ from redis.asyncio import from_url
 
 # Create a async lifespan context manager
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:  # noqa: ARG001
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     app.state.redis = from_url(
         settings.redis_url,
         encoding="utf-8",

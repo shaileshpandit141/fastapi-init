@@ -1,12 +1,9 @@
 from datetime import datetime, timedelta, timezone
-from typing import Annotated
 from uuid import UUID
 from jose import JWTError, jwt
 from ..settings import settings
-from fastapi import Depends, HTTPException
+from fastapi import HTTPException
 from fastapi.security import OAuth2PasswordBearer
-from models.user import User
-from db.session import AsyncSession, get_session
 
 
 def get_utc_now() -> datetime:
@@ -118,24 +115,3 @@ def verify_refresh_token(token: str) -> UUID:
         return UUID(uuid)
     except JWTError:
         raise credentials_exception
-
-
-async def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)],
-    session: Annotated[AsyncSession, Depends(get_session)],
-) -> User:
-
-    # Verify token signature
-    uuid = verify_access_token(token=token)
-
-    # Featch user detail
-    user = await session.get(User, uuid)
-    if user is None:
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid or expired access token",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    # Return current user
-    return user
