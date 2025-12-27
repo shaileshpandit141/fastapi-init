@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from typing import Annotated
 
-from config.security import hash_password
+from config.security import get_password_hash
 from db.session import AsyncSession, get_session
 from fastapi import APIRouter, Depends, status
 from models.user import CreateUserSchema, User, UserReadSchema
@@ -30,7 +30,7 @@ async def create_user(
 
     user = User(
         email=payload.email,
-        password_hash=hash_password(payload.password),
+        password_hash=get_password_hash(payload.password),
     )
 
     session.add(user)
