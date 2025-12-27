@@ -2,40 +2,21 @@ from datetime import datetime, timedelta, timezone
 from typing import Annotated
 from uuid import UUID
 from jose import JWTError, jwt
-from passlib.context import CryptContext
-from .settings import settings
+from ..settings import settings
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from models.user import User
 from db.session import AsyncSession, get_session
 
 
-# --- Define global context ---
+def get_utc_now() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="token",
     description="Use email as the username field",
 )
-pwd_context = CryptContext(
-    schemes=["argon2"],
-    deprecated="auto",
-)
-
-
-def password_hash(password: str) -> str:
-    return pwd_context.hash(password)
-
-
-def password_verify(password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(password, hashed_password)
-
-
-# --- Handle token creation ---
-
-
-def get_utc_now() -> datetime:
-    return datetime.now(timezone.utc)
 
 
 def create_access_token(

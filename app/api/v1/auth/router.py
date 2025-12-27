@@ -4,7 +4,8 @@ from typing import Annotated
 from models.user import User, UserRead, UserCreate
 from db.session import AsyncSession, get_session
 from sqlmodel import select
-from config.security import create_access_token, password_hash, password_verify
+from config.security.auth import create_access_token
+from config.security.password import password_hash, password_verify
 from fastapi.security import OAuth2PasswordRequestForm
 from config.settings import settings
 from models.auth import TokenRead

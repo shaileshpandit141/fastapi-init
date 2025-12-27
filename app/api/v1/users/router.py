@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
 from models.user import User, UserRead
-from config.security import get_current_user
+from config.security.auth import get_current_user
 
 
 router = APIRouter(prefix="/users", tags=["users"])
