@@ -7,13 +7,23 @@ from config.settings import settings
 from db.engine import engine, init_db
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from redis.asyncio import from_url
 
 
+# Create a async lifespan context manager
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:  # noqa: ARG001
-    await init_db()
-    yield
-    await engine.dispose()
+    app.state.redis = from_url(
+        settings.redis_url,
+        encoding="utf-8",
+        decode_responses=True,
+    )
+    try:
+        await init_db()
+        yield
+    finally:
+        await app.state.redis.close()
+        await engine.dispose()
 
 
 # Create FastAPI app

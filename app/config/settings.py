@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     app_port: int = 8000
     app_origins: list[str] = ["127.0.0.1", "localhost"]
     async_db_url: str = "sqlite+aiosqlite:///../db.sqlite3"
+    redis_url: str = "redis://localhost:6379/0"
     access_secret_key: str = secrets.token_hex(32)
     refresh_secret_key: str = secrets.token_hex(32)
     algorithm: str = "HS256"
