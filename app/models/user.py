@@ -36,7 +36,7 @@ class User(UUIDMixin, TimestampMixin, table=True):
 # --- Pydantic I/O schemas ---
 
 
-class UserReadSchema(SQLModel):
+class UserRead(SQLModel):
     """Schema for returning user info in responses."""
 
     id: UUID
@@ -46,14 +46,14 @@ class UserReadSchema(SQLModel):
     updated_at: datetime
 
 
-class CreateUserSchema(SQLModel):
+class UserCreate(SQLModel):
     """Schema for creating a new user."""
 
     email: str
     password: str
 
 
-class UpdateUserSchema(SQLModel):
+class UserUpdate(SQLModel):
     """Schema for updating user data."""
 
     email: str | None = None

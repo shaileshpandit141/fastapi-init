@@ -1,6 +1,7 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
+from api.v1.auth import router as auth_router
 from api.v1.users import router as users_router
 from config.settings import settings
 from db.engine import engine, init_db
@@ -36,4 +37,5 @@ async def check_health() -> dict[str, str]:
 
 
 # Include routers
+app.include_router(auth_router, prefix="/api/v1")
 app.include_router(users_router, prefix="/api/v1")
