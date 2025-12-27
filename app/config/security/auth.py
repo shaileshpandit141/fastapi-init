@@ -14,7 +14,7 @@ def get_utc_now() -> datetime:
 
 
 oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="token",
+    tokenUrl="/api/v1/auth/token",
     description="Use email as the username field",
 )
 
