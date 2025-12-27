@@ -1,14 +1,15 @@
 from fastapi import APIRouter, HTTPException, status
-from models.user import User, UserRead, UserCreate
+from models.user import User
+from schemas.user import UserRead, UserCreate
 from dependencies.session import SessionDep
 from sqlmodel import select
-from config.security.auth import (
+from core.security.auth import (
     create_access_token,
     create_refresh_token,
     verify_refresh_token,
 )
-from config.security.password import password_hash, password_verify
-from models.auth import TokenRead
+from core.security.password import password_hash, password_verify
+from schemas.auth import TokenRead
 from dependencies.oauth2 import OAuth2PasswordFormDep
 
 

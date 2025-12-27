@@ -1,13 +1,10 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from uuid import UUID
 from jose import JWTError, jwt
 from ..settings import settings
 from fastapi import HTTPException
 from fastapi.security import OAuth2PasswordBearer
-
-
-def get_utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+from utils.get_utc_now import get_utc_now
 
 
 oauth2_scheme = OAuth2PasswordBearer(

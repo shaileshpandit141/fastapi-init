@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from api.v1.auth import router as auth_router
 from api.v1.users import router as users_router
-from config.settings import settings
+from core.settings import settings
 from db.engine import engine, init_db
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

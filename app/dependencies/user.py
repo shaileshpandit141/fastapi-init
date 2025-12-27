@@ -3,7 +3,7 @@ from fastapi import Depends, HTTPException
 from .session import SessionDep
 from .oauth2 import Oauth2SchemeDep
 from models.user import User
-from config.security.auth import verify_access_token
+from core.security.auth import verify_access_token
 
 
 async def get_current_user(

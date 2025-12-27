@@ -1,9 +1,6 @@
-from datetime import datetime
 from enum import Enum
-from uuid import UUID
-
 from db.mixins import TimestampMixin, UUIDMixin
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field
 
 
 # --- Enums ---
@@ -31,29 +28,3 @@ class User(UUIDMixin, TimestampMixin, table=True):
     password_hash: str = Field(max_length=255, nullable=False)
     role: UserRole = Field(default=UserRole.USER, nullable=False)
     status: UserStatus = Field(default=UserStatus.ACTIVE, nullable=False)
-
-
-# --- Pydantic I/O schemas ---
-
-
-class UserRead(SQLModel):
-    """Schema for returning user info in responses."""
-
-    id: UUID
-    email: str
-    role: UserRole
-    status: UserStatus
-    updated_at: datetime
-
-
-class UserCreate(SQLModel):
-    """Schema for creating a new user."""
-
-    email: str
-    password: str
-
-
-class UserUpdate(SQLModel):
-    """Schema for updating user data."""
-
-    email: str | None = None

@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import Depends
-from config.security.auth import oauth2_scheme
+from core.security.auth import oauth2_scheme
 from fastapi.security import OAuth2PasswordRequestForm
 
 

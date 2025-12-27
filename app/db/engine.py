@@ -1,4 +1,4 @@
-from config.settings import settings
+from core.settings import settings
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import SQLModel
 from sqlalchemy import event
