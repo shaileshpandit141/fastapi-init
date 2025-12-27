@@ -27,11 +27,33 @@ def create_access_token(
     if expires_delta:
         expire = get_utc_now() + expires_delta
     else:
-        expire = get_utc_now() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
+        expire = get_utc_now() + timedelta(
+            minutes=settings.access_token_expire_minutes,
+        )
+    to_encode.update({"type": "access", "exp": expire})
     encoded_jwt = jwt.encode(
         to_encode,
-        settings.secret_key,
+        settings.access_secret_key,
+        algorithm=settings.algorithm,
+    )
+    return encoded_jwt
+
+
+def create_refresh_token(
+    data: dict[str, str | int | datetime],
+    expires_delta: timedelta | None = None,
+) -> str:
+    to_encode = data.copy()
+    if expires_delta:
+        expire = get_utc_now() + expires_delta
+    else:
+        expire = get_utc_now() + timedelta(
+            minutes=settings.refresh_token_expire_minutes,
+        )
+    to_encode.update({"type": "refresh", "exp": expire})
+    encoded_jwt = jwt.encode(
+        to_encode,
+        settings.refresh_secret_key,
         algorithm=settings.algorithm,
     )
     return encoded_jwt
@@ -49,7 +71,7 @@ async def get_current_user(
     try:
         payload = jwt.decode(
             token,
-            settings.secret_key,
+            settings.access_secret_key,
             algorithms=[settings.algorithm],
         )
 
