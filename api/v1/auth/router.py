@@ -12,8 +12,9 @@ from dependencies.oauth2 import OAuth2PasswordFormDep
 from dependencies.redis import RedisDep
 from dependencies.session import SessionDep
 from models.user import User
-from schemas.auth import TokenRead, TokenRevokePayload, TokenRevokeRead
-from schemas.user import UserCreate, UserRead
+from schemas.auth import RevokeTokenRequest, TokenResponse
+from schemas.message import MessageResponse
+from schemas.user import UserCreateRequest, UserResponse
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -21,8 +22,8 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 # --- Handle user sign up action ---
 
 
-@router.post("/signup", response_model=UserRead)
-async def create_user(payload: UserCreate, session: SessionDep) -> User:
+@router.post("/signup", response_model=UserResponse)
+async def create_user(payload: UserCreateRequest, session: SessionDep) -> User:
     # Check if user exists
     existing = await session.exec(
         select(User).where(User.email == payload.email),
@@ -50,7 +51,7 @@ async def create_user(payload: UserCreate, session: SessionDep) -> User:
 @router.post("/token")
 async def get_access_token(
     form_payload: OAuth2PasswordFormDep, session: SessionDep
-) -> TokenRead:
+) -> TokenResponse:
     user = await session.exec(
         select(User).where(User.email == form_payload.username),
     )
@@ -67,7 +68,7 @@ async def get_access_token(
     access_token = create_access_token(sub=str(user.id))
     refresh_token = create_refresh_token(sub=str(user.id))
 
-    return TokenRead(
+    return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token,
         token_type="bearer",
@@ -78,14 +79,14 @@ async def get_access_token(
 
 
 @router.post("/refresh")
-async def refresh_access_token(refresh_token: str, redis: RedisDep) -> TokenRead:
+async def refresh_access_token(refresh_token: str, redis: RedisDep) -> TokenResponse:
     # Verify token signature
     id = await verify_refresh_token(redis=redis, token=refresh_token)
 
     # Check token against DB / blacklist here.
     access_token = create_access_token(sub=str(id))
 
-    return TokenRead(
+    return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token,
         token_type="bearer",
@@ -95,10 +96,10 @@ async def refresh_access_token(refresh_token: str, redis: RedisDep) -> TokenRead
 # --- Handle refresh token blocklist ---
 @router.post("/signout")
 async def signout(
-    payload: TokenRevokePayload,
+    payload: RevokeTokenRequest,
     redis: RedisDep,
-) -> TokenRevokeRead:
+) -> MessageResponse:
 
     claims = await verify_refresh_token(redis=redis, token=payload.refresh_token)
     await revoke_token(redis=redis, jti=claims["jti"], exp=claims["exp"])
-    return TokenRevokeRead(detail="Token revoked")
+    return MessageResponse(detail="Token revoked")

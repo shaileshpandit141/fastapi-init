@@ -1,17 +1,15 @@
-from sqlmodel import SQLModel
-
-# --- Pydantic I/O schema ---
+from pydantic import BaseModel
 
 
-class TokenRead(SQLModel):
+class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str
 
 
-class TokenRevokePayload(SQLModel):
+class RefreshTokenRequest(BaseModel):
     refresh_token: str
 
 
-class TokenRevokeRead(SQLModel):
-    detail: str
+class RevokeTokenRequest(BaseModel):
+    refresh_token: str

@@ -4,8 +4,6 @@ from sqlmodel import Field
 
 from db.mixins import TimestampMixin, UUIDMixin
 
-# --- Enums ---
-
 
 class UserRole(str, Enum):
     ADMIN = "admin"
@@ -17,11 +15,7 @@ class UserStatus(str, Enum):
     INACTIVE = "inactive"
 
 
-# --- DB table model ---
-
-
 class User(UUIDMixin, TimestampMixin, table=True):
-    """Database model for storing users."""
 
     __tablename__ = "users"
 

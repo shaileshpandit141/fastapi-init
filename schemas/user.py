@@ -1,16 +1,12 @@
 from datetime import datetime
 from uuid import UUID
 
-from sqlmodel import SQLModel
+from pydantic import BaseModel
 
 from models.user import UserRole, UserStatus
 
-# --- Pydantic I/O schemas ---
 
-
-class UserRead(SQLModel):
-    """Schema for returning user info in responses."""
-
+class UserResponse(BaseModel):
     id: UUID
     email: str
     role: UserRole
@@ -18,14 +14,10 @@ class UserRead(SQLModel):
     updated_at: datetime
 
 
-class UserCreate(SQLModel):
-    """Schema for creating a new user."""
-
+class UserCreateRequest(BaseModel):
     email: str
     password: str
 
 
-class UserUpdate(SQLModel):
-    """Schema for updating user data."""
-
+class UserUpdateRequest(BaseModel):
     email: str | None = None
