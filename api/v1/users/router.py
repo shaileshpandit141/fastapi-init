@@ -1,8 +1,8 @@
 from fastapi import APIRouter
+
+from dependencies.user import CurrentUserDep
 from models.user import User
 from schemas.user import UserRead
-from dependencies.user import CurrentUserDep
-
 
 router = APIRouter(prefix="/users", tags=["users"])
 

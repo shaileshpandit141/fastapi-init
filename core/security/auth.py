@@ -2,11 +2,12 @@ from datetime import timedelta
 from typing import Any, MutableMapping, cast
 from uuid import uuid4
 
-from core.settings import settings
 from fastapi import HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from redis.asyncio.client import Redis
+
+from core.settings import settings
 from utils.get_utc_now import get_utc_now
 
 oauth2_scheme = OAuth2PasswordBearer(

@@ -1,9 +1,10 @@
 from typing import Annotated
 from uuid import UUID
 
+from fastapi import Depends, HTTPException
+
 from core.security.auth import verify_access_token
 from dependencies.redis import RedisDep
-from fastapi import Depends, HTTPException
 from models.user import User
 
 from .oauth2 import Oauth2SchemeDep

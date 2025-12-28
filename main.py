@@ -1,13 +1,14 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from redis.asyncio import from_url
+
 from api.v1.auth import router as auth_router
 from api.v1.users import router as users_router
 from core.settings import settings
 from db.engine import engine, init_db
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from redis.asyncio import from_url
 
 
 # Create a async lifespan context manager

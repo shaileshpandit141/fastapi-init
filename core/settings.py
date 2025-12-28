@@ -1,5 +1,6 @@
-from typing import Literal
 import secrets
+from typing import Literal
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 

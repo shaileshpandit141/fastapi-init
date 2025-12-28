@@ -1,7 +1,8 @@
 from enum import Enum
-from db.mixins import TimestampMixin, UUIDMixin
+
 from sqlmodel import Field
 
+from db.mixins import TimestampMixin, UUIDMixin
 
 # --- Enums ---
 

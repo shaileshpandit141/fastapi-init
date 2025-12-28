@@ -1,8 +1,9 @@
 from datetime import datetime
 from uuid import UUID
-from sqlmodel import SQLModel
-from models.user import UserRole, UserStatus
 
+from sqlmodel import SQLModel
+
+from models.user import UserRole, UserStatus
 
 # --- Pydantic I/O schemas ---
 

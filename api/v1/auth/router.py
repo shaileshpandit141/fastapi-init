@@ -1,4 +1,5 @@
-from typing import Annotated
+from fastapi import APIRouter, HTTPException, status
+from sqlmodel import select
 
 from core.security.auth import (
     create_access_token,
@@ -10,11 +11,9 @@ from core.security.password import password_hash, password_verify
 from dependencies.oauth2 import OAuth2PasswordFormDep
 from dependencies.redis import RedisDep
 from dependencies.session import SessionDep
-from fastapi import APIRouter, HTTPException, status
 from models.user import User
 from schemas.auth import TokenRead, TokenRevokePayload, TokenRevokeRead
 from schemas.user import UserCreate, UserRead
-from sqlmodel import select
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 

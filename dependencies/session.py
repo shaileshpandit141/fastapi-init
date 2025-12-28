@@ -1,7 +1,8 @@
-from typing import AsyncGenerator
+from typing import Annotated, AsyncGenerator
+
 from fastapi import Depends
 from sqlmodel.ext.asyncio.session import AsyncSession
-from typing import Annotated
+
 from db.session import Session
 
 

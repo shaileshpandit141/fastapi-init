@@ -1,11 +1,13 @@
-from core.settings import settings
-from sqlalchemy.ext.asyncio import create_async_engine
-from sqlmodel import SQLModel
-from sqlalchemy import event
 from datetime import datetime, timezone
-from sqlalchemy.orm import Mapper
-from sqlalchemy.engine import Connection
 from typing import Any
+
+from sqlalchemy import event
+from sqlalchemy.engine import Connection
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.orm import Mapper
+from sqlmodel import SQLModel
+
+from core.settings import settings
 
 engine = create_async_engine(
     settings.async_db_url,
