@@ -5,23 +5,23 @@ description = "Production ready FastAPI init code."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "aiosqlite>=0.22.1",
-    "argon2-cffi>=25.1.0",
-    "fastapi[standard]>=0.127.0",
-    "passlib[argon2]>=1.7.4",
-    "psycopg[binary]>=3.3.2",
-    "pydantic-settings>=2.12.0",
-    "python-jose[cryptography]>=3.5.0",
-    "python-multipart>=0.0.21",
-    "redis>=7.1.0",
-    "sqlmodel>=0.0.29",
-    "uuid6>=2025.0.1",
-    "uvicorn[standard]>=0.40.0",
+  "aiosqlite>=0.22.1",
+  "argon2-cffi>=25.1.0",
+  "fastapi[standard]>=0.127.0",
+  "passlib[argon2]>=1.7.4",
+  "psycopg[binary]>=3.3.2",
+  "pydantic-settings>=2.12.0",
+  "python-jose[cryptography]>=3.5.0",
+  "python-multipart>=0.0.21",
+  "redis>=7.1.0",
+  "sqlmodel>=0.0.29",
+  "uuid6>=2025.0.1",
+  "uvicorn[standard]>=0.40.0",
 ]
 
 # Dependency groups
 [dependency-groups]
-dev = []
+dev = ["black>=25.12.0", "isort>=7.0.0"]
 
 # Optional dependencies
 [project.optional-dependencies]
@@ -48,3 +48,13 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+
+# Black tool Configuration
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+
+# Isort tool Configuration
+[tool.isort]
+profile = "black"
+line_length = 88
