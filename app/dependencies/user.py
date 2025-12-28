@@ -1,21 +1,29 @@
 from typing import Annotated
-from fastapi import Depends, HTTPException
-from .session import SessionDep
-from .oauth2 import Oauth2SchemeDep
-from models.user import User
+from uuid import UUID
+
 from core.security.auth import verify_access_token
+from dependencies.redis import RedisDep
+from fastapi import Depends, HTTPException
+from models.user import User
+
+from .oauth2 import Oauth2SchemeDep
+from .session import SessionDep
 
 
 async def get_current_user(
     token: Oauth2SchemeDep,
     session: SessionDep,
+    redis: RedisDep,
 ) -> User:
 
     # Verify token signature
-    uuid = verify_access_token(token=token)
+    claims = await verify_access_token(
+        redis,
+        token=token,
+    )
 
     # Featch user detail
-    user = await session.get(User, uuid)
+    user = await session.get(User, UUID(claims["sub"]))
     if user is None:
         raise HTTPException(
             status_code=401,

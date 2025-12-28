@@ -1,11 +1,13 @@
-from datetime import datetime, timedelta
-from uuid import UUID
-from jose import JWTError, jwt
-from ..settings import settings
+from datetime import timedelta
+from typing import Any, MutableMapping, cast
+from uuid import uuid4
+
+from core.settings import settings
 from fastapi import HTTPException
 from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+from redis.asyncio.client import Redis
 from utils.get_utc_now import get_utc_now
-
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/api/v1/auth/token",
@@ -14,27 +16,40 @@ oauth2_scheme = OAuth2PasswordBearer(
 
 
 def create_access_token(
-    data: dict[str, str | int | datetime],
+    sub: str,
+    extra_claims: dict[str, Any] | None = None,
     expires_delta: timedelta | None = None,
 ) -> str:
-    to_encode = data.copy()
+
     if expires_delta:
         expire = get_utc_now() + expires_delta
     else:
         expire = get_utc_now() + timedelta(
             minutes=settings.access_token_expire_minutes,
         )
-    to_encode.update({"type": "access", "exp": expire})
+
+    if not extra_claims:
+        extra_claims = {}
+
+    payload = {
+        "type": "access",
+        "sub": sub,
+        "jti": str(uuid4()),
+        "iat": get_utc_now(),
+        "exp": expire,
+        **extra_claims,
+    }
+
     encoded_jwt = jwt.encode(
-        to_encode,
-        settings.access_secret_key,
+        claims=cast(MutableMapping[str, Any], payload),
+        key=settings.access_secret_key,
         algorithm=settings.algorithm,
     )
 
     return encoded_jwt
 
 
-def verify_access_token(token: str) -> UUID:
+async def verify_access_token(redis: Redis, token: str) -> dict[str, Any]:
     credentials_exception = HTTPException(
         status_code=401,
         detail="Invalid or expired access token",
@@ -42,11 +57,18 @@ def verify_access_token(token: str) -> UUID:
     )
 
     try:
-        payload = jwt.decode(
+        payload: dict[str, Any] = jwt.decode(
             token,
             settings.access_secret_key,
             algorithms=[settings.algorithm],
         )
+
+        # Check, Is token block by jti
+        jti: str | None = payload.get("jti")
+        if await redis.get(f"blocklist:{jti}"):
+            raise HTTPException(status_code=401, detail="Token revoked")
+
+        # Check token type
         if payload.get("type") != "access":
             raise HTTPException(
                 status_code=401,
@@ -54,49 +76,68 @@ def verify_access_token(token: str) -> UUID:
             )
 
         # Get auth subject detail
-        uuid: str | None = payload.get("sub")
-        if uuid is None:
+        if payload.get("sub") is None:
             raise credentials_exception
 
         # Return UUID instance
-        return UUID(uuid)
+        return payload
     except JWTError:
         raise credentials_exception
 
 
 def create_refresh_token(
-    data: dict[str, str | int | datetime],
+    sub: str,
+    extra_claims: dict[str, Any] | None = None,
     expires_delta: timedelta | None = None,
 ) -> str:
-    to_encode = data.copy()
+
     if expires_delta:
         expire = get_utc_now() + expires_delta
     else:
         expire = get_utc_now() + timedelta(
             minutes=settings.refresh_token_expire_minutes,
         )
-    to_encode.update({"type": "refresh", "exp": expire})
+
+    if not extra_claims:
+        extra_claims = {}
+
+    payload = {
+        "type": "refresh",
+        "sub": sub,
+        "jti": str(uuid4()),
+        "iat": get_utc_now(),
+        "exp": expire,
+        **extra_claims,
+    }
+
     encoded_jwt = jwt.encode(
-        to_encode,
-        settings.refresh_secret_key,
+        claims=cast(MutableMapping[str, Any], payload),
+        key=settings.refresh_secret_key,
         algorithm=settings.algorithm,
     )
 
     return encoded_jwt
 
 
-def verify_refresh_token(token: str) -> UUID:
+async def verify_refresh_token(redis: Redis, token: str) -> dict[str, Any]:
     credentials_exception = HTTPException(
         status_code=401,
         detail="Invalid or expired refresh token",
     )
 
     try:
-        payload = jwt.decode(
+        payload: dict[str, Any] = jwt.decode(
             token,
             settings.refresh_secret_key,
             algorithms=[settings.algorithm],
         )
+
+        # Check, Is token block by jti
+        jti: str | None = payload.get("jti")
+        if await redis.get(f"blocklist:{jti}"):
+            raise HTTPException(status_code=401, detail="Token revoked")
+
+        # Check token type
         if payload.get("type") != "refresh":
             raise HTTPException(
                 status_code=401,
@@ -104,11 +145,22 @@ def verify_refresh_token(token: str) -> UUID:
             )
 
         # Get auth subject detail
-        uuid: str | None = payload.get("sub")
-        if uuid is None:
+        if payload.get("sub") is None:
             raise credentials_exception
 
         # Return UUID instance
-        return UUID(uuid)
+        return payload
     except JWTError:
         raise credentials_exception
+
+
+async def revoke_token(
+    redis: Redis,
+    jti: str,
+    exp: int,
+) -> None:
+    # seconds until expiry
+    ttl = max(exp - int(get_utc_now().timestamp()), 0)
+
+    # Cache jti to block token
+    await redis.set(f"blocklist:{jti}", "1", ex=ttl)

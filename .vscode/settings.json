@@ -22,16 +22,12 @@
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
   // -----------------------------
-  // Python Environment
-  // -----------------------------
-  "python.defaultInterpreterPath": ".venv/bin/python",
-  // -----------------------------
   // Python-Specific Behavior
   // -----------------------------
   "[python]": {
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-      "source.organizeImports": true
+      "source.organizeImports": "explicit"
     },
     "editor.defaultFormatter": "ms-python.black-formatter"
   }

@@ -1,17 +1,20 @@
-from fastapi import APIRouter, HTTPException, status
-from models.user import User
-from schemas.user import UserRead, UserCreate
-from dependencies.session import SessionDep
-from sqlmodel import select
+from typing import Annotated
+
 from core.security.auth import (
     create_access_token,
     create_refresh_token,
+    revoke_token,
     verify_refresh_token,
 )
 from core.security.password import password_hash, password_verify
-from schemas.auth import TokenRead
 from dependencies.oauth2 import OAuth2PasswordFormDep
-
+from dependencies.redis import RedisDep
+from dependencies.session import SessionDep
+from fastapi import APIRouter, HTTPException, status
+from models.user import User
+from schemas.auth import TokenRead, TokenRevokePayload, TokenRevokeRead
+from schemas.user import UserCreate, UserRead
+from sqlmodel import select
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -47,8 +50,7 @@ async def create_user(payload: UserCreate, session: SessionDep) -> User:
 
 @router.post("/token")
 async def get_access_token(
-    form_payload: OAuth2PasswordFormDep,
-    session: SessionDep,
+    form_payload: OAuth2PasswordFormDep, session: SessionDep
 ) -> TokenRead:
     user = await session.exec(
         select(User).where(User.email == form_payload.username),
@@ -63,12 +65,8 @@ async def get_access_token(
             detail="Incorrect email or password",
         )
 
-    access_token = create_access_token(
-        data={"sub": str(user.id)},
-    )
-    refresh_token = create_refresh_token(
-        data={"sub": str(user.id)},
-    )
+    access_token = create_access_token(sub=str(user.id))
+    refresh_token = create_refresh_token(sub=str(user.id))
 
     return TokenRead(
         access_token=access_token,
@@ -81,20 +79,27 @@ async def get_access_token(
 
 
 @router.post("/refresh")
-async def get_refresh_token(
-    refresh_token: str,
-    session: SessionDep,
-) -> TokenRead:
+async def refresh_access_token(refresh_token: str, redis: RedisDep) -> TokenRead:
     # Verify token signature
-    uuid = verify_refresh_token(token=refresh_token)
+    id = await verify_refresh_token(redis=redis, token=refresh_token)
 
-    # Check token against DB / blacklist here (for rotation / logout).
-    access_token = create_access_token(
-        data={"sub": str(uuid)},
-    )
+    # Check token against DB / blacklist here.
+    access_token = create_access_token(sub=str(id))
 
     return TokenRead(
         access_token=access_token,
         refresh_token=refresh_token,
         token_type="bearer",
     )
+
+
+# --- Handle refresh token blocklist ---
+@router.post("/signout")
+async def signout(
+    payload: TokenRevokePayload,
+    redis: RedisDep,
+) -> TokenRevokeRead:
+
+    claims = await verify_refresh_token(redis=redis, token=payload.refresh_token)
+    await revoke_token(redis=redis, jti=claims["jti"], exp=claims["exp"])
+    return TokenRevokeRead(detail="Token revoked")
