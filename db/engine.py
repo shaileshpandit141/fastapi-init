@@ -10,7 +10,7 @@ from sqlmodel import SQLModel
 from core.settings import settings
 
 engine = create_async_engine(
-    settings.async_db_url,
+    settings.database_url,
     echo=settings.env == "dev",
     future=True,
 )

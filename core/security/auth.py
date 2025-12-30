@@ -43,7 +43,7 @@ def create_access_token(
 
     encoded_jwt = jwt.encode(
         claims=cast(MutableMapping[str, Any], payload),
-        key=settings.access_secret_key,
+        key=settings.access_token_secret_key,
         algorithm=settings.algorithm,
     )
 
@@ -60,7 +60,7 @@ async def verify_access_token(redis: Redis, token: str) -> dict[str, Any]:
     try:
         payload: dict[str, Any] = jwt.decode(
             token,
-            settings.access_secret_key,
+            settings.access_token_secret_key,
             algorithms=[settings.algorithm],
         )
 
@@ -113,7 +113,7 @@ def create_refresh_token(
 
     encoded_jwt = jwt.encode(
         claims=cast(MutableMapping[str, Any], payload),
-        key=settings.refresh_secret_key,
+        key=settings.refresh_token_secret_key,
         algorithm=settings.algorithm,
     )
 
@@ -129,7 +129,7 @@ async def verify_refresh_token(redis: Redis, token: str) -> dict[str, Any]:
     try:
         payload: dict[str, Any] = jwt.decode(
             token,
-            settings.refresh_secret_key,
+            settings.refresh_token_secret_key,
             algorithms=[settings.algorithm],
         )
 
