@@ -10,7 +10,7 @@ from dependencies.oauth2 import OAuth2PasswordFormDep
 from dependencies.redis import RedisDep
 from dependencies.session import SessionDep
 from models.user import User
-from schemas.auth import RevokedTokenRequest, TokenResponse
+from schemas.auth import RefreshTokenRequest, RevokedTokenRequest, TokenResponse
 from schemas.message import MessageResponse
 from schemas.user import UserCreateRequest, UserResponse
 
@@ -71,15 +71,20 @@ async def get_access_token(
 
 
 @router.post("/refresh")
-async def refresh_access_token(refresh_token: str, redis: RedisDep) -> TokenResponse:
+async def refresh_access_token(
+    payload: RefreshTokenRequest, redis: RedisDep
+) -> TokenResponse:
     try:
-        claims = await verify_refresh_token(redis=redis, token=refresh_token)
+        claims = await verify_refresh_token(redis=redis, token=payload.refresh_token)
     except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid or expire refresh token")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expire refresh token",
+        )
 
     return TokenResponse(
         access_token=create_access_token({"id": claims["id"]}),
-        refresh_token=refresh_token,
+        refresh_token=payload.refresh_token,
         token_type="bearer",
     )
 
