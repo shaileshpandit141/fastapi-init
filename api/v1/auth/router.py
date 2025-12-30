@@ -95,4 +95,5 @@ async def signout(payload: RevokedTokenRequest, redis: RedisDep) -> MessageRespo
         raise HTTPException(status_code=200, detail="Sign out successfull")
 
     await revoke_token(redis=redis, jti=claims["jti"], exp=claims["exp"])
+
     return MessageResponse(detail="Sign out successfull")
