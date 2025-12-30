@@ -17,18 +17,11 @@ UNHEALTHY_TTL = 5  # seconds
 
 
 @router.get("/", summary="Health check")
-async def check_health(
-    redis: RedisDep,
-    session: SessionDep,
-) -> JSONResponse:
+async def check_health(redis: RedisDep, session: SessionDep) -> JSONResponse:
     cached_raw = await redis.get(HEALTH_CACHE_KEY)
+
     if cached_raw:
-        if isinstance(cached_raw, (bytes, bytearray)):
-            cached_health = json.loads(cached_raw.decode())
-        elif isinstance(cached_raw, str):
-            cached_health = json.loads(cached_raw)
-        else:
-            cached_health = cached_raw
+        cached_health = json.loads(cached_raw)
 
         return JSONResponse(
             content=cached_health,
