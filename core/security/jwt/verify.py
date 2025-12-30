@@ -2,13 +2,20 @@ from typing import Any
 
 from jose import ExpiredSignatureError, jwt
 from jose import JWTError as JoseJWTError
+from redis.asyncio.client import Redis
 
-from core.security.jwt.exceptions import ExpiredTokenError, InvalidTokenError
+from core.security.jwt.exceptions import (
+    ExpiredTokenError,
+    InvalidTokenError,
+    RevokeTokenError,
+)
+from core.security.jwt.revocation import is_token_revoked
 from core.settings import settings
 
 
-def _verify_jwt(
+async def _verify_jwt(
     *,
+    redis: Redis,
     sub: str,
     token: str,
     secret_key: str,
@@ -25,18 +32,25 @@ def _verify_jwt(
     except JoseJWTError:
         raise InvalidTokenError()
 
+    # Check required claims
     required_claims = {"sub", "exp", "iat", "jti"}
     if not required_claims.issubset(claims):
         raise InvalidTokenError()
 
-    if claims.get("sub") != sub:
+    # Check subject
+    if claims["sub"] != sub:
         raise InvalidTokenError()
+
+    # Check, Is revoked by client
+    if await is_token_revoked(redis=redis, jti=claims["jti"]):
+        raise RevokeTokenError()
 
     return claims
 
 
-def verify_access_token(token: str) -> dict[str, Any]:
-    return _verify_jwt(
+async def verify_access_token(redis: Redis, token: str) -> dict[str, Any]:
+    return await _verify_jwt(
+        redis=redis,
         sub="access",
         token=token,
         secret_key=settings.access_token_secret_key,
@@ -44,8 +58,9 @@ def verify_access_token(token: str) -> dict[str, Any]:
     )
 
 
-def verify_refresh_token(token: str) -> dict[str, Any]:
-    return _verify_jwt(
+async def verify_refresh_token(redis: Redis, token: str) -> dict[str, Any]:
+    return await _verify_jwt(
+        redis=redis,
         sub="refresh",
         token=token,
         secret_key=settings.refresh_token_secret_key,

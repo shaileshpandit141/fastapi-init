@@ -8,3 +8,7 @@ class InvalidTokenError(JWTError):
 
 class ExpiredTokenError(JWTError):
     pass
+
+
+class RevokeTokenError(JWTError):
+    pass
