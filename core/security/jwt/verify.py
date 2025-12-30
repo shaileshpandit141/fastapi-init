@@ -8,7 +8,7 @@ from core.config import settings
 from core.security.jwt.exceptions import (
     ExpiredTokenError,
     InvalidTokenError,
-    RevokeTokenError,
+    RevokedTokenError,
 )
 from core.security.jwt.revocation import is_token_revoked
 
@@ -43,7 +43,7 @@ async def _verify_jwt(
 
     # Check, Is revoked by client
     if await is_token_revoked(redis=redis, jti=claims["jti"]):
-        raise RevokeTokenError()
+        raise RevokedTokenError()
 
     return claims
 
