@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import Mapper
 from sqlmodel import SQLModel
 
-from core.settings import settings
+from core.config import settings
 
 engine = create_async_engine(
     settings.database_url,

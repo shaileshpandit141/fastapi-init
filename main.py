@@ -9,7 +9,7 @@ from redis.asyncio import from_url
 from api.v1.auth import router as auth_router
 from api.v1.health import router as health_router
 from api.v1.users import router as users_router
-from core.settings import settings
+from core.config import settings
 from db.engine import engine, init_db
 
 
