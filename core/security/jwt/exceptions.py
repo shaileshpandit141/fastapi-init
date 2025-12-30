@@ -10,5 +10,5 @@ class ExpiredTokenError(JWTError):
     pass
 
 
-class RevokeTokenError(JWTError):
+class RevokedTokenError(JWTError):
     pass
