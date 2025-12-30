@@ -18,35 +18,29 @@ def create_token(claims: dict[str, Any], key: str, algorithm: str) -> str:
     )
 
 
-def create_jwt_token(
-    sub: Literal["access", "refresh"],
-    claims: dict[str, Any],
-    expires_delta: timedelta | None = None,
-) -> str:
+def create_jwt_token(sub: Literal["access", "refresh"], claims: dict[str, Any]) -> str:
     """Create a JWT token with specified subject and claims."""
 
-    now = get_utc_now()
-
-    if expires_delta:
-        expire = now + expires_delta
-    else:
-        expire = now + timedelta(minutes=settings.access_token_expire_minutes)
-
     payload = {
+        **claims,
         "sub": sub,
         "jti": str(uuid4()),
-        "iat": now,
-        "exp": expire,
-        **claims,
+        "iat": get_utc_now(),
     }
 
     if sub == "access":
+        payload["exp"] = get_utc_now(
+            add=timedelta(minutes=settings.access_token_expire_minutes)
+        )
         return create_token(
             claims=payload,
             key=settings.access_token_secret_key,
             algorithm=settings.algorithm,
         )
     elif sub == "refresh":
+        payload["exp"] = get_utc_now(
+            add=timedelta(minutes=settings.refresh_token_expire_minutes)
+        )
         return create_token(
             claims=payload,
             key=settings.refresh_token_secret_key,
