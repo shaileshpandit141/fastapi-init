@@ -61,8 +61,8 @@ async def get_access_token(
         )
 
     return TokenResponse(
-        access_token=create_access_token({"id": user.id}),
-        refresh_token=create_access_token({"id": user.id}),
+        access_token=create_access_token({"id": str(user.id)}),
+        refresh_token=create_access_token({"id": str(user.id)}),
         token_type="bearer",
     )
 
