@@ -8,7 +8,7 @@ from sqlmodel import select
 from dependencies.redis import RedisDep
 from dependencies.session import SessionDep
 
-router = APIRouter(prefix="/healthz", tags=["health"])
+router = APIRouter(prefix="/health", tags=["health"])
 
 
 HEALTH_CACHE_KEY = "system_health_status"
@@ -17,7 +17,7 @@ UNHEALTHY_TTL = 5  # seconds
 
 
 @router.get("/", summary="Health check")
-async def check_health(redis: RedisDep, session: SessionDep) -> JSONResponse:
+async def health_check(redis: RedisDep, session: SessionDep) -> JSONResponse:
     cached_raw = await redis.get(HEALTH_CACHE_KEY)
 
     if cached_raw:
