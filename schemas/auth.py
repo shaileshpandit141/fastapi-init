@@ -11,5 +11,5 @@ class RefreshTokenRequest(BaseModel):
     refresh_token: str
 
 
-class RevokeTokenRequest(BaseModel):
+class RevokedTokenRequest(BaseModel):
     refresh_token: str

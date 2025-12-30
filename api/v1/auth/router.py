@@ -10,7 +10,7 @@ from dependencies.oauth2 import OAuth2PasswordFormDep
 from dependencies.redis import RedisDep
 from dependencies.session import SessionDep
 from models.user import User
-from schemas.auth import RevokeTokenRequest, TokenResponse
+from schemas.auth import RevokedTokenRequest, TokenResponse
 from schemas.message import MessageResponse
 from schemas.user import UserCreateRequest, UserResponse
 
@@ -88,7 +88,7 @@ async def refresh_access_token(refresh_token: str, redis: RedisDep) -> TokenResp
 
 
 @router.post("/signout")
-async def signout(payload: RevokeTokenRequest, redis: RedisDep) -> MessageResponse:
+async def signout(payload: RevokedTokenRequest, redis: RedisDep) -> MessageResponse:
     try:
         claims = await verify_refresh_token(redis=redis, token=payload.refresh_token)
     except JWTError:
