@@ -1,13 +1,11 @@
 from fastapi import APIRouter, HTTPException, status
 from sqlmodel import select
 
-from core.security.auth import (
-    create_access_token,
-    create_refresh_token,
-    revoke_token,
-    verify_refresh_token,
-)
-from core.security.password import password_hash, password_verify
+from core.security.jwt.create import create_access_token
+from core.security.jwt.exceptions import JWTError
+from core.security.jwt.revocation import revoke_token
+from core.security.jwt.verify import verify_refresh_token
+from core.security.password import hash_password, verify_password
 from dependencies.oauth2 import OAuth2PasswordFormDep
 from dependencies.redis import RedisDep
 from dependencies.session import SessionDep
@@ -37,7 +35,7 @@ async def create_user(payload: UserCreateRequest, session: SessionDep) -> User:
     # Handle New User Creation
     new_user = User(
         **payload.model_dump(exclude={"password"}),
-        password_hash=password_hash(payload.password),
+        password_hash=hash_password(payload.password),
     )
     session.add(new_user)
     await session.commit()
@@ -56,21 +54,15 @@ async def get_access_token(
         select(User).where(User.email == form_payload.username),
     )
     user = user.first()
-    if not user or not password_verify(
-        form_payload.password,
-        user.password_hash,
-    ):
+    if not user or not verify_password(form_payload.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
         )
 
-    access_token = create_access_token(sub=str(user.id))
-    refresh_token = create_refresh_token(sub=str(user.id))
-
     return TokenResponse(
-        access_token=access_token,
-        refresh_token=refresh_token,
+        access_token=create_access_token({"id": user.id}),
+        refresh_token=create_access_token({"id": user.id}),
         token_type="bearer",
     )
 
@@ -80,26 +72,27 @@ async def get_access_token(
 
 @router.post("/refresh")
 async def refresh_access_token(refresh_token: str, redis: RedisDep) -> TokenResponse:
-    # Verify token signature
-    id = await verify_refresh_token(redis=redis, token=refresh_token)
-
-    # Check token against DB / blacklist here.
-    access_token = create_access_token(sub=str(id))
+    try:
+        claims = await verify_refresh_token(redis=redis, token=refresh_token)
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid or expire refresh token")
 
     return TokenResponse(
-        access_token=access_token,
+        access_token=create_access_token({"id": claims["id"]}),
         refresh_token=refresh_token,
         token_type="bearer",
     )
 
 
-# --- Handle refresh token blocklist ---
-@router.post("/signout")
-async def signout(
-    payload: RevokeTokenRequest,
-    redis: RedisDep,
-) -> MessageResponse:
+# --- Handle refresh token revoke ---
 
-    claims = await verify_refresh_token(redis=redis, token=payload.refresh_token)
+
+@router.post("/signout")
+async def signout(payload: RevokeTokenRequest, redis: RedisDep) -> MessageResponse:
+    try:
+        claims = await verify_refresh_token(redis=redis, token=payload.refresh_token)
+    except JWTError:
+        raise HTTPException(status_code=200, detail="Sign out successfull")
+
     await revoke_token(redis=redis, jti=claims["jti"], exp=claims["exp"])
-    return MessageResponse(detail="Token revoked")
+    return MessageResponse(detail="Sign out successfull")

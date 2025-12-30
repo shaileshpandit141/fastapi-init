@@ -4,13 +4,13 @@ from jose import ExpiredSignatureError, jwt
 from jose import JWTError as JoseJWTError
 from redis.asyncio.client import Redis
 
+from core.config import settings
 from core.security.jwt.exceptions import (
     ExpiredTokenError,
     InvalidTokenError,
     RevokeTokenError,
 )
 from core.security.jwt.revocation import is_token_revoked
-from core.settings import settings
 
 
 async def _verify_jwt(
