@@ -1,5 +1,6 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from logging.config import dictConfig
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,6 +11,7 @@ from api.v1.auth import router as auth_router
 from api.v1.health import router as health_router
 from api.v1.users import router as users_router
 from core.config import settings
+from core.config.logging import LOGGING_CONFIG
 from db.engine import engine, init_db
 
 
@@ -27,6 +29,10 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     finally:
         await app.state.redis.close()
         await engine.dispose()
+
+
+# Configure logging
+dictConfig(LOGGING_CONFIG)
 
 
 # Create FastAPI app
