@@ -8,8 +8,8 @@ from api.v1.auth import router as auth_router
 from api.v1.health import router as health_router
 from api.v1.users import router as users_router
 from context.lifespan import lifespan
-from core.config import settings
 from core.config.logging import LOGGING_CONFIG
+from core.config.settings import settings
 
 # Configure logging
 dictConfig(LOGGING_CONFIG)

@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from jose import jwt
 
-from core.config import settings
+from core.config.settings import settings
 from utils.get_utc_now import get_utc_now
 
 
