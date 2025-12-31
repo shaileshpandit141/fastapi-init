@@ -1,10 +1,13 @@
+from collections.abc import Awaitable, Callable
+from typing import Any, Mapping
+
 from fastapi import APIRouter, HTTPException, status
 from sqlmodel import select
 
 from core.security.jwt.create import create_access_token, create_refresh_token
 from core.security.jwt.exceptions import JWTError
 from core.security.jwt.revocation import revoke_token
-from core.security.jwt.verify import verify_refresh_token
+from core.security.jwt.verify import verify_access_token, verify_refresh_token
 from core.security.password import hash_password, verify_password
 from dependencies.oauth2 import OAuth2PasswordFormDep
 from dependencies.redis import RedisDep
@@ -105,13 +108,20 @@ async def refresh_access_token(
 # --- Handle refresh token revoke ---
 
 
+VerifyFn = Callable[..., Awaitable[Mapping[str, Any]]]
+
+
 @router.post("/signout")
 async def signout(payload: RevokedTokenRequest, redis: RedisDep) -> MessageResponse:
-    try:
-        claims = await verify_refresh_token(redis=redis, token=payload.refresh_token)
-    except JWTError:
-        raise HTTPException(status_code=200, detail="Sign out successfull")
 
-    await revoke_token(redis=redis, jti=claims["jti"], exp=claims["exp"])
+    async def revoke_if_valid(verify_fn: VerifyFn, token: str) -> None:
+        try:
+            claims = await verify_fn(redis=redis, token=token)
+            await revoke_token(redis=redis, jti=claims["jti"], exp=claims["exp"])
+        except JWTError:
+            pass
 
-    return MessageResponse(detail="Sign out successfull")
+    await revoke_if_valid(verify_access_token, payload.access_token)
+    await revoke_if_valid(verify_refresh_token, payload.refresh_token)
+
+    return MessageResponse(detail="Sign out successful")
