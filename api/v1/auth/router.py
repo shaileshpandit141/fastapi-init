@@ -114,14 +114,14 @@ VerifyFn = Callable[..., Awaitable[Mapping[str, Any]]]
 @router.post("/signout")
 async def signout(payload: RevokedTokenRequest, redis: RedisDep) -> MessageResponse:
 
-    async def revoke_if_valid(verify_fn: VerifyFn, token: str) -> None:
+    async def _revoke_if_valid(verify_fn: VerifyFn, token: str) -> None:
         try:
             claims = await verify_fn(redis=redis, token=token)
             await revoke_token(redis=redis, jti=claims["jti"], exp=claims["exp"])
         except JWTError:
             pass
 
-    await revoke_if_valid(verify_access_token, payload.access_token)
-    await revoke_if_valid(verify_refresh_token, payload.refresh_token)
+    await _revoke_if_valid(verify_access_token, payload.access_token)
+    await _revoke_if_valid(verify_refresh_token, payload.refresh_token)
 
     return MessageResponse(detail="Sign out successful")
