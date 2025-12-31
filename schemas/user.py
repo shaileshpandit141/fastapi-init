@@ -1,23 +1,23 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 from models.user import UserRole, UserStatus
 
 
 class UserResponse(BaseModel):
     id: UUID
-    email: str
+    email: EmailStr
     role: UserRole
     status: UserStatus
     updated_at: datetime
 
 
 class UserCreateRequest(BaseModel):
-    email: str
+    email: EmailStr
     password: str
 
 
 class UserUpdateRequest(BaseModel):
-    email: str | None = None
+    email: EmailStr | None = None
