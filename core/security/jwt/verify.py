@@ -1,3 +1,4 @@
+from logging import getLogger
 from typing import Any
 
 from jose import ExpiredSignatureError, jwt
@@ -11,6 +12,8 @@ from core.security.jwt.exceptions import (
     RevokedTokenError,
 )
 from core.security.jwt.revocation import is_token_revoked
+
+logger = getLogger(__name__)
 
 
 async def _verify_jwt(
@@ -28,21 +31,30 @@ async def _verify_jwt(
             algorithms=[algorithm],
         )
     except ExpiredSignatureError:
+        logger.debug("JWT verification failed: token expired", exc_info=True)
         raise ExpiredTokenError()
     except JoseJWTError:
+        logger.debug("JWT verification failed: invalid token", exc_info=True)
         raise InvalidTokenError()
 
     # Check required claims
     required_claims = {"sub", "exp", "iat", "jti"}
     if not required_claims.issubset(claims):
+        logger.debug("JWT verification failed: missing required claims")
         raise InvalidTokenError()
 
     # Check subject
     if claims["sub"] != sub:
+        logger.debug(
+            "JWT verification failed: subject mismatch " "(expected=%s, actual=%s)",
+            sub,
+            claims.get("sub"),
+        )
         raise InvalidTokenError()
 
     # Check, Is revoked by client
     if await is_token_revoked(redis=redis, jti=claims["jti"]):
+        logger.debug("JWT verification failed: token revoked")
         raise RevokedTokenError()
 
     return claims
