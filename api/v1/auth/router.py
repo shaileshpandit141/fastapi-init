@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from sqlmodel import select
 
-from core.security.jwt.create import create_access_token
+from core.security.jwt.create import create_access_token, create_refresh_token
 from core.security.jwt.exceptions import JWTError
 from core.security.jwt.revocation import revoke_token
 from core.security.jwt.verify import verify_refresh_token
@@ -9,7 +9,7 @@ from core.security.password import hash_password, verify_password
 from dependencies.oauth2 import OAuth2PasswordFormDep
 from dependencies.redis import RedisDep
 from dependencies.session import SessionDep
-from models.user import User
+from models.user import User, UserStatus
 from schemas.auth import RefreshTokenRequest, RevokedTokenRequest, TokenResponse
 from schemas.message import MessageResponse
 from schemas.user import UserCreateRequest, UserResponse
@@ -54,7 +54,20 @@ async def get_access_token(
         select(User).where(User.email == form_payload.username),
     )
     user = user.first()
-    if not user or not verify_password(form_payload.password, user.password_hash):
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User not found",
+        )
+
+    if user.status == UserStatus.INACTIVE:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User is inactive",
+        )
+
+    if not verify_password(form_payload.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -62,7 +75,7 @@ async def get_access_token(
 
     return TokenResponse(
         access_token=create_access_token({"id": str(user.id)}),
-        refresh_token=create_access_token({"id": str(user.id)}),
+        refresh_token=create_refresh_token({"id": str(user.id)}),
         token_type="bearer",
     )
 
