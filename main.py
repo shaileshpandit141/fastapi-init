@@ -1,35 +1,15 @@
-from collections.abc import AsyncGenerator
-from contextlib import asynccontextmanager
 from logging.config import dictConfig
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
-from redis.asyncio import from_url
 
 from api.v1.auth import router as auth_router
 from api.v1.health import router as health_router
 from api.v1.users import router as users_router
+from context.lifespan import lifespan
 from core.config import settings
 from core.config.logging import LOGGING_CONFIG
-from db.engine import engine, init_db
-
-
-# Create a async lifespan context manager
-@asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    app.state.redis = from_url(
-        settings.redis_url,
-        encoding="utf-8",
-        decode_responses=True,
-    )
-    try:
-        await init_db()
-        yield
-    finally:
-        await app.state.redis.close()
-        await engine.dispose()
-
 
 # Configure logging
 dictConfig(LOGGING_CONFIG)
