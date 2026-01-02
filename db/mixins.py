@@ -6,6 +6,14 @@ from sqlmodel import Field, SQLModel
 from uuid6 import uuid7
 
 
+class IDMixin(SQLModel):
+    id: int = Field(
+        default=None,
+        primary_key=True,
+        sa_column_kwargs={"autoincrement": True},
+    )
+
+
 class UUIDMixin(SQLModel):
     id: uuid.UUID = Field(
         default_factory=uuid7,
