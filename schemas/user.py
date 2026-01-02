@@ -3,13 +3,12 @@ from uuid import UUID
 
 from pydantic import BaseModel, EmailStr
 
-from models.user import UserRole, UserStatus
+from models.user import UserStatus
 
 
 class UserResponse(BaseModel):
     id: UUID
     email: EmailStr
-    role: UserRole
     status: UserStatus
     updated_at: datetime
 

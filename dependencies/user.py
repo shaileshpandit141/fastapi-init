@@ -1,5 +1,4 @@
 from typing import Annotated
-from uuid import UUID
 
 from fastapi import Depends, HTTPException
 
@@ -13,13 +12,10 @@ from .session import SessionDep
 
 
 async def get_current_user(
-    token: Oauth2SchemeDep,
-    session: SessionDep,
-    redis: RedisDep,
+    token: Oauth2SchemeDep, session: SessionDep, redis: RedisDep
 ) -> User:
     try:
         claims = await verify_access_token(redis, token=token)
-        user_id = UUID(claims["id"])
     except (JWTError, KeyError, ValueError):
         raise HTTPException(
             status_code=401,
@@ -27,7 +23,7 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    user = await session.get(User, user_id)
+    user = await session.get(User, claims["id"])
 
     if user is None:
         raise HTTPException(
