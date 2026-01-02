@@ -4,11 +4,10 @@ from fastapi import Depends, HTTPException
 
 from core.security.jwt.exceptions import JWTError
 from core.security.jwt.verify import verify_access_token
+from dependencies.oauth2 import Oauth2SchemeDep
 from dependencies.redis import RedisDep
+from dependencies.session import SessionDep
 from models.user import User, UserStatus
-
-from .oauth2 import Oauth2SchemeDep
-from .session import SessionDep
 
 
 async def get_current_user(
