@@ -13,7 +13,7 @@ def require_roles(
     allowed_roles_set = set(allowed_roles)
 
     async def _checker(user: ActiveUserDep) -> User:
-        user_role_names = {link.role.name for link in user.roles}
+        user_role_names: set[str] = {link.role.name for link in user.roles}
 
         if not user_role_names.intersection(allowed_roles_set):
             raise HTTPException(
@@ -26,4 +26,5 @@ def require_roles(
     return _checker
 
 
-AdminUserDep = Annotated[User, Depends(require_roles(["admins"]))]
+UserDep = Annotated[User, Depends(require_roles(["user"]))]
+AdminUserDep = Annotated[User, Depends(require_roles(["admin"]))]
