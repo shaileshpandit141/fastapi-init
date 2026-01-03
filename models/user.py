@@ -3,7 +3,7 @@ from enum import Enum
 from pydantic import EmailStr
 from sqlmodel import Field
 
-from db.mixins import TimestampMixin, UUIDMixin
+from db.mixins import IDMixin, TimestampMixin
 
 
 class UserRole(str, Enum):
@@ -16,7 +16,7 @@ class UserStatus(str, Enum):
     INACTIVE = "inactive"
 
 
-class User(UUIDMixin, TimestampMixin, table=True):
+class User(IDMixin, TimestampMixin, table=True):
 
     __tablename__ = "users"
 
