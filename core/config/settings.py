@@ -14,7 +14,7 @@ class Settings(BaseSettings):
 
     # Security & Auth Config
     allow_origins: list[str] = ["127.0.0.1", "localhost"]
-    database_url: str = "sqlite+aiosqlite:///./db.sqlite3"
+    database_url: str = "sqlite+aiosqlite:///./db.sqlite"
     redis_url: str = "redis://localhost:6379/0"
     access_token_secret_key: str = secrets.token_hex(32)
     refresh_token_secret_key: str = secrets.token_hex(32)

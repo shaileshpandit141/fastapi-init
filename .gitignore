@@ -11,4 +11,4 @@ wheels/
 
 # Security related files
 .env
-db.sqlite3
+db.sqlite
