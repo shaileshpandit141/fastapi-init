@@ -1,6 +1,7 @@
 from typing import Sequence
 
 from fastapi import APIRouter, HTTPException, status
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
 
 from dependencies.roles import AdminUserDep
@@ -21,16 +22,16 @@ async def list_roles(admin: AdminUserDep, session: SessionDep) -> Sequence[Role]
 async def create_role(
     role_in: RoleRequest, admin: AdminUserDep, session: SessionDep
 ) -> Role:
-    existing = await session.exec(select(Role).where(Role.name == role_in.name))
-    if existing.first():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Role already exists"
-        )
-
     role = Role.model_validate(role_in)
     session.add(role)
 
-    await session.commit()
-    await session.refresh(role)
+    try:
+        await session.commit()
+        await session.refresh(role)
+    except IntegrityError:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Role already exists"
+        )
 
     return role
