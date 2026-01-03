@@ -20,14 +20,17 @@ async def list_roles(admin: AdminUserDep, session: SessionDep) -> Sequence[Role]
 @router.post("/roles", response_model=Role, status_code=status.HTTP_201_CREATED)
 async def create_role(
     role_in: RoleRequest, admin: AdminUserDep, session: SessionDep
-) -> RoleRequest:
+) -> Role:
     existing = await session.exec(select(Role).where(Role.name == role_in.name))
     if existing.first():
-        raise HTTPException(status_code=400, detail="Role already exists")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Role already exists"
+        )
 
-    session.add(role_in)
+    role = Role.model_validate(role_in)
+    session.add(role)
 
     await session.commit()
-    await session.refresh(role_in)
+    await session.refresh(role)
 
-    return role_in
+    return role
