@@ -1,20 +1,20 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import text
+from sqlalchemy import Column, DateTime, func, text
 from sqlmodel import Field, SQLModel
 from uuid6 import uuid7
 
 
-class IDMixin(SQLModel):
-    id: int = Field(
+class BaseIntIDModel(SQLModel):
+    id: int | None = Field(
         default=None,
         primary_key=True,
         sa_column_kwargs={"autoincrement": True},
     )
 
 
-class UUIDMixin(SQLModel):
+class BaseUUIDModel(SQLModel):
     id: uuid.UUID = Field(
         default_factory=uuid7,
         primary_key=True,
@@ -22,12 +22,16 @@ class UUIDMixin(SQLModel):
     )
 
 
-class TimestampMixin:
+class BaseTimestampModel(SQLModel):
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
     updated_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
-        nullable=False,
+        sa_column=Column(
+            DateTime(timezone=True),
+            server_default=func.now(),
+            onupdate=func.now(),
+            nullable=False,
+        )
     )

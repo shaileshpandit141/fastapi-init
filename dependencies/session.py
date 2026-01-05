@@ -3,11 +3,11 @@ from typing import Annotated, AsyncGenerator
 from fastapi import Depends
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from db.session import Session
+from db.connections import sessions
 
 
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
-    async with Session() as session:
+    async with sessions.AsyncSessionLocal() as session:
         yield session
 
 

@@ -3,7 +3,7 @@ from enum import Enum
 from pydantic import EmailStr
 from sqlmodel import Field, Relationship, SQLModel
 
-from db.mixins import IDMixin, TimestampMixin
+from db.models.bases import BaseIntIDModel, BaseTimestampModel
 
 
 class UserStatus(str, Enum):
@@ -14,7 +14,7 @@ class UserStatus(str, Enum):
 # ---- Core user model ----
 
 
-class User(IDMixin, TimestampMixin, table=True):
+class User(BaseIntIDModel, BaseTimestampModel, table=True):
     __tablename__ = "users"
 
     email: EmailStr = Field(max_length=255, index=True, unique=True, nullable=False)
@@ -27,7 +27,7 @@ class User(IDMixin, TimestampMixin, table=True):
 # ---- Role & permission models ----
 
 
-class Role(IDMixin, table=True):
+class Role(BaseIntIDModel, table=True):
     __tablename__ = "roles"
 
     name: str = Field(max_length=50, unique=True, index=True)
@@ -37,7 +37,7 @@ class Role(IDMixin, table=True):
     permissions: list["RolePermissionLink"] = Relationship(back_populates="role")
 
 
-class Permission(IDMixin, table=True):
+class Permission(BaseIntIDModel, table=True):
     __tablename__ = "permissions"
 
     code: str = Field(max_length=100, unique=True, index=True)
