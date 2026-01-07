@@ -52,7 +52,7 @@ class Permission(BaseIntIDModel, table=True):
 class UserRoleLink(SQLModel, table=True):
     __tablename__ = "user_roles"
 
-    user_id: str = Field(foreign_key="users.id", primary_key=True)
+    user_id: int = Field(foreign_key="users.id", primary_key=True)
     role_id: int = Field(foreign_key="roles.id", primary_key=True)
 
     user: "User" = Relationship(back_populates="roles")

@@ -1,6 +1,7 @@
 import click
 
-from commands.seeds.rbac import seed_rbac
+from commands.create import create
+from commands.seed import seed
 
 
 @click.group()
@@ -9,4 +10,5 @@ def cli() -> None:
     pass
 
 
-cli.add_command(seed_rbac)
+cli.add_command(create)
+cli.add_command(seed)

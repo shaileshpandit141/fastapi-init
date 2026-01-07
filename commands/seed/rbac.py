@@ -72,6 +72,6 @@ def rbac() -> None:
 
             echo("Roles and permissions seeded successfully.")
 
-        except Exception as e:
+        except Exception as err:
             session.rollback()
-            echo(f"RBAC seeding failed: {e}")
+            echo(f"RBAC seeding failed: {err}")
