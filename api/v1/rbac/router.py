@@ -4,8 +4,8 @@ from fastapi import APIRouter, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
 
-from dependencies.roles import AdminUserDep
-from dependencies.session import SessionDep
+from dependencies.authorization.roles import AdminUserDep
+from dependencies.connections.session import SessionDep
 from models.user import Role
 from schemas.role import RoleRequest, RoleResponse
 

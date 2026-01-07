@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from dependencies.user import ActiveUserDep
+from dependencies.auth.user import ActiveUserDep
 from models.user import User
 from schemas.user import UserResponse
 

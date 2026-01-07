@@ -3,7 +3,7 @@ from typing import Annotated, Awaitable
 
 from fastapi import Depends, HTTPException, status
 
-from dependencies.user import ActiveUserDep
+from dependencies.auth.user import ActiveUserDep
 from models.user import User
 
 

@@ -6,8 +6,8 @@ from fastapi import APIRouter, Response, status
 from sqlalchemy.exc import OperationalError
 from sqlmodel import select
 
-from dependencies.redis import RedisDep
-from dependencies.session import SessionDep
+from dependencies.cache.redis import RedisDep
+from dependencies.connections.session import SessionDep
 from schemas.health import HealthyResponse, UnhealthyResponse
 
 router = APIRouter(prefix="/health", tags=["health"])

@@ -9,9 +9,9 @@ from core.security.jwt.exceptions import JWTError
 from core.security.jwt.revocation import revoke_token
 from core.security.jwt.verify import verify_access_token, verify_refresh_token
 from core.security.password import hash_password, verify_password
-from dependencies.oauth2 import OAuth2PasswordFormDep
-from dependencies.redis import RedisDep
-from dependencies.session import SessionDep
+from dependencies.auth.oauth2 import OAuth2PasswordFormDep
+from dependencies.cache.redis import RedisDep
+from dependencies.connections.session import SessionDep
 from models.user import User, UserStatus
 from schemas.auth import RefreshTokenRequest, RevokedTokenRequest, TokenResponse
 from schemas.message import MessageResponse

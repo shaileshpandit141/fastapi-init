@@ -6,9 +6,9 @@ from sqlmodel import select
 
 from core.security.jwt.exceptions import JWTError
 from core.security.jwt.verify import verify_access_token
-from dependencies.oauth2 import Oauth2SchemeDep
-from dependencies.redis import RedisDep
-from dependencies.session import SessionDep
+from dependencies.auth.oauth2 import Oauth2SchemeDep
+from dependencies.cache.redis import RedisDep
+from dependencies.connections.session import SessionDep
 from models.user import User, UserRoleLink, UserStatus
 
 
