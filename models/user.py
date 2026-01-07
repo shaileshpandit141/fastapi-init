@@ -1,3 +1,5 @@
+# pyright: reportAssignmentType=false
+
 from enum import Enum
 
 from pydantic import EmailStr
