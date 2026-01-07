@@ -22,7 +22,7 @@ INITIAL_PERMISSIONS: list[Permission] = [
 
 
 @command()
-def seed_rbac() -> None:
+def rbac() -> None:
     """Seed roles and permissions (SQLite dev, PostgreSQL prod)."""
     with sessions.SyncSessionLocal() as session:
         try:
