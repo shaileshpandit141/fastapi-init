@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class RoleResponse(BaseModel):
@@ -10,3 +10,8 @@ class RoleResponse(BaseModel):
 class RoleRequest(BaseModel):
     name: str
     description: str | None = None
+
+
+class PermissionRequest(BaseModel):
+    code: str
+    description: str | None = Field(default=None, max_length=255)
