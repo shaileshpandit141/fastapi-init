@@ -6,7 +6,7 @@ from sqlmodel import select
 
 from dependencies.authorization.roles import AdminUserDep
 from dependencies.connections.session import SessionDep
-from models.user import Role
+from models.user import Permission, Role
 from schemas.rbac import RoleRequest, RoleResponse
 
 router = APIRouter(prefix="/rbac", tags=["rbac"])
@@ -35,3 +35,11 @@ async def create_role(
         )
 
     return role
+
+
+@router.get("/permissions", response_model=list[Permission])
+async def list_permissions(
+    admin: AdminUserDep, session: SessionDep
+) -> Sequence[Permission]:
+    result = await session.exec(select(Permission))
+    return result.all()
