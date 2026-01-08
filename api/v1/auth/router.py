@@ -13,9 +13,9 @@ from dependencies.auth.oauth2 import OAuth2PasswordFormDep
 from dependencies.cache.redis import RedisDep
 from dependencies.connections.session import SessionDep
 from models.user import User, UserStatus
-from schemas.auth import RefreshTokenRequest, RevokedTokenRequest, TokenResponse
-from schemas.message import MessageResponse
-from schemas.user import UserCreateRequest, UserResponse
+from schemas.auth import RefreshTokenCreate, RevokedTokenCreate, TokenRead
+from schemas.message import MessageRead
+from schemas.user import UserCreate, UserRead
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -23,8 +23,8 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 # --- Handle user sign up action ---
 
 
-@router.post("/signup", response_model=UserResponse)
-async def create_user(payload: UserCreateRequest, session: SessionDep) -> User:
+@router.post("/signup", response_model=UserRead)
+async def create_user(payload: UserCreate, session: SessionDep) -> User:
     # Check if user exists
     existing = await session.exec(
         select(User).where(User.email == payload.email),
@@ -52,7 +52,7 @@ async def create_user(payload: UserCreateRequest, session: SessionDep) -> User:
 @router.post("/token")
 async def get_access_token(
     form_payload: OAuth2PasswordFormDep, session: SessionDep
-) -> TokenResponse:
+) -> TokenRead:
     user = await session.exec(
         select(User).where(User.email == form_payload.username),
     )
@@ -76,7 +76,7 @@ async def get_access_token(
             detail="Incorrect email or password",
         )
 
-    return TokenResponse(
+    return TokenRead(
         access_token=create_access_token({"id": user.id}),
         refresh_token=create_refresh_token({"id": user.id}),
         token_type="bearer",
@@ -88,8 +88,8 @@ async def get_access_token(
 
 @router.post("/refresh")
 async def refresh_access_token(
-    payload: RefreshTokenRequest, redis: RedisDep
-) -> TokenResponse:
+    payload: RefreshTokenCreate, redis: RedisDep
+) -> TokenRead:
     try:
         claims = await verify_refresh_token(redis=redis, token=payload.refresh_token)
     except JWTError:
@@ -98,7 +98,7 @@ async def refresh_access_token(
             detail="Invalid or expire refresh token",
         )
 
-    return TokenResponse(
+    return TokenRead(
         access_token=create_access_token({"id": claims["id"]}),
         refresh_token=payload.refresh_token,
         token_type="bearer",
@@ -112,7 +112,7 @@ VerifyFn = Callable[..., Awaitable[Mapping[str, Any]]]
 
 
 @router.post("/signout")
-async def signout(payload: RevokedTokenRequest, redis: RedisDep) -> MessageResponse:
+async def signout(payload: RevokedTokenCreate, redis: RedisDep) -> MessageRead:
 
     async def _revoke_if_valid(verify_fn: VerifyFn, token: str) -> None:
         try:
@@ -124,4 +124,4 @@ async def signout(payload: RevokedTokenRequest, redis: RedisDep) -> MessageRespo
     await _revoke_if_valid(verify_access_token, payload.access_token)
     await _revoke_if_valid(verify_refresh_token, payload.refresh_token)
 
-    return MessageResponse(detail="Sign out successful")
+    return MessageRead(detail="Sign out successful")

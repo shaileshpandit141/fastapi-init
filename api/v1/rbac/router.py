@@ -7,12 +7,12 @@ from sqlmodel import select
 from dependencies.authorization.roles import AdminUserDep
 from dependencies.connections.session import SessionDep
 from models.user import Permission, Role
-from schemas.rbac import PermissionRequest, RoleRequest, RoleResponse
+from schemas.rbac import PermissionCreate, RoleCreate, RoleRead
 
 router = APIRouter(prefix="/rbac", tags=["rbac"])
 
 
-@router.get("/roles", response_model=list[RoleResponse])
+@router.get("/roles", response_model=list[RoleRead])
 async def list_roles(admin: AdminUserDep, session: SessionDep) -> Sequence[Role]:
     result = await session.exec(select(Role))
     return result.all()
@@ -20,7 +20,7 @@ async def list_roles(admin: AdminUserDep, session: SessionDep) -> Sequence[Role]
 
 @router.post("/roles", response_model=Role, status_code=status.HTTP_201_CREATED)
 async def create_role(
-    role_in: RoleRequest, admin: AdminUserDep, session: SessionDep
+    role_in: RoleCreate, admin: AdminUserDep, session: SessionDep
 ) -> Role:
     role = Role.model_validate(role_in)
     session.add(role)
@@ -49,7 +49,7 @@ async def list_permissions(
     "/permissions", response_model=Permission, status_code=status.HTTP_201_CREATED
 )
 async def create_permission(
-    perm_in: PermissionRequest, admin: AdminUserDep, session: SessionDep
+    perm_in: PermissionCreate, admin: AdminUserDep, session: SessionDep
 ) -> Permission:
     permission = Permission.model_validate(perm_in)
     session.add(permission)

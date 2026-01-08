@@ -1,21 +1,22 @@
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr
+from pydantic import EmailStr
+from sqlmodel import SQLModel
 
 from models.user import UserStatus
 
 
-class UserResponse(BaseModel):
+class UserRead(SQLModel):
     id: int
     email: EmailStr
     status: UserStatus
     updated_at: datetime
 
 
-class UserCreateRequest(BaseModel):
+class UserCreate(SQLModel):
     email: EmailStr
     password: str
 
 
-class UserUpdateRequest(BaseModel):
+class UserUpdate(SQLModel):
     email: EmailStr | None = None

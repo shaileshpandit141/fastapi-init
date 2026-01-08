@@ -1,16 +1,17 @@
 from pydantic import BaseModel
+from sqlmodel import SQLModel
 
 
-class TokenResponse(BaseModel):
+class TokenRead(SQLModel):
     access_token: str
     refresh_token: str
     token_type: str
 
 
-class RefreshTokenRequest(BaseModel):
+class RefreshTokenCreate(SQLModel):
     refresh_token: str
 
 
-class RevokedTokenRequest(BaseModel):
+class RevokedTokenCreate(BaseModel):
     access_token: str
     refresh_token: str

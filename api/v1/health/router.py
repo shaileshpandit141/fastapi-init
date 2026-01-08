@@ -8,7 +8,7 @@ from sqlmodel import select
 
 from dependencies.cache.redis import RedisDep
 from dependencies.connections.session import SessionDep
-from schemas.health import HealthyResponse, UnhealthyResponse
+from schemas.health import HealthyRead, UnhealthyRead
 
 router = APIRouter(prefix="/health", tags=["health"])
 
@@ -21,20 +21,20 @@ UNHEALTHY_TTL = 5  # seconds
 
 
 HEALTH_RESPONSES: dict[int | str, dict[str, Any]] = {
-    200: {"model": HealthyResponse, "description": "Service is healthy"},
-    503: {"model": UnhealthyResponse, "description": "Service is unhealthy"},
+    200: {"model": HealthyRead, "description": "Service is healthy"},
+    503: {"model": UnhealthyRead, "description": "Service is unhealthy"},
 }
 
 
 @router.get(
     "/",
     summary="Health check",
-    response_model=HealthyResponse | UnhealthyResponse,
+    response_model=HealthyRead | UnhealthyRead,
     responses=HEALTH_RESPONSES,
 )
 async def health_check(
     redis: RedisDep, session: SessionDep, response: Response
-) -> HealthyResponse | UnhealthyResponse:
+) -> HealthyRead | UnhealthyRead:
     # Try returning cached health
     cached_raw = await redis.get(HEALTH_CACHE_KEY)
     if cached_raw:
@@ -45,9 +45,9 @@ async def health_check(
             response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
 
         return (
-            HealthyResponse(**cached_health)
+            HealthyRead(**cached_health)
             if cached_health["status"] == "ok"
-            else UnhealthyResponse(**cached_health)
+            else UnhealthyRead(**cached_health)
         )
 
     # Compute health
@@ -70,7 +70,7 @@ async def health_check(
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
 
     return (
-        HealthyResponse(**health_data)
+        HealthyRead(**health_data)
         if health_status == "ok"
-        else UnhealthyResponse(**health_data)
+        else UnhealthyRead(**health_data)
     )

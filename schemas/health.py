@@ -1,9 +1,9 @@
-from pydantic import BaseModel
+from sqlmodel import SQLModel
 
 
-class HealthyResponse(BaseModel):
+class HealthyRead(SQLModel):
     status: str = "ok"
 
 
-class UnhealthyResponse(BaseModel):
+class UnhealthyRead(SQLModel):
     status: str = "unhealthy"

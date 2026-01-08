@@ -1,17 +1,17 @@
-from pydantic import BaseModel, Field
+from sqlmodel import Field, SQLModel
 
 
-class RoleResponse(BaseModel):
+class RoleRead(SQLModel):
     id: int
     name: str
     description: str | None = None
 
 
-class RoleRequest(BaseModel):
+class RoleCreate(SQLModel):
     name: str
     description: str | None = None
 
 
-class PermissionRequest(BaseModel):
+class PermissionCreate(SQLModel):
     code: str
     description: str | None = Field(default=None, max_length=255)
