@@ -6,8 +6,10 @@ from sqlmodel import select
 
 from dependencies.authorization.roles import AdminUserDep
 from dependencies.connections.session import SessionDep
-from models.user import Permission, Role
+from models.user import Permission, Role, RolePermissionLink
+from schemas.message import MessageRead
 from schemas.rbac import PermissionCreate, RoleCreate, RoleRead
+from schemas.user import RolePermissionCreate
 
 router = APIRouter(prefix="/rbac", tags=["rbac"])
 
@@ -64,3 +66,38 @@ async def create_permission(
         )
 
     return permission
+
+
+@router.post(
+    "/roles/permissions",
+    response_model=MessageRead,
+    status_code=status.HTTP_201_CREATED,
+)
+async def set_role_permission(
+    body: RolePermissionCreate, admin: AdminUserDep, session: SessionDep
+) -> MessageRead:
+    role = await session.get(Role, body.role_id)
+    if not role:
+        raise HTTPException(status_code=404, detail="Role not found")
+
+    permission = await session.get(Permission, body.permission_id)
+    if not permission:
+        raise HTTPException(status_code=404, detail="Permission not found")
+
+    try:
+        role_perm = RolePermissionLink(
+            role_id=body.role_id,
+            permission_id=body.permission_id,
+        )
+        session.add(role_perm)
+        await session.commit()
+    except IntegrityError:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Permission already assigned to role",
+        )
+
+    return MessageRead(
+        detail="Permission assigned to role",
+    )

@@ -20,3 +20,8 @@ class UserCreate(SQLModel):
 
 class UserUpdate(SQLModel):
     email: EmailStr | None = None
+
+
+class RolePermissionCreate(SQLModel):
+    role_id: int
+    permission_id: int
