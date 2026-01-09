@@ -15,6 +15,7 @@ dependencies = [
   "python-jose[cryptography]>=3.5.0",
   "python-multipart>=0.0.21",
   "redis>=7.1.0",
+  "slowapi>=0.1.9",
   "sqlmodel>=0.0.29",
   "uuid6>=2025.0.1",
   "uvicorn[standard]>=0.40.0",
