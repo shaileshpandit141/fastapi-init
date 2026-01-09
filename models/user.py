@@ -4,7 +4,7 @@ from enum import Enum
 from typing import TYPE_CHECKING
 
 from pydantic import EmailStr
-from sqlmodel import Field, Relationship
+from sqlmodel import Field, Relationship, SQLModel
 
 from db.models.bases import BaseIntIDModel, BaseTimestampModel
 
@@ -17,11 +17,14 @@ class UserStatus(str, Enum):
     INACTIVE = "inactive"
 
 
-class User(BaseIntIDModel, BaseTimestampModel, table=True):
+class UserBase(SQLModel):
+    email: EmailStr = Field(max_length=255, index=True, unique=True, nullable=False)
+    status: UserStatus = Field(default=UserStatus.ACTIVE, nullable=False)
+
+
+class User(BaseIntIDModel, UserBase, BaseTimestampModel, table=True):
     __tablename__ = "users"
 
-    email: EmailStr = Field(max_length=255, index=True, unique=True, nullable=False)
     password_hash: str = Field(max_length=255, nullable=False)
-    status: UserStatus = Field(default=UserStatus.ACTIVE, nullable=False)
 
     roles: list["UserRoleLink"] = Relationship(back_populates="user")

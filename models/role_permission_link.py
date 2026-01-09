@@ -9,11 +9,13 @@ if TYPE_CHECKING:
     from models.role import Role
 
 
-class RolePermissionLink(SQLModel, table=True):
-    __tablename__ = "role_permissions"
-
+class RolePermissionLinkBase(SQLModel):
     role_id: int = Field(foreign_key="roles.id", primary_key=True)
     permission_id: int = Field(foreign_key="permissions.id", primary_key=True)
+
+
+class RolePermissionLink(RolePermissionLinkBase, table=True):
+    __tablename__ = "role_permissions"
 
     role: "Role" = Relationship(back_populates="permissions")
     permission: "Permission" = Relationship(back_populates="roles")
