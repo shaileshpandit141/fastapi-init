@@ -5,7 +5,9 @@ from sqlmodel import select
 
 from core.security.password import hash_password
 from db.connections import sessions
-from models.user import Role, User, UserRoleLink
+from models.role import Role
+from models.user import User
+from models.user_role_link import UserRoleLink
 
 
 @command()

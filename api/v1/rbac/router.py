@@ -6,7 +6,9 @@ from sqlmodel import select
 
 from dependencies.authorization.roles import AdminUserDep
 from dependencies.connections.session import SessionDep
-from models.user import Permission, Role, RolePermissionLink
+from models.permission import Permission
+from models.role import Role
+from models.role_permission_link import RolePermissionLink
 from schemas.message import MessageRead
 from schemas.rbac import PermissionCreate, RoleCreate, RoleRead
 from schemas.user import RolePermissionCreate

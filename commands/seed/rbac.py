@@ -3,7 +3,9 @@ from typing import cast
 from click import command, echo
 
 from db.connections import sessions
-from models.user import Permission, Role, RolePermissionLink
+from models.permission import Permission
+from models.role import Role
+from models.role_permission_link import RolePermissionLink
 
 INITIAL_ROLES: list[Role] = [
     Role(name="admin", description="Administrator with full access."),

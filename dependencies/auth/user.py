@@ -9,7 +9,8 @@ from core.security.jwt.verify import verify_access_token
 from dependencies.auth.oauth2 import Oauth2SchemeDep
 from dependencies.cache.redis import RedisDep
 from dependencies.connections.session import SessionDep
-from models.user import User, UserRoleLink, UserStatus
+from models.user import User, UserStatus
+from models.user_role_link import UserRoleLink
 
 
 async def get_current_user(
