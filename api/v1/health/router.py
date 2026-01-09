@@ -7,7 +7,7 @@ from sqlalchemy.exc import OperationalError
 from sqlmodel import select
 
 from dependencies.cache.redis import RedisDep
-from dependencies.connections.session import SessionDep
+from dependencies.connections.sessions import AsyncSessionDep
 from schemas.health import HealthyRead, UnhealthyRead
 
 router = APIRouter(prefix="/health", tags=["health"])
@@ -33,7 +33,7 @@ HEALTH_RESPONSES: dict[int | str, dict[str, Any]] = {
     responses=HEALTH_RESPONSES,
 )
 async def health_check(
-    redis: RedisDep, session: SessionDep, response: Response
+    redis: RedisDep, session: AsyncSessionDep, response: Response
 ) -> HealthyRead | UnhealthyRead:
     # Try returning cached health
     cached_raw = await redis.get(HEALTH_CACHE_KEY)

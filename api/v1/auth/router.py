@@ -11,7 +11,7 @@ from core.security.jwt.verify import verify_access_token, verify_refresh_token
 from core.security.password import hash_password, verify_password
 from dependencies.auth.oauth2 import OAuth2PasswordFormDep
 from dependencies.cache.redis import RedisDep
-from dependencies.connections.session import SessionDep
+from dependencies.connections.sessions import AsyncSessionDep
 from models.user import User, UserStatus
 from schemas.auth import RefreshTokenCreate, RevokedTokenCreate, TokenRead
 from schemas.message import MessageRead
@@ -24,7 +24,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/signup", response_model=UserRead)
-async def create_user(payload: UserCreate, session: SessionDep) -> User:
+async def create_user(payload: UserCreate, session: AsyncSessionDep) -> User:
     # Check if user exists
     existing = await session.exec(
         select(User).where(User.email == payload.email),
@@ -51,7 +51,7 @@ async def create_user(payload: UserCreate, session: SessionDep) -> User:
 
 @router.post("/token")
 async def get_access_token(
-    form_payload: OAuth2PasswordFormDep, session: SessionDep
+    form_payload: OAuth2PasswordFormDep, session: AsyncSessionDep
 ) -> TokenRead:
     user = await session.exec(
         select(User).where(User.email == form_payload.username),

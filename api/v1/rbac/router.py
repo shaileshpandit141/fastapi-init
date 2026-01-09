@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
 
 from dependencies.authorization.roles import AdminUserDep
-from dependencies.connections.session import SessionDep
+from dependencies.connections.sessions import AsyncSessionDep
 from models.permission import Permission
 from models.role import Role
 from models.role_permission_link import RolePermissionLink
@@ -17,14 +17,14 @@ router = APIRouter(prefix="/rbac", tags=["rbac"])
 
 
 @router.get("/roles", response_model=list[RoleRead])
-async def list_roles(admin: AdminUserDep, session: SessionDep) -> Sequence[Role]:
+async def list_roles(admin: AdminUserDep, session: AsyncSessionDep) -> Sequence[Role]:
     result = await session.exec(select(Role))
     return result.all()
 
 
 @router.post("/roles", response_model=Role, status_code=status.HTTP_201_CREATED)
 async def create_role(
-    role_in: RoleCreate, admin: AdminUserDep, session: SessionDep
+    role_in: RoleCreate, admin: AdminUserDep, session: AsyncSessionDep
 ) -> Role:
     role = Role.model_validate(role_in)
     session.add(role)
@@ -43,7 +43,7 @@ async def create_role(
 
 @router.get("/permissions", response_model=list[Permission])
 async def list_permissions(
-    admin: AdminUserDep, session: SessionDep
+    admin: AdminUserDep, session: AsyncSessionDep
 ) -> Sequence[Permission]:
     result = await session.exec(select(Permission))
     return result.all()
@@ -53,7 +53,7 @@ async def list_permissions(
     "/permissions", response_model=Permission, status_code=status.HTTP_201_CREATED
 )
 async def create_permission(
-    perm_in: PermissionCreate, admin: AdminUserDep, session: SessionDep
+    perm_in: PermissionCreate, admin: AdminUserDep, session: AsyncSessionDep
 ) -> Permission:
     permission = Permission.model_validate(perm_in)
     session.add(permission)
@@ -76,7 +76,7 @@ async def create_permission(
     status_code=status.HTTP_201_CREATED,
 )
 async def set_role_permission(
-    body: RolePermissionCreate, admin: AdminUserDep, session: SessionDep
+    body: RolePermissionCreate, admin: AdminUserDep, session: AsyncSessionDep
 ) -> MessageRead:
     role = await session.get(Role, body.role_id)
     if not role:
