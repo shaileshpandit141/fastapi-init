@@ -10,8 +10,9 @@ from models.permission import Permission
 from models.role import Role
 from models.role_permission_link import RolePermissionLink
 from schemas.message import MessageRead
-from schemas.rbac import PermissionCreate, RoleCreate, RoleRead
-from schemas.user import RolePermissionCreate
+from schemas.permission import PermissionCreate
+from schemas.role import RoleCreate, RoleRead
+from schemas.role_permission_link import RolePermissionLinkCreate
 
 router = APIRouter(prefix="/rbac", tags=["rbac"])
 
@@ -76,7 +77,7 @@ async def create_permission(
     status_code=status.HTTP_201_CREATED,
 )
 async def set_role_permission(
-    body: RolePermissionCreate, admin: AdminUserDep, session: AsyncSessionDep
+    body: RolePermissionLinkCreate, admin: AdminUserDep, session: AsyncSessionDep
 ) -> MessageRead:
     role = await session.get(Role, body.role_id)
     if not role:

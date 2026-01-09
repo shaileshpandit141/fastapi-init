@@ -1,15 +1,14 @@
 from datetime import datetime
 
 from pydantic import EmailStr
-from sqlmodel import SQLModel
+from sqlmodel import Field, SQLModel
 
-from models.user import UserStatus
+from db.models.bases import BaseIntIDModel
+from models.user import UserBase
+from schemas.base import NonEmptyUpdateModel
 
 
-class UserRead(SQLModel):
-    id: int
-    email: EmailStr
-    status: UserStatus
+class UserRead(BaseIntIDModel, UserBase):
     updated_at: datetime
 
 
@@ -18,10 +17,5 @@ class UserCreate(SQLModel):
     password: str
 
 
-class UserUpdate(SQLModel):
-    email: EmailStr | None = None
-
-
-class RolePermissionCreate(SQLModel):
-    role_id: int
-    permission_id: int
+class UserUpdate(NonEmptyUpdateModel):
+    email: EmailStr | None = Field(default=None, max_length=255)
