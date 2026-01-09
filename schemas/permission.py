@@ -1,6 +1,6 @@
 from sqlmodel import Field
 
-from db.models.bases import BaseIntIDModel
+from db.models.base import BaseIntIDModel
 from models.permission import PermissionBase
 from schemas.base import NonEmptyUpdateModel
 

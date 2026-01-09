@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from pydantic import EmailStr
 from sqlmodel import Field, Relationship, SQLModel
 
-from db.models.bases import BaseIntIDModel, BaseTimestampModel
+from db.models.base import BaseIntIDModel, BaseTimestampModel
 
 if TYPE_CHECKING:
     from models.user_role_link import UserRoleLink

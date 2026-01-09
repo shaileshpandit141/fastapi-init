@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from sqlmodel import Field, Relationship, SQLModel
 
-from db.models.bases import BaseIntIDModel
+from db.models.base import BaseIntIDModel
 
 if TYPE_CHECKING:
     from models.role_permission_link import RolePermissionLink
