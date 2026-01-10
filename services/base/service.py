@@ -109,3 +109,18 @@ class AsyncCRUDService[
         await self.session.commit()
         await self.session.refresh(obj)
         return obj
+
+    async def upsert(self, *, lookup: dict[str, Any], data: dict[str, Any]) -> Model:
+        stmt = select(self.model).filter_by(**lookup)
+        obj = (await self.session.execute(stmt)).scalar_one_or_none()
+
+        if obj:
+            for k, v in data.items():
+                setattr(obj, k, v)
+        else:
+            obj = self.model(**lookup, **data)
+            self.session.add(obj)
+
+        await self.session.commit()
+        await self.session.refresh(obj)
+        return obj
