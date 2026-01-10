@@ -168,3 +168,12 @@ class AsyncCRUDService[
         stmt = select(func.count()).select_from(self.model).filter_by(**filters)
         count = (await self.session.execute(stmt)).scalar_one()
         return count > 0
+
+    async def lock_for_update(self, *, id: int) -> Model:
+        stmt = select(self.model).where(self.model.id == id).with_for_update()  # type: ignore
+        obj = (await self.session.execute(stmt)).scalar_one_or_none()
+
+        if not obj:
+            raise NotFoundError()
+
+        return obj
