@@ -1,7 +1,9 @@
 from logging import getLogger
+from typing import Sequence
 
 from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
+from sqlmodel import select
 
 from core.security.password import hash_password
 from models.user import User, UserStatus
@@ -36,3 +38,9 @@ class UserService(AsyncSessionService):
             )
 
         return user
+
+    async def list_users(self, *, limit: int = 8, offset: int = 0) -> Sequence[User]:
+        """Sequence of user records"""
+        stmt = select(User).limit(limit).offset(offset)
+        result = await self.session.exec(stmt)
+        return result.all()
