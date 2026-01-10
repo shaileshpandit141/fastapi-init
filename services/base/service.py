@@ -81,10 +81,7 @@ class AsyncCRUDService[
         return result.scalars().all()
 
     async def paginate(
-        self,
-        *,
-        limit: int = 20,
-        offset: int = 0,
+        self, *, limit: int = 20, offset: int = 0
     ) -> tuple[Sequence[Model], int]:
         data_stmt = self.base_query().limit(limit).offset(offset)
         count_stmt = select(func.count()).select_from(self.base_query().subquery())
@@ -93,3 +90,22 @@ class AsyncCRUDService[
         total = (await self.session.execute(count_stmt)).scalar_one()
 
         return data, total
+
+    async def update(self, *, obj: Model, data: UpdateModel) -> Model:
+        updates = data.model_dump(exclude_unset=True)
+        for field, value in updates.items():
+            setattr(obj, field, value)
+
+        self.session.add(obj)
+        await self.session.commit()
+        await self.session.refresh(obj)
+        return obj
+
+    async def patch(self, *, id: int, data: dict[str, Any]) -> Model:
+        obj = await self.get_or_raise(id=id)
+        for field, value in data.items():
+            setattr(obj, field, value)
+
+        await self.session.commit()
+        await self.session.refresh(obj)
+        return obj
