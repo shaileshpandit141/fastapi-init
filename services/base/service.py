@@ -128,3 +128,7 @@ class AsyncCRUDService[
     async def delete(self, *, obj: Model) -> None:
         await self.session.delete(obj)
         await self.session.commit()
+
+    async def delete_by_id(self, *, id: int) -> None:
+        obj = await self.get_or_raise(id=id)
+        await self.delete(obj=obj)
