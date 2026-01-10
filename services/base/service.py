@@ -55,3 +55,6 @@ class AsyncCRUDService[
             )
             await self.session.rollback()
             raise ConflictError from error
+
+    async def get(self, *, id: int) -> Model | None:
+        return await self.session.get(self.model, id)
