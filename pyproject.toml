@@ -33,12 +33,7 @@ dev = ["httpx>=0.28.1", "pytest>=9.0.2", "pytest-asyncio>=1.3.0"]
 [tool.pyright]
 typeCheckingMode = "strict"
 reportMissingTypeStubs = false
-reportUnknownMemberType = false
-reportUnknownVariableType = false
-reportIncompatibleVariableOverride = false
-reportCallIssue = false
 reportUntypedFunctionDecorator = false
-# reportAssignmentType = false
 
 # Disable ruff S101 rule for test casecases
 [tool.ruff.lint.per-file-ignores]
