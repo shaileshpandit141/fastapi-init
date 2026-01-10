@@ -1,13 +1,13 @@
 # pyright: reportCallIssue=false
 
 from logging import getLogger
-from typing import Any, Sequence
+from typing import Any, Iterable, Sequence, cast
 
 from sqlalchemy import Select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeMeta
-from sqlmodel import SQLModel, func, select
+from sqlmodel import SQLModel, delete, func, select
 
 from .exceptions import ConflictError, NotFoundError
 
@@ -132,3 +132,9 @@ class AsyncCRUDService[
     async def delete_by_id(self, *, id: int) -> None:
         obj = await self.get_or_raise(id=id)
         await self.delete(obj=obj)
+
+    async def bulk_delete(self, *, ids: Iterable[int]) -> int:
+        stmt = delete(self.model).where(self.model.id.in_(ids))  # type: ignore
+        result = await self.session.execute(stmt)
+        await self.session.commit()
+        return cast(int, result.rowcount) or 0  # type: ignore
