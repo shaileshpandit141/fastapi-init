@@ -7,7 +7,7 @@ from sqlalchemy import Select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeMeta
-from sqlmodel import SQLModel, select
+from sqlmodel import SQLModel, func, select
 
 from .exceptions import ConflictError, NotFoundError
 
@@ -71,11 +71,7 @@ class AsyncCRUDService[
         return obj
 
     async def list(
-        self,
-        *,
-        limit: int = 20,
-        offset: int = 0,
-        order_by: Any | None = None,
+        self, *, limit: int = 20, offset: int = 0, order_by: Any | None = None
     ) -> Sequence[Model]:
         stmt = self.base_query().limit(limit).offset(offset)
         if order_by is not None:
@@ -83,3 +79,17 @@ class AsyncCRUDService[
 
         result = await self.session.execute(stmt)
         return result.scalars().all()
+
+    async def paginate(
+        self,
+        *,
+        limit: int = 20,
+        offset: int = 0,
+    ) -> tuple[Sequence[Model], int]:
+        data_stmt = self.base_query().limit(limit).offset(offset)
+        count_stmt = select(func.count()).select_from(self.base_query().subquery())
+
+        data = (await self.session.execute(data_stmt)).scalars().all()
+        total = (await self.session.execute(count_stmt)).scalar_one()
+
+        return data, total
