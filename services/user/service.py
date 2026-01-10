@@ -18,12 +18,12 @@ logger = getLogger(__name__)
 class UserService(AsyncSessionService):
     """Service to mange user table"""
 
-    async def create_user(self, *, data: UserCreate) -> User:
+    async def create_user(self, *, data: UserCreate, user_status: UserStatus) -> User:
         """Create a new user with email and password"""
         user = User(
             email=data.email,
             password_hash=hash_password(data.password),
-            status=UserStatus.ACTIVE,
+            status=user_status,
         )
 
         self.session.add(user)
