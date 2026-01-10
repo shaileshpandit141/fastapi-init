@@ -1,3 +1,5 @@
+# pyright: reportCallIssue=false
+
 from logging import getLogger
 from typing import Sequence
 
