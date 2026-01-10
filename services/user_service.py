@@ -7,7 +7,7 @@ from sqlmodel import select
 
 from core.security.password import hash_password
 from models.user import User, UserStatus
-from schemas.user import UserCreate
+from schemas.user import UserCreate, UserUpdate
 from services.base import AsyncSessionService
 
 logger = getLogger(__name__)
@@ -54,6 +54,25 @@ class UserService(AsyncSessionService):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="User not found",
+            )
+
+        return user
+
+    async def update_user(self, *, user: User, data: UserUpdate) -> User:
+        """Update user with provided data"""
+
+        for field, value in data.model_dump(exclude_unset=True).items():
+            setattr(user, field, value)
+
+        try:
+            await self.session.commit()
+            await self.session.refresh(user)
+        except IntegrityError as error:
+            logger.warning("User update failed", exc_info=error)
+            await self.session.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User update violates database constraints",
             )
 
         return user
