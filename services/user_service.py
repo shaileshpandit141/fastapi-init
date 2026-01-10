@@ -44,3 +44,16 @@ class UserService(AsyncSessionService):
         stmt = select(User).limit(limit).offset(offset)
         result = await self.session.exec(stmt)
         return result.all()
+
+    async def get_user(self, *, user_id: int) -> User:
+        """Get a user by ID"""
+        stmt = select(User).where(User.status == UserStatus.ACTIVE)
+        user = (await self.session.exec(stmt)).one_or_none()
+
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found",
+            )
+
+        return user
