@@ -1,7 +1,7 @@
 # pyright: reportCallIssue=false
 
 from logging import getLogger
-from typing import Any
+from typing import Any, Sequence
 
 from sqlalchemy import Select
 from sqlalchemy.exc import IntegrityError
@@ -69,3 +69,17 @@ class AsyncCRUDService[
             raise NotFoundError(f"{self.model.__name__} not found")
 
         return obj
+
+    async def list(
+        self,
+        *,
+        limit: int = 20,
+        offset: int = 0,
+        order_by: Any | None = None,
+    ) -> Sequence[Model]:
+        stmt = self.base_query().limit(limit).offset(offset)
+        if order_by is not None:
+            stmt = stmt.order_by(order_by)
+
+        result = await self.session.execute(stmt)
+        return result.scalars().all()
