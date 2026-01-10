@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeMeta
 from sqlmodel import SQLModel, select
 
-from .exceptions import ConflictError
+from .exceptions import ConflictError, NotFoundError
 
 logger = getLogger(__name__)
 
@@ -43,10 +43,13 @@ class AsyncCRUDService[
                 **data.model_dump(include=include, exclude=exclude),
                 **(extra_fields or {}),
             )
+
             self.session.add(obj)
             await self.session.commit()
+
             if refresh:
                 await self.session.refresh(obj)
+
             return obj
         except IntegrityError as error:
             logger.debug(
@@ -58,3 +61,11 @@ class AsyncCRUDService[
 
     async def get(self, *, id: int) -> Model | None:
         return await self.session.get(self.model, id)
+
+    async def get_or_raise(self, *, id: int) -> Model:
+        obj = await self.get(id=id)
+
+        if not obj:
+            raise NotFoundError(f"{self.model.__name__} not found")
+
+        return obj
