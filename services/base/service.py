@@ -163,3 +163,8 @@ class AsyncCRUDService[
         result = await self.session.execute(stmt)
         await self.session.commit()
         return cast(int, result.rowcount) or 0  # type: ignore
+
+    async def exists(self, **filters: Any) -> bool:
+        stmt = select(func.count()).select_from(self.model).filter_by(**filters)
+        count = (await self.session.execute(stmt)).scalar_one()
+        return count > 0
