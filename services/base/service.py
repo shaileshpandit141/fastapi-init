@@ -59,6 +59,31 @@ class AsyncCRUDService[
             await self.session.rollback()
             raise ConflictError from error
 
+    async def bulk_create(
+        self,
+        *,
+        data: Sequence[CreateModel],
+        refresh: bool = True,
+        include: set[str] | None = None,
+        exclude: set[str] | None = None,
+        extra_fields: dict[str, Any] | None = None,
+    ) -> Sequence[Model]:
+        objs = [
+            self.model(
+                **item.model_dump(include=include, exclude=exclude),
+                **(extra_fields or {}),
+            )
+            for item in data
+        ]
+
+        self.session.add_all(objs)
+        await self.session.commit()
+
+        if refresh:
+            await self.session.refresh(objs)
+
+        return objs
+
     async def get(self, *, id: int) -> Model | None:
         return await self.session.get(self.model, id)
 
