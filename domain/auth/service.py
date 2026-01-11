@@ -5,9 +5,9 @@ from sqlmodel import select
 
 from core.db.deps import AsyncSessionDep
 from core.repository.exceptions import ConflictError
-from core.security.jwt.exceptions import JWTError
-from core.security.password import hash_password, verify_password
 from domain.message.schemas import MessageRead
+from domain.password.service import PasswordService
+from domain.token.exceptions import JWTError
 from domain.token.schemas import TokenRead, TokenRefresh, TokenRevoked
 from domain.token.service import JwtTokenService
 from domain.user.deps import UserRepositoryDep
@@ -19,8 +19,9 @@ VerifyFn = Callable[..., Awaitable[Mapping[str, Any]]]
 
 
 class AuthService:
-    def __init__(self, *, token: JwtTokenService) -> None:
+    def __init__(self, *, token: JwtTokenService, password: PasswordService) -> None:
         self.token = token
+        self.password = password
 
     async def signup(
         self, *, user_in: UserCreate, user_repo: UserRepositoryDep
@@ -29,7 +30,7 @@ class AuthService:
             user = await user_repo.create(
                 data=user_in,
                 include={"email"},
-                extra={"password_hash": hash_password(user_in.password)},
+                extra={"password_hash": self.password.hash(password=user_in.password)},
             )
         except ConflictError:
             raise HTTPException(
@@ -58,7 +59,9 @@ class AuthService:
                 detail="User is inactive",
             )
 
-        if not verify_password(form_in.password, user.password_hash):
+        if not self.password.verify(
+            plain_password=form_in.password, hashed_password=user.password_hash
+        ):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect email password",
