@@ -68,7 +68,7 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
         refresh: bool = True,
         include: set[str] | None = None,
         exclude: set[str] | None = None,
-        extra_fields: dict[str, Any] | None = None,
+        extra: dict[str, Any] | None = None,
     ) -> Model:
         """
         Create and persist a new model instance.
@@ -83,7 +83,7 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
             Fields to include when dumping the create model.
         exclude
             Fields to exclude when dumping the create model.
-        extra_fields
+        extra
             Additional fields to inject into the model constructor.
 
         Returns
@@ -99,7 +99,7 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
         try:
             obj = self.model(
                 **data.model_dump(include=include, exclude=exclude),
-                **(extra_fields or {}),
+                **(extra or {}),
             )
 
             self.session.add(obj)
@@ -127,7 +127,7 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
         refresh: bool = True,
         include: set[str] | None = None,
         exclude: set[str] | None = None,
-        extra_fields: dict[str, Any] | None = None,
+        extra: dict[str, Any] | None = None,
     ) -> Sequence[Model]:
         """
         Create multiple model instances in a single transaction.
@@ -142,7 +142,7 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
             Fields to include when dumping the create models.
         exclude
             Fields to exclude when dumping the create models.
-        extra_fields
+        extra
             Additional fields to inject into each model constructor.
 
         Returns
@@ -153,7 +153,7 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
         objs = [
             self.model(
                 **item.model_dump(include=include, exclude=exclude),
-                **(extra_fields or {}),
+                **(extra or {}),
             )
             for item in data
         ]
