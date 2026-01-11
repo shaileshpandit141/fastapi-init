@@ -5,10 +5,10 @@ from fastapi.responses import RedirectResponse
 from slowapi.errors import RateLimitExceeded
 
 from api.router import api_router
-from core.config.logging import LOGGING_CONFIG
-from core.config.settings import settings
 from core.lifespan import lifespan
+from core.logging import LOGGING_CONFIG
 from core.middleware import include_middlewares
+from core.settings import settings
 from infrastructure.limiter import limiter
 from infrastructure.limiter.handlers import rate_limit_handler
 

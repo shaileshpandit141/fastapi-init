@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi.middleware import SlowAPIMiddleware
 
-from core.config.settings import settings
+from core.settings import settings
 
 
 def include_middlewares(app: FastAPI) -> None:

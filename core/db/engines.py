@@ -3,7 +3,7 @@ from sqlalchemy.engine.url import make_url
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from sqlmodel import create_engine
 
-from core.config.settings import settings
+from core.settings import settings
 
 
 def make_sync_url(database_url: str) -> str:

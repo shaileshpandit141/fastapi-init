@@ -7,7 +7,7 @@ from jose import ExpiredSignatureError, jwt
 from jose import JWTError as JoseJWTError
 from redis.asyncio.client import Redis
 
-from core.config.settings import settings
+from core.settings import settings
 from core.utils.time import time
 
 from .exceptions import ExpiredTokenError, InvalidTokenError, RevokedTokenError

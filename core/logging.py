@@ -1,6 +1,6 @@
 import sys
 
-from core.config.settings import settings
+from core.settings import settings
 
 LOGGING_CONFIG = {
     "version": 1,

@@ -5,7 +5,7 @@ from logging import getLogger
 from fastapi import FastAPI
 from redis.asyncio import from_url  # type: ignore
 
-from core.config.settings import settings
+from core.settings import settings
 
 from .db import engines, init_db
 
