@@ -36,19 +36,19 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
       domain-specific exceptions.
     """
 
-    def __init__(self, *, session: AsyncSession, model: type[Model]) -> None:
+    def __init__(self, *, model: type[Model], session: AsyncSession) -> None:
         """
         Initialize the CRUD repository.
 
         Parameters
         ----------
-        session
-            An active SQLModel AsyncSession.
         model
             The SQLModel managed by this repository.
+        session
+            An active SQLModel AsyncSession.
         """
-        self.session = session
         self.model = model
+        self.session = session
 
     def base_query(self) -> Select[tuple[Model]]:
         """

@@ -12,6 +12,11 @@ from domain.rbac.models import UserRoleLink
 from infrastructure.cache.redis import RedisDep
 
 from .models import User, UserStatus
+from .repository import UserRepository
+
+
+async def get_user_repository(session: AsyncSessionDep) -> UserRepository:
+    return UserRepository(model=User, session=session)
 
 
 async def get_current_user(
@@ -59,6 +64,8 @@ async def get_active_user(
         )
     return user
 
+
+UserRepositoryDep = Annotated[UserRepository, Depends(get_user_repository)]
 
 CurrentUserDep = Annotated[User, Depends(get_current_user)]
 ActiveUserDep = Annotated[User, Depends(get_active_user)]
