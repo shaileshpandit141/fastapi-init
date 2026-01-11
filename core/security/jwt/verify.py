@@ -6,23 +6,15 @@ from jose import JWTError as JoseJWTError
 from redis.asyncio.client import Redis
 
 from core.config.settings import settings
-from core.security.jwt.exceptions import (
-    ExpiredTokenError,
-    InvalidTokenError,
-    RevokedTokenError,
-)
-from core.security.jwt.revocation import is_token_revoked
+
+from .exceptions import ExpiredTokenError, InvalidTokenError, RevokedTokenError
+from .revocation import is_token_revoked
 
 logger = getLogger(__name__)
 
 
 async def _verify_jwt(
-    *,
-    redis: Redis,
-    sub: str,
-    token: str,
-    secret_key: str,
-    algorithm: str,
+    *, redis: Redis, sub: str, token: str, secret_key: str, algorithm: str
 ) -> dict[str, Any]:
     try:
         claims = jwt.decode(
@@ -30,18 +22,25 @@ async def _verify_jwt(
             key=secret_key,
             algorithms=[algorithm],
         )
-    except ExpiredSignatureError:
+    except ExpiredSignatureError as error:
         logger.debug("JWT verification failed: token expired", exc_info=True)
-        raise ExpiredTokenError()
-    except JoseJWTError:
+        raise ExpiredTokenError(
+            code="expire_token", detail="Jwt token signature expire"
+        ) from error
+    except JoseJWTError as error:
         logger.debug("JWT verification failed: invalid token", exc_info=True)
-        raise InvalidTokenError()
+        raise InvalidTokenError(
+            code="invalid_jwt_token", detail="Invalid jwt token"
+        ) from error
 
     # Check required claims
     required_claims = {"sub", "exp", "iat", "jti"}
     if not required_claims.issubset(claims):
         logger.debug("JWT verification failed: missing required claims")
-        raise InvalidTokenError()
+        raise InvalidTokenError(
+            code="invalid_jwt_token",
+            detail="Jwt verification failed by missing required claims",
+        )
 
     # Check subject
     if claims["sub"] != sub:
@@ -50,12 +49,18 @@ async def _verify_jwt(
             sub,
             claims.get("sub"),
         )
-        raise InvalidTokenError()
+        raise InvalidTokenError(
+            code="invalid_jwt_token",
+            detail="Jwt verification failed because subject mismatch",
+        )
 
     # Check, Is revoked by client
     if await is_token_revoked(redis=redis, jti=claims["jti"]):
-        logger.debug("JWT verification failed: token revoked")
-        raise RevokedTokenError()
+        logger.debug("Jwt verification failed: token revoked")
+        raise RevokedTokenError(
+            code="token_revoked",
+            detail="Jwt verification failed because token revoked",
+        )
 
     return claims
 

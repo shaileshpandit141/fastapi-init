@@ -1,10 +1,10 @@
 from redis.asyncio.client import Redis
 
-from utils.get_utc_now import get_utc_now
+from ...utils.time import time
 
 
 async def revoke_token(redis: Redis, jti: str, exp: int) -> None:
-    ttl = max(exp - int(get_utc_now().timestamp()), 0)  # seconds until expiry
+    ttl = max(exp - int(time.utc_now().timestamp()), 0)  # seconds until expiry
     if ttl > 0:
         await redis.set(f"blocklist:{jti}", "1", ex=ttl)
 

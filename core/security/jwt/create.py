@@ -5,7 +5,8 @@ from uuid import uuid4
 from jose import jwt
 
 from core.config.settings import settings
-from utils.get_utc_now import get_utc_now
+
+from ...utils.time import time
 
 
 def _create_jwt(
@@ -16,12 +17,13 @@ def _create_jwt(
     algorithm: str,
     expires_in: timedelta,
 ) -> str:
+    utc_now = time.utc_now()
     payload = {
         **claims,
         "sub": subject,
         "jti": str(uuid4()),
-        "iat": get_utc_now(),
-        "exp": get_utc_now(add=expires_in),
+        "iat": utc_now,
+        "exp": utc_now + expires_in,
     }
 
     return jwt.encode(

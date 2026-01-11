@@ -1,51 +1,46 @@
 from logging.config import dictConfig
 
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from slowapi.errors import RateLimitExceeded
-from slowapi.middleware import SlowAPIMiddleware
 
-from api.v1.auth import router as auth_router
-from api.v1.health import router as health_router
-from api.v1.rbac import router as rbac_router
-from api.v1.users import router as users_router
-from context.lifespan import lifespan
+from api.router import api_router
 from core.config.logging import LOGGING_CONFIG
 from core.config.settings import settings
-from limiter import limiter
-from limiter.handlers.rate_limit_handler import rate_limit_handler
-
-# Configure logging
-dictConfig(LOGGING_CONFIG)
-
-
-# Create FastAPI app
-app = FastAPI(title=settings.app_name, lifespan=lifespan)
+from core.lifespan import lifespan
+from core.middleware import include_middlewares
+from infrastructure.limiter import limiter
+from infrastructure.limiter.handlers import rate_limit_handler
 
 
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.allow_origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+def create_app() -> FastAPI:
 
-app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, rate_limit_handler)
-app.add_middleware(SlowAPIMiddleware)
+    # Configure logging
+    dictConfig(LOGGING_CONFIG)
+
+    # Creating a FastAPI app
+    app = FastAPI(title=settings.app_name, lifespan=lifespan)
+
+    # Add something to app state
+    app.state.limiter = limiter
+
+    # Add custom exception handler
+    app.add_exception_handler(RateLimitExceeded, rate_limit_handler)
+
+    # Include all middlewares
+    include_middlewares(app)
+
+    # Define root url to redirect /docs page
+    @app.get("/", include_in_schema=False)
+    async def _() -> RedirectResponse:
+        return RedirectResponse(url="/docs", status_code=307)
+
+    # Include api routers
+    app.include_router(api_router)
+
+    # Return created app
+    return app
 
 
-# Define root url to redirect /docs page
-@app.get("/", include_in_schema=False)
-async def root() -> RedirectResponse:
-    return RedirectResponse(url="/docs", status_code=307)
-
-
-# Include routers
-app.include_router(health_router, prefix="/api/v1")
-app.include_router(auth_router, prefix="/api/v1")
-app.include_router(rbac_router, prefix="/api/v1")
-app.include_router(users_router, prefix="/api/v1")
+# Create a fastapi app
+app = create_app()

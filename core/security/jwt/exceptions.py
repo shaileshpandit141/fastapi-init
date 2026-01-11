@@ -1,5 +1,8 @@
-class JWTError(Exception):
-    """Base JWT error."""
+from core.exceptions import AppError
+
+
+class JWTError(AppError):
+    pass
 
 
 class InvalidTokenError(JWTError):
