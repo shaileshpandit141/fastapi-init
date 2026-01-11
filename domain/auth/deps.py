@@ -3,12 +3,14 @@ from typing import Annotated
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
+from domain.token.deps import JwtTokenServiceDep
+
 from .schemas import oauth2_scheme
 from .service import AuthService
 
 
-async def get_auth_service() -> AuthService:
-    return AuthService()
+async def get_auth_service(jwt_token_service: JwtTokenServiceDep) -> AuthService:
+    return AuthService(token=jwt_token_service)
 
 
 AuthServiceDep = Annotated[AuthService, Depends(get_auth_service)]
