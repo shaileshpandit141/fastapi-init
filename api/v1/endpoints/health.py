@@ -10,7 +10,7 @@ from core.db.deps import AsyncSessionDep
 from domain.health.schemas import HealthyRead, UnhealthyRead
 from infrastructure.cache.redis import RedisDep
 
-router = APIRouter(prefix="/health", tags=["Health"])
+router = APIRouter(prefix="/health", tags=["Health Related Endpoints"])
 
 logger = getLogger(__name__)
 
