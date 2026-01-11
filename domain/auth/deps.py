@@ -3,8 +3,8 @@ from typing import Annotated
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
+from domain.jwt.deps import JwtTokenServiceDep
 from domain.password.deps import PasswordServiceDep
-from domain.token.deps import JwtTokenServiceDep
 
 from .schemas import oauth2_scheme
 from .service import AuthService

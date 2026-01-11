@@ -1,16 +1,15 @@
 from typing import Any, Awaitable, Callable, Mapping
 
 from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
 
 from core.db.deps import AsyncSessionDep
-from core.repository.exceptions import ConflictError
+from domain.jwt.exceptions import JWTError
+from domain.jwt.schemas import TokenRead, TokenRefresh, TokenRevoked
+from domain.jwt.service import JwtTokenService
 from domain.message.schemas import MessageRead
 from domain.password.service import PasswordService
-from domain.token.exceptions import JWTError
-from domain.token.schemas import TokenRead, TokenRefresh, TokenRevoked
-from domain.token.service import JwtTokenService
-from domain.user.deps import UserRepositoryDep
 from domain.user.models import User, UserStatus
 from domain.user.schemas import UserCreate
 from infrastructure.cache.redis import RedisDep
@@ -23,16 +22,17 @@ class AuthService:
         self.token = token
         self.password = password
 
-    async def signup(
-        self, *, user_in: UserCreate, user_repo: UserRepositoryDep
-    ) -> User:
+    async def signup(self, *, user_in: UserCreate, session: AsyncSessionDep) -> User:
         try:
-            user = await user_repo.create(
-                data=user_in,
-                include={"email"},
-                extra={"password_hash": self.password.hash(password=user_in.password)},
-            )
-        except ConflictError:
+            user = User(
+                email=user_in.email,
+                password_hash=self.password.hash(password=user_in.password),
+                status=UserStatus.ACTIVE,
+            )  # pyright: ignore[reportCallIssue]
+            session.add(user)
+            await session.commit()
+            await session.refresh(user)
+        except IntegrityError:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Email already registered",

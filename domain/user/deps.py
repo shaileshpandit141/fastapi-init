@@ -5,9 +5,9 @@ from sqlalchemy.orm import selectinload
 from sqlmodel import select
 
 from core.db.deps import AsyncSessionDep
-from core.security.jwt.exceptions import JWTError
-from core.security.jwt.verify import verify_access_token
 from domain.auth.deps import Oauth2SchemeDep
+from domain.jwt.deps import JwtTokenServiceDep
+from domain.jwt.exceptions import JWTError
 from domain.rbac.models import UserRoleLink
 from infrastructure.cache.redis import RedisDep
 
@@ -20,10 +20,13 @@ async def get_user_repository(session: AsyncSessionDep) -> UserRepository:
 
 
 async def get_current_user(
-    token: Oauth2SchemeDep, session: AsyncSessionDep, redis: RedisDep
+    token_in: Oauth2SchemeDep,
+    session: AsyncSessionDep,
+    redis: RedisDep,
+    token: JwtTokenServiceDep,
 ) -> User:
     try:
-        claims = await verify_access_token(redis, token=token)
+        claims = await token.verify_access_token(token=token_in)
     except (JWTError, KeyError, ValueError):
         raise HTTPException(
             status_code=401,
