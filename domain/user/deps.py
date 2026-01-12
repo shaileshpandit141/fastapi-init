@@ -5,9 +5,9 @@ from sqlalchemy.orm import selectinload
 from sqlmodel import select
 
 from core.db.deps import AsyncSessionDep
+from core.security.jwt import JwtTokenManager
+from core.security.jwt.exceptions import JwtError
 from domain.auth.deps import Oauth2SchemeDep
-from domain.jwt.deps import JwtTokenServiceDep
-from domain.jwt.exceptions import JWTError
 from domain.rbac.models import UserRoleLink
 from infrastructure.cache.redis import RedisDep
 
@@ -20,14 +20,14 @@ async def get_user_repository(session: AsyncSessionDep) -> UserRepository:
 
 
 async def get_current_user(
-    token_in: Oauth2SchemeDep,
-    session: AsyncSessionDep,
-    redis: RedisDep,
-    token: JwtTokenServiceDep,
+    token_in: Oauth2SchemeDep, session: AsyncSessionDep, redis: RedisDep
 ) -> User:
+
+    jwt_token_manager = JwtTokenManager(redis=redis)
+
     try:
-        claims = await token.verify_access_token(token=token_in)
-    except (JWTError, KeyError, ValueError):
+        claims = await jwt_token_manager.verify_access_token(token=token_in)
+    except (JwtError, KeyError, ValueError):
         raise HTTPException(
             status_code=401,
             detail="Invalid or expired access token",
@@ -57,9 +57,7 @@ async def get_current_user(
     return user
 
 
-async def get_active_user(
-    user: Annotated[User, Depends(get_current_user)],
-) -> User:
+async def get_active_user(user: Annotated[User, Depends(get_current_user)]) -> User:
     if user.status != UserStatus.ACTIVE:
         raise HTTPException(
             status_code=403,

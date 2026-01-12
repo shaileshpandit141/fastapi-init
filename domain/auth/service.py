@@ -1,39 +1,37 @@
 from typing import Any, Awaitable, Callable, Mapping
 
 from fastapi import HTTPException, status
+from redis.asyncio.client import Redis
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
 
 from core.db import AsyncSession
-from domain.jwt.exceptions import JWTError
-from domain.jwt.schemas import TokenRead, TokenRefresh, TokenRevoked
-from domain.jwt.service import JwtTokenService
+from core.security.jwt import JwtTokenManager
+from core.security.jwt.exceptions import JwtError
+from core.security.password import PasswordHasher
 from domain.message.schemas import MessageRead
-from domain.password.service import PasswordService
 from domain.user.models import User, UserStatus
 from domain.user.schemas import UserCreate
 from infrastructure.cache.redis import RedisDep
+
+from .schemas import TokenRead, TokenRefresh, TokenRevoked
 
 VerifyFn = Callable[..., Awaitable[Mapping[str, Any]]]
 
 
 class AuthService:
-    def __init__(
-        self,
-        *,
-        token: JwtTokenService,
-        password: PasswordService,
-        session: AsyncSession,
-    ) -> None:
-        self._token = token
-        self._password = password
+    def __init__(self, *, session: AsyncSession, redis: Redis) -> None:
         self._session = session
+        self._jwt_token_manager = JwtTokenManager(redis=redis)
+        self._password_hasher = PasswordHasher()
 
     async def signup(self, *, user_in: UserCreate) -> User:
         try:
             user = User(
                 email=user_in.email,
-                password_hash=self._password.hash(password=user_in.password),
+                password_hash=self._password_hasher.hash_password(
+                    password=user_in.password
+                ),
                 status=UserStatus.ACTIVE,
             )  # pyright: ignore[reportCallIssue]
             self._session.add(user)
@@ -64,7 +62,7 @@ class AuthService:
                 detail="User is inactive",
             )
 
-        if not self._password.verify(
+        if not self._password_hasher.verify_password(
             plain_password=form_in.password, hashed_password=user.password_hash
         ):
             raise HTTPException(
@@ -73,8 +71,12 @@ class AuthService:
             )
 
         return TokenRead(
-            access_token=self._token.create_access_token(claims={"id": user.id}),
-            refresh_token=self._token.create_refresh_token(claims={"id": user.id}),
+            access_token=self._jwt_token_manager.create_access_token(
+                claims={"id": user.id}
+            ),
+            refresh_token=self._jwt_token_manager.create_refresh_token(
+                claims={"id": user.id}
+            ),
             token_type="bearer",
         )
 
@@ -82,17 +84,19 @@ class AuthService:
         self, *, token_in: TokenRefresh, redis: RedisDep
     ) -> TokenRead:
         try:
-            claims = await self._token.verify_refresh_token(
+            claims = await self._jwt_token_manager.verify_refresh_token(
                 token=token_in.refresh_token
             )
-        except JWTError:
+        except JwtError:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid or expire refresh token",
             )
 
         return TokenRead(
-            access_token=self._token.create_access_token(claims={"id": claims["id"]}),
+            access_token=self._jwt_token_manager.create_access_token(
+                claims={"id": claims["id"]}
+            ),
             refresh_token=token_in.refresh_token,
             token_type="bearer",
         )
@@ -101,11 +105,17 @@ class AuthService:
         async def _revoke_if_valid(verify_fn: VerifyFn, token: str) -> None:
             try:
                 claims = await verify_fn(redis=redis, token=token)
-                await self._token.revoke_token(jti=claims["jti"], exp=claims["exp"])
-            except JWTError:
+                await self._jwt_token_manager.revoke_token(
+                    jti=claims["jti"], exp=claims["exp"]
+                )
+            except JwtError:
                 pass
 
-        await _revoke_if_valid(self._token.verify_access_token, token_in.access_token)
-        await _revoke_if_valid(self._token.verify_refresh_token, token_in.refresh_token)
+        await _revoke_if_valid(
+            self._jwt_token_manager.verify_access_token, token_in.access_token
+        )
+        await _revoke_if_valid(
+            self._jwt_token_manager.verify_refresh_token, token_in.refresh_token
+        )
 
         return MessageRead(detail="Sign out successful")

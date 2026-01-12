@@ -4,14 +4,14 @@ from typing import Any
 from jose import ExpiredSignatureError, jwt
 from jose import JWTError as JoseJWTError
 
-from .blocklist import JWTBlocklist
+from .blocklist import JwtBlocklist
 from .exceptions import ExpiredTokenError, InvalidTokenError, RevokedTokenError
 
 logger = getLogger(__name__)
 
 
 class JwtVerifier:
-    def __init__(self, blocklist: JWTBlocklist) -> None:
+    def __init__(self, blocklist: JwtBlocklist) -> None:
         self.blocklist = blocklist
 
     async def verify(

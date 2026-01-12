@@ -5,7 +5,7 @@ from domain.user.deps import ActiveUserDep
 from domain.user.models import User
 from domain.user.schemas import UserCreate, UserRead
 
-router = APIRouter(prefix="/auth", tags=["Auth Related Endpoints"])
+router = APIRouter(prefix="/auth", tags=["Auth Endpoints"])
 
 
 @router.post(

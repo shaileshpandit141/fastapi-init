@@ -4,19 +4,14 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
 from core.db.deps import AsyncSessionDep
-from domain.jwt.deps import JwtTokenServiceDep
-from domain.password.deps import PasswordServiceDep
+from infrastructure.cache.redis import RedisDep
 
 from .schemas import oauth2_scheme
 from .service import AuthService
 
 
-async def get_auth_service(
-    jwt_token_service: JwtTokenServiceDep,
-    password: PasswordServiceDep,
-    session: AsyncSessionDep,
-) -> AuthService:
-    return AuthService(token=jwt_token_service, password=password, session=session)
+async def get_auth_service(session: AsyncSessionDep, redis: RedisDep) -> AuthService:
+    return AuthService(session=session, redis=redis)
 
 
 AuthServiceDep = Annotated[AuthService, Depends(get_auth_service)]

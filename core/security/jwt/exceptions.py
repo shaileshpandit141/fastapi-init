@@ -1,17 +1,17 @@
 from core.exceptions import AppError
 
 
-class JWTError(AppError):
+class JwtError(AppError):
     pass
 
 
-class InvalidTokenError(JWTError):
+class InvalidTokenError(JwtError):
     pass
 
 
-class ExpiredTokenError(JWTError):
+class ExpiredTokenError(JwtError):
     pass
 
 
-class RevokedTokenError(JWTError):
+class RevokedTokenError(JwtError):
     pass
