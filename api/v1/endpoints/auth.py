@@ -13,7 +13,7 @@ router = APIRouter(prefix="/auth", tags=["Auth Endpoints"])
 @router.post(
     "/signup",
     summary="Create new user",
-    description="Create a new user with email and password",
+    description="Create a new user with email and password.",
     response_model=UserRead,
 )
 async def create_user(user_in: UserCreate, auth_service: AuthServiceDep) -> User:
@@ -23,7 +23,7 @@ async def create_user(user_in: UserCreate, auth_service: AuthServiceDep) -> User
 @router.post(
     "/token",
     summary="Get new jwt tokens",
-    description="Get new jwt tokens to make requests on protected routes",
+    description="Get new jwt tokens to make requests on protected routes.",
     response_model=TokenRead,
 )
 async def create_jwt_token(
@@ -37,7 +37,7 @@ async def create_jwt_token(
 @router.post(
     "/refresh",
     summary="Get new access token",
-    description="Get new access token by using refresh token",
+    description="Get new access token by using refresh token.",
     response_model=TokenRead,
 )
 async def refresh_access_token(
@@ -49,7 +49,7 @@ async def refresh_access_token(
 @router.post(
     "/revoke",
     summary="Revoke jwt tokens",
-    description="Revoke access and refresh tokens",
+    description="Revoke access and refresh tokens.",
     response_model=MessageRead,
 )
 async def revoke_token(
@@ -58,6 +58,11 @@ async def revoke_token(
     return await auth_service.revoke_token(token_in=token_in)
 
 
-@router.get("/me", response_model=UserRead)
+@router.get(
+    "/me",
+    summary="Get authenticated user info",
+    description="Get authenticated user information.",
+    response_model=UserRead,
+)
 async def read_me(current_user: ActiveUserDep) -> User:
     return current_user
