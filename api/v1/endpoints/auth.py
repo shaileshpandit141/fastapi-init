@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
-from domain.auth.deps import AuthServiceDep
+from domain.auth.deps import AuthServiceDep, OAuth2PasswordRequestFormDep
+from domain.auth.schemas import TokenRead
 from domain.user.deps import ActiveUserDep
 from domain.user.models import User
 from domain.user.schemas import UserCreate, UserRead
@@ -16,6 +17,20 @@ router = APIRouter(prefix="/auth", tags=["Auth Endpoints"])
 )
 async def create_user(user_in: UserCreate, auth_service: AuthServiceDep) -> User:
     return await auth_service.signup(user_in=user_in)
+
+
+@router.post(
+    "/token",
+    summary="Get new jwt tokens",
+    description="Get new jwt tokens to make requests on protected routes",
+    response_model=TokenRead,
+)
+async def create_access_token(
+    form_in: OAuth2PasswordRequestFormDep, auth_service: AuthServiceDep
+) -> TokenRead:
+    return await auth_service.signin(
+        form_in=UserCreate(email=form_in.username, password=form_in.password)
+    )
 
 
 @router.get("/me", response_model=UserRead)
