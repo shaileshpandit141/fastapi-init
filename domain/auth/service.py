@@ -12,7 +12,6 @@ from core.security.password import PasswordHasher
 from domain.message.schemas import MessageRead
 from domain.user.models import User, UserStatus
 from domain.user.schemas import UserCreate
-from infrastructure.cache.redis import RedisDep
 
 from .schemas import TokenRead, TokenRefresh, TokenRevoked
 
@@ -22,6 +21,7 @@ VerifyFn = Callable[..., Awaitable[Mapping[str, Any]]]
 class AuthService:
     def __init__(self, *, session: AsyncSession, redis: Redis) -> None:
         self._session = session
+        self._redis = redis
         self._jwt_token_manager = JwtTokenManager(redis=redis)
         self._password_hasher = PasswordHasher()
 
@@ -80,9 +80,7 @@ class AuthService:
             token_type="bearer",
         )
 
-    async def refresh_access_token(
-        self, *, token_in: TokenRefresh, redis: RedisDep
-    ) -> TokenRead:
+    async def refresh_access_token(self, *, token_in: TokenRefresh) -> TokenRead:
         try:
             claims = await self._jwt_token_manager.verify_refresh_token(
                 token=token_in.refresh_token
@@ -101,10 +99,10 @@ class AuthService:
             token_type="bearer",
         )
 
-    async def signout(self, *, token_in: TokenRevoked, redis: RedisDep) -> MessageRead:
+    async def signout(self, *, token_in: TokenRevoked) -> MessageRead:
         async def _revoke_if_valid(verify_fn: VerifyFn, token: str) -> None:
             try:
-                claims = await verify_fn(redis=redis, token=token)
+                claims = await verify_fn(redis=self._redis, token=token)
                 await self._jwt_token_manager.revoke_token(
                     jti=claims["jti"], exp=claims["exp"]
                 )

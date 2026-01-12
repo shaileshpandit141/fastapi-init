@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from domain.auth.deps import AuthServiceDep, OAuth2PasswordRequestFormDep
-from domain.auth.schemas import TokenRead
+from domain.auth.schemas import TokenRead, TokenRefresh
 from domain.user.deps import ActiveUserDep
 from domain.user.models import User
 from domain.user.schemas import UserCreate, UserRead
@@ -31,6 +31,18 @@ async def create_access_token(
     return await auth_service.signin(
         form_in=UserCreate(email=form_in.username, password=form_in.password)
     )
+
+
+@router.post(
+    "/refresh",
+    summary="Get new access token",
+    description="Get new access token by using refresh token",
+    response_model=TokenRead,
+)
+async def refresh_access_token(
+    token_in: TokenRefresh, auth_service: AuthServiceDep
+) -> TokenRead:
+    return await auth_service.refresh_access_token(token_in=token_in)
 
 
 @router.get("/me", response_model=UserRead)
