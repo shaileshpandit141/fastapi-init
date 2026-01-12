@@ -22,8 +22,8 @@ async def create_user(user_in: UserCreate, auth_service: AuthServiceDep) -> User
 
 @router.post(
     "/token",
-    summary="Get new jwt tokens",
-    description="Get new jwt tokens to make requests on protected routes.",
+    summary="Issue new jwt tokens",
+    description="Issue new jwt tokens to make requests on protected routes.",
     response_model=TokenRead,
 )
 async def create_jwt_token(
@@ -36,8 +36,8 @@ async def create_jwt_token(
 
 @router.post(
     "/refresh",
-    summary="Get new access token",
-    description="Get new access token by using refresh token.",
+    summary="Issue new access token",
+    description="Issue new access token by using refresh token.",
     response_model=TokenRead,
 )
 async def refresh_access_token(
