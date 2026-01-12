@@ -21,11 +21,10 @@ VerifyFn = Callable[..., Awaitable[Mapping[str, Any]]]
 class AuthService:
     def __init__(self, *, session: AsyncSession, redis: Redis) -> None:
         self._session = session
-        self._redis = redis
         self._jwt_token_manager = JwtTokenManager(redis=redis)
         self._password_hasher = PasswordHasher()
 
-    async def signup(self, *, user_in: UserCreate) -> User:
+    async def register(self, *, user_in: UserCreate) -> User:
         try:
             user = User(
                 email=user_in.email,
@@ -45,7 +44,7 @@ class AuthService:
 
         return user
 
-    async def signin(self, *, form_in: UserCreate) -> TokenRead:
+    async def create_jwt_token(self, *, form_in: UserCreate) -> TokenRead:
 
         stmt = select(User).where(User.email == form_in.email)
         user = (await self._session.exec(stmt)).one_or_none()
@@ -99,10 +98,10 @@ class AuthService:
             token_type="bearer",
         )
 
-    async def signout(self, *, token_in: TokenRevoked) -> MessageRead:
+    async def revoke_token(self, *, token_in: TokenRevoked) -> MessageRead:
         async def _revoke_if_valid(verify_fn: VerifyFn, token: str) -> None:
             try:
-                claims = await verify_fn(redis=self._redis, token=token)
+                claims = await verify_fn(token=token)
                 await self._jwt_token_manager.revoke_token(
                     jti=claims["jti"], exp=claims["exp"]
                 )
@@ -110,10 +109,12 @@ class AuthService:
                 pass
 
         await _revoke_if_valid(
-            self._jwt_token_manager.verify_access_token, token_in.access_token
+            self._jwt_token_manager.verify_access_token,
+            token_in.access_token,
         )
         await _revoke_if_valid(
-            self._jwt_token_manager.verify_refresh_token, token_in.refresh_token
+            self._jwt_token_manager.verify_refresh_token,
+            token_in.refresh_token,
         )
 
-        return MessageRead(detail="Sign out successful")
+        return MessageRead(detail="Token revoke successful")
