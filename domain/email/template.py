@@ -2,11 +2,11 @@
 
 from typing import Any
 
-from jinja2 import Environment, PackageLoader, StrictUndefined, select_autoescape
+from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
 from premailer import transform
 
 email_template_env = Environment(
-    loader=PackageLoader("", "templates/email"),
+    loader=FileSystemLoader("templates/email"),
     autoescape=select_autoescape(["html", "xml"]),
     undefined=StrictUndefined,
 )
