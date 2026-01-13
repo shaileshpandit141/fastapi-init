@@ -1,4 +1,5 @@
 from fastapi.security import OAuth2PasswordBearer
+from pydantic import EmailStr
 from sqlmodel import SQLModel
 
 oauth2_scheme = OAuth2PasswordBearer(
@@ -11,6 +12,11 @@ class TokenRead(SQLModel):
     access_token: str
     refresh_token: str
     token_type: str
+
+
+class JwtTokenCreate(SQLModel):
+    email: EmailStr
+    password: str
 
 
 class TokenRefresh(SQLModel):

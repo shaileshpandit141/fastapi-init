@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from domain.auth.deps import AuthServiceDep, OAuth2PasswordRequestFormDep
-from domain.auth.schemas import TokenRead, TokenRefresh, TokenRevoked
+from domain.auth.schemas import JwtTokenCreate, TokenRead, TokenRefresh, TokenRevoked
 from domain.message.schemas import MessageRead
 from domain.user.deps import ActiveUserDep
 from domain.user.models import User
@@ -30,7 +30,7 @@ async def create_jwt_token(
     form_in: OAuth2PasswordRequestFormDep, auth_service: AuthServiceDep
 ) -> TokenRead:
     return await auth_service.create_jwt_token(
-        form_in=UserCreate(email=form_in.username, password=form_in.password)
+        form_in=JwtTokenCreate(email=form_in.username, password=form_in.password)
     )
 
 

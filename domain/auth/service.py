@@ -13,7 +13,7 @@ from domain.message.schemas import MessageRead
 from domain.user.models import User, UserStatus
 from domain.user.schemas import UserCreate
 
-from .schemas import TokenRead, TokenRefresh, TokenRevoked
+from .schemas import JwtTokenCreate, TokenRead, TokenRefresh, TokenRevoked
 
 VerifyFn = Callable[..., Awaitable[Mapping[str, Any]]]
 
@@ -44,7 +44,7 @@ class AuthService:
 
         return user
 
-    async def create_jwt_token(self, *, form_in: UserCreate) -> TokenRead:
+    async def create_jwt_token(self, *, form_in: JwtTokenCreate) -> TokenRead:
 
         stmt = select(User).where(User.email == form_in.email)
         user = (await self._session.exec(stmt)).one_or_none()
