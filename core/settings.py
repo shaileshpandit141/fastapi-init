@@ -25,6 +25,14 @@ class Settings(BaseSettings):
     # Logging Config
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
 
+    # Email and Celery Config
+    email_host: str = "smtp.gmail.com"
+    email_port: int = 587
+    email_user: str = ""
+    email_password: str = ""
+    email_from: str = ""
+    celery_broker_url: str = "redis://localhost:6379/0"
+
     # Model Config
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
