@@ -9,7 +9,7 @@ from core.db import AsyncSession
 from core.security.jwt import JwtTokenManager
 from core.security.jwt.exceptions import JwtError
 from core.security.password import PasswordHasher
-from domain.message.schemas import MessageRead
+from domain.response.schemas import DetailResponse
 from domain.user.models import User, UserStatus
 from domain.user.schemas import UserCreate
 
@@ -98,7 +98,7 @@ class AuthService:
             token_type="bearer",
         )
 
-    async def revoke_token(self, *, token_in: TokenRevoked) -> MessageRead:
+    async def revoke_token(self, *, token_in: TokenRevoked) -> DetailResponse:
         async def _revoke_if_valid(verify_fn: VerifyFn, token: str) -> None:
             try:
                 claims = await verify_fn(token=token)
@@ -117,4 +117,4 @@ class AuthService:
             token_in.refresh_token,
         )
 
-        return MessageRead(detail="Token revoke successful")
+        return DetailResponse(detail="Token revoke successful")

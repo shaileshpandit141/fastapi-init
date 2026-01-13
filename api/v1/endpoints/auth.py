@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from domain.auth.deps import AuthServiceDep, OAuth2PasswordRequestFormDep
 from domain.auth.schemas import JwtTokenCreate, TokenRead, TokenRefresh, TokenRevoked
-from domain.message.schemas import MessageRead
+from domain.response.schemas import DetailResponse
 from domain.user.deps import ActiveUserDep
 from domain.user.models import User
 from domain.user.schemas import UserCreate, UserRead
@@ -50,11 +50,11 @@ async def refresh_access_token(
     "/revoke",
     summary="Revoke jwt tokens",
     description="Revoke access and refresh tokens.",
-    response_model=MessageRead,
+    response_model=DetailResponse,
 )
 async def revoke_token(
     token_in: TokenRevoked, auth_service: AuthServiceDep
-) -> MessageRead:
+) -> DetailResponse:
     return await auth_service.revoke_token(token_in=token_in)
 
 
