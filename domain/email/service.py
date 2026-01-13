@@ -21,7 +21,7 @@ def build_email_message(email: EmailMessage) -> MIMEMultipart:
 
     html_content = render_email_template(
         template_name=email.content.html_template,
-        context=email.context,
+        context={**email.context, "subject": email.subject},
     )
     msg.attach(MIMEText(html_content, "html"))
 

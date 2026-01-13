@@ -15,7 +15,9 @@
         <td align="center">
           <table class="email-container">
             <tr>
-              <td class="email-body">{{ body | safe }}</td>
+              <td class="email-body">
+                {% block body %}{% endblock body %}
+              </td>
             </tr>
           </table>
         </td>

@@ -1,10 +1,11 @@
 # pyright: reportUnknownVariableType=false
 
 from smtplib import SMTPException
+from typing import Any
 
-from celery import shared_task
 from celery.app.task import Task
 
+from celery_app import shared_task
 from domain.email.schemas import EmailMessage
 from domain.email.service import build_email_message, send_via_smtp
 
@@ -14,12 +15,14 @@ from domain.email.service import build_email_message, send_via_smtp
     autoretry_for=(SMTPException,),
     retry_kwargs={"countdown": 60, "max_retries": 3},
 )
-def send_email_task(self: Task, email_message: EmailMessage) -> str:
-    message = build_email_message(email_message)
+def send_email_task(self: Task, email_message: dict[str, Any]) -> str:
+
+    email = EmailMessage(**email_message)
+    message = build_email_message(email=email)
 
     try:
         send_via_smtp(message)
     except Exception as exc:
         raise self.retry(exc=exc)  # type: ignore
 
-    return f"Email sent to {email_message.to}"
+    return f"Email sent to {email.to}"
