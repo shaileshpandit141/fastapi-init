@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 
-from core.repository.exceptions import ConflictError
+from core.repository.exceptions import ConflictError, NotFoundError
 from core.security.password.hasher import PasswordHasher
 from domain.user.models import User, UserStatus
 from domain.user.repository import UserRepository
@@ -29,6 +29,17 @@ class UserService:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Email already registered",
+            )
+
+        return user
+
+    async def get_user(self, user_id: int) -> User:
+        try:
+            user = await self.user_repo.get_or_raise(id=user_id)
+        except NotFoundError:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User does not exist",
             )
 
         return user
