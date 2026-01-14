@@ -2,6 +2,7 @@ from logging.config import dictConfig
 
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
+from redis.exceptions import ConnectionError
 from slowapi.errors import RateLimitExceeded
 
 from api.router import api_router
@@ -9,8 +10,9 @@ from core.lifespan import lifespan
 from core.logging import LOGGING_CONFIG
 from core.middleware import include_middlewares
 from core.settings import settings
+from infrastructure.cache.handler import redis_connection_handler
 from infrastructure.limiter import limiter
-from infrastructure.limiter.handlers import rate_limit_handler
+from infrastructure.limiter.handler import rate_limit_handler
 
 
 def create_app() -> FastAPI:
@@ -26,6 +28,7 @@ def create_app() -> FastAPI:
 
     # Add custom exception handler
     app.add_exception_handler(RateLimitExceeded, rate_limit_handler)
+    app.add_exception_handler(ConnectionError, redis_connection_handler)
 
     # Include all middlewares
     include_middlewares(app)

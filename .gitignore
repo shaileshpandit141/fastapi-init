@@ -10,5 +10,5 @@ wheels/
 .venv
 
 # Security related files
-.env
+.env*
 db.sqlite

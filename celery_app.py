@@ -10,7 +10,7 @@ from core.settings import settings
 celery = Celery(
     "fastapi-init",
     broker=settings.celery_broker_url,
-    backend=settings.celery_broker_url,
+    backend=settings.celery_result_backend,
     include=["domain.tasks"],
 )
 
