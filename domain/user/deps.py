@@ -9,14 +9,11 @@ from core.security.jwt import JwtTokenManager
 from core.security.jwt.exceptions import JwtError
 from domain.auth.deps import Oauth2SchemeDep
 from domain.rbac.models import UserRoleLink
+from domain.user.service import UserService
 from infrastructure.cache.redis import RedisDep
 
 from .models import User, UserStatus
 from .repository import UserRepository
-
-
-async def get_user_repository(session: AsyncSessionDep) -> UserRepository:
-    return UserRepository(model=User, session=session)
 
 
 async def get_current_user(
@@ -66,7 +63,12 @@ async def get_active_user(user: Annotated[User, Depends(get_current_user)]) -> U
     return user
 
 
-UserRepositoryDep = Annotated[UserRepository, Depends(get_user_repository)]
-
 CurrentUserDep = Annotated[User, Depends(get_current_user)]
 ActiveUserDep = Annotated[User, Depends(get_active_user)]
+
+
+async def get_user_service(session: AsyncSessionDep) -> UserService:
+    return UserService(UserRepository(model=User, session=session))
+
+
+UserServiceDep = Annotated[UserService, Depends(get_user_service)]
