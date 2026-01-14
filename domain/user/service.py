@@ -63,3 +63,12 @@ class UserService:
         )
 
         return user
+
+    async def delete_user(self, user_id: int) -> None:
+        try:
+            await self.user_repo.delete_by_id(id=user_id)
+        except NotFoundError:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User does not exist"
+            )
