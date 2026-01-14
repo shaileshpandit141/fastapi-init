@@ -1,3 +1,5 @@
+from typing import Sequence
+
 from fastapi import HTTPException, status
 
 from core.repository.exceptions import ConflictError, NotFoundError
@@ -43,3 +45,11 @@ class UserService:
             )
 
         return user
+
+    async def list_user(self, limit: int = 20, offset: int = 0) -> Sequence[User]:
+        users = await self.user_repo.list(
+            limit=limit,
+            offset=offset,
+        )
+
+        return users
