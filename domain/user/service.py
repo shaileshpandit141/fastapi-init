@@ -6,7 +6,7 @@ from core.repository.exceptions import ConflictError, NotFoundError
 from core.security.password.hasher import PasswordHasher
 from domain.user.models import User, UserStatus
 from domain.user.repository import UserRepository
-from domain.user.schemas import UserCreate
+from domain.user.schemas import UserCreate, UserUpdate
 
 
 class UserService:
@@ -53,3 +53,13 @@ class UserService:
         )
 
         return users
+
+    async def update_user(self, user_id: int, user_in: UserUpdate) -> User:
+        db_user = await self.get_user(user_id)
+
+        user = await self.user_repo.update(
+            obj=db_user,
+            data=user_in,
+        )
+
+        return user
