@@ -6,7 +6,7 @@ from core.repository.exceptions import ConflictError, NotFoundError
 
 from .models import Role
 from .repository import RoleRepository
-from .schemas import RoleCreate
+from .schemas import RoleCreate, RoleUpdate
 
 # === Role Repository ===
 
@@ -41,3 +41,13 @@ class RoleService:
             offset=offset,
         )
         return roles
+
+    async def update_role(self, role_id: int, role_in: RoleUpdate) -> Role:
+        db_role = await self.get_role(role_id)
+
+        role = await self.role_repo.update(
+            obj=db_role,
+            data=role_in,
+        )
+
+        return role
