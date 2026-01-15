@@ -4,8 +4,10 @@ from logging import getLogger
 from typing import Any, Iterable, Sequence, cast
 
 from sqlalchemy import Select
+from sqlalchemy.engine import Result
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql import Executable
 from sqlmodel import SQLModel, delete, func, select
 
 from .exceptions import ConflictError, NotFoundError
@@ -49,6 +51,22 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
         """
         self.model = model
         self.session = session
+
+    async def exec(self, stmt: Executable) -> Result[tuple[Model]]:
+        """
+        Execute a SQLModel statement and return the raw result.
+
+        Parameters
+        ----------
+        stmt
+            A SQLModel executable statement (Select, Insert, Update, Delete).
+
+        Returns
+        -------
+        Result
+            The SQLModel Result object.
+        """
+        return await self.session.execute(stmt)
 
     def base_query(self) -> Select[tuple[Model]]:
         """
