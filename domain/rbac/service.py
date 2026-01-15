@@ -254,3 +254,12 @@ class UserRoleService:
         )
 
         return user_role
+
+    async def delete_user_role(self, user_role_id: int) -> None:
+        try:
+            await self.user_role_repo.delete_by_id(id=user_role_id)
+        except NotFoundError:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User role does not exist",
+            )
