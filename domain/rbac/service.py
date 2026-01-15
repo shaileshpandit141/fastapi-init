@@ -1,3 +1,5 @@
+from typing import Sequence
+
 from fastapi import HTTPException, status
 
 from core.repository.exceptions import ConflictError, NotFoundError
@@ -32,3 +34,10 @@ class RoleService:
             )
 
         return role
+
+    async def list_role(self, limit: int = 20, offset: int = 0) -> Sequence[Role]:
+        roles = await self.role_repo.list(
+            limit=limit,
+            offset=offset,
+        )
+        return roles
