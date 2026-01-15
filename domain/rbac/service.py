@@ -112,3 +112,12 @@ class PermissionService:
         )
 
         return permission
+
+    async def delete_permission(self, permission_id: int) -> None:
+        try:
+            await self.permission_repo.delete_by_id(id=permission_id)
+        except NotFoundError:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Permission does not exist",
+            )
