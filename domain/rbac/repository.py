@@ -1,14 +1,14 @@
 from core.repository.base import AsyncRepository
-from domain.rbac.models import Permission, Role, RolePermissionLink, UserRoleLink
+from domain.rbac.models import Permission, Role, RolePermission, UserRole
 from domain.rbac.schemas import (
     PermissionCreate,
     PermissionUpdate,
     RoleCreate,
-    RolePermissionLinkCreate,
-    RolePermissionLinkUpdate,
+    RolePermissionCreate,
+    RolePermissionUpdate,
     RoleUpdate,
-    UserRoleLinkCreate,
-    UserRoleLinkUpdate,
+    UserRoleCreate,
+    UserRoleUpdate,
 )
 
 
@@ -22,15 +22,11 @@ class PermissionRepository(
     pass
 
 
-class RolePermissionLinkRepository(
-    AsyncRepository[
-        RolePermissionLink, RolePermissionLinkCreate, RolePermissionLinkUpdate
-    ]
+class RolePermissionRepository(
+    AsyncRepository[RolePermission, RolePermissionCreate, RolePermissionUpdate]
 ):
     pass
 
 
-class UserRoleLinkRepository(
-    AsyncRepository[UserRoleLink, UserRoleLinkCreate, UserRoleLinkUpdate]
-):
+class UserRoleRepository(AsyncRepository[UserRole, UserRoleCreate, UserRoleUpdate]):
     pass

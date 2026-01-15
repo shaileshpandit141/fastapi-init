@@ -3,7 +3,7 @@ from typing import cast
 from click import command, echo
 
 from core.db.sessions import sessions
-from domain.rbac.models import Permission, Role, RolePermissionLink
+from domain.rbac.models import Permission, Role, RolePermission
 
 INITIAL_ROLES: list[Role] = [
     Role(name="admin", description="Administrator with full access."),
@@ -45,12 +45,12 @@ def rbac() -> None:
                 session.refresh(perm)
 
             # Link roles to permissions (example: admin gets all permissions)
-            links: list[RolePermissionLink] = []
+            links: list[RolePermission] = []
             for role in INITIAL_ROLES:
                 if role.name == "admin":
                     for perm in INITIAL_PERMISSIONS:
                         links.append(
-                            RolePermissionLink(
+                            RolePermission(
                                 role_id=cast(int, role.id),
                                 permission_id=cast(int, perm.id),
                             )
@@ -61,7 +61,7 @@ def rbac() -> None:
                         p for p in INITIAL_PERMISSIONS if p.code == "user:read"
                     )
                     links.append(
-                        RolePermissionLink(
+                        RolePermission(
                             role_id=cast(int, role.id),
                             permission_id=cast(int, read_perm.id),
                         )

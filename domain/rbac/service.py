@@ -3,7 +3,7 @@ from typing import Sequence
 from fastapi import HTTPException, status
 
 from core.repository.exceptions import ConflictError, NotFoundError
-from domain.rbac.schemas.permission import PermissionCreate, PermissionUpdate
+from domain.rbac.schemas import PermissionCreate, PermissionUpdate
 
 from .models import Permission, Role
 from .repository import PermissionRepository, RoleRepository

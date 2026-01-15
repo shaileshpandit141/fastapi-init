@@ -5,7 +5,7 @@ from sqlmodel import select
 
 from core.db.sessions import sessions
 from core.security.password.hasher import PasswordHasher
-from domain.rbac.models import Role, UserRoleLink
+from domain.rbac.models import Role, UserRole
 from domain.user.models import User
 
 
@@ -41,7 +41,7 @@ def admin_user(email: str, password: str) -> None:
 
             # Grant to admin role
             session.add(
-                UserRoleLink(user_id=cast(int, user.id), role_id=cast(int, role.id))
+                UserRole(user_id=cast(int, user.id), role_id=cast(int, role.id))
             )
             session.commit()
 
