@@ -9,7 +9,7 @@ from .models import Permission, Role
 from .repository import PermissionRepository, RoleRepository
 from .schemas import RoleCreate, RoleUpdate
 
-# === Role Repository ===
+# === Role Service ===
 
 
 class RoleService:
@@ -62,7 +62,7 @@ class RoleService:
             )
 
 
-# === Permission Repository ===
+# === Permission Service ===
 
 
 class PermissionService:
