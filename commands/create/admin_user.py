@@ -3,11 +3,10 @@ from typing import cast
 from click import command, echo, option
 from sqlmodel import select
 
-from core.security.password import hash_password
-from db.connections import sessions
-from models.role import Role
-from models.user import User
-from models.user_role_link import UserRoleLink
+from core.db.sessions import sessions
+from core.security.password.hasher import PasswordHasher
+from domain.rbac.models import Role, UserRoleLink
+from domain.user.models import User
 
 
 @command()
@@ -21,9 +20,15 @@ from models.user_role_link import UserRoleLink
 )
 def admin_user(email: str, password: str) -> None:
     """Create admin user with email and password"""
+
+    hasher = PasswordHasher()
+
     try:
-        with sessions.SyncSessionLocal() as session:
-            user = User(email=email, password_hash=hash_password(password))
+        with sessions.session() as session:
+            user = User(
+                email=email,
+                password_hash=hasher.hash_password(password),
+            )  # type: ignore
             session.add(user)
             session.commit()
             session.refresh(user)

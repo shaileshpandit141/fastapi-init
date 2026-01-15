@@ -1,7 +1,7 @@
 import click
 
-from cli.create import create
-from cli.seed import seed
+from .create import create
+from .seed import seed
 
 
 @click.group()
@@ -12,6 +12,3 @@ def cli() -> None:
 
 cli.add_command(create)
 cli.add_command(seed)
-
-if __name__ == "__main__":
-    cli()

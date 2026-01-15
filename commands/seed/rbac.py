@@ -2,10 +2,8 @@ from typing import cast
 
 from click import command, echo
 
-from db.connections import sessions
-from models.permission import Permission
-from models.role import Role
-from models.role_permission_link import RolePermissionLink
+from core.db.sessions import sessions
+from domain.rbac.models import Permission, Role, RolePermissionLink
 
 INITIAL_ROLES: list[Role] = [
     Role(name="admin", description="Administrator with full access."),
@@ -26,7 +24,7 @@ INITIAL_PERMISSIONS: list[Permission] = [
 @command()
 def rbac() -> None:
     """Seed roles and permissions (SQLite dev, PostgreSQL prod)."""
-    with sessions.SyncSessionLocal() as session:
+    with sessions.session() as session:
         try:
             # Add roles
             for role in INITIAL_ROLES:
