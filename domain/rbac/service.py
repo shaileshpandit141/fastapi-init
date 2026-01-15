@@ -51,3 +51,11 @@ class RoleService:
         )
 
         return role
+
+    async def delete_role(self, role_in: int) -> None:
+        try:
+            await self.role_repo.delete_by_id(id=role_in)
+        except NotFoundError:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Role does not exist"
+            )
