@@ -3,9 +3,10 @@ from typing import Sequence
 from fastapi import HTTPException, status
 
 from core.repository.exceptions import ConflictError, NotFoundError
+from domain.rbac.schemas.permission import PermissionCreate
 
-from .models import Role
-from .repository import RoleRepository
+from .models import Permission, Role
+from .repository import PermissionRepository, RoleRepository
 from .schemas import RoleCreate, RoleUpdate
 
 # === Role Repository ===
@@ -20,7 +21,7 @@ class RoleService:
             role = await self.role_repo.create(data=role_in)
         except ConflictError:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="This role is exist"
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Role already exist"
             )
 
         return role
@@ -59,3 +60,22 @@ class RoleService:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Role does not exist"
             )
+
+
+# === Permission Repository ===
+
+
+class PermissionService:
+    def __init__(self, perm_repo: PermissionRepository) -> None:
+        self.perm_repo = perm_repo
+
+    async def create_permission(self, permission_in: PermissionCreate) -> Permission:
+        try:
+            permission = await self.perm_repo.create(data=permission_in)
+        except ConflictError:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Permission already exist",
+            )
+
+        return permission
