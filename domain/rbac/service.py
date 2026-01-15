@@ -18,6 +18,7 @@ from .schemas import (
     RolePermissionUpdate,
     RoleUpdate,
     UserRoleCreate,
+    UserRoleUpdate,
 )
 
 # === Role Service ===
@@ -241,3 +242,15 @@ class UserRoleService:
         )
 
         return user_roles
+
+    async def update_user_role(
+        self, user_role_id: int, user_role_in: UserRoleUpdate
+    ) -> UserRole:
+        db_user_role = await self.get_user_role(user_role_id)
+
+        user_role = await self.user_role_repo.update(
+            obj=db_user_role,
+            data=user_role_in,
+        )
+
+        return user_role
