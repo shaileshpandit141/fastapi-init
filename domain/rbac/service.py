@@ -66,16 +66,27 @@ class RoleService:
 
 
 class PermissionService:
-    def __init__(self, perm_repo: PermissionRepository) -> None:
-        self.perm_repo = perm_repo
+    def __init__(self, permission_repo: PermissionRepository) -> None:
+        self.permission_repo = permission_repo
 
     async def create_permission(self, permission_in: PermissionCreate) -> Permission:
         try:
-            permission = await self.perm_repo.create(data=permission_in)
+            permission = await self.permission_repo.create(data=permission_in)
         except ConflictError:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Permission already exist",
+            )
+
+        return permission
+
+    async def get_permission(self, permission_id: int) -> Permission:
+        try:
+            permission = await self.permission_repo.get_or_raise(id=permission_id)
+        except NotFoundError:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Permission does not exist",
             )
 
         return permission
