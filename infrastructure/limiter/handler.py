@@ -8,7 +8,7 @@ def rate_limit_handler(request: Request, exc: Exception) -> JSONResponse:
         status_code=429,
         content={
             "code": "RATE_LIMIT_EXCEEDED",
-            "message": getattr(exc, "detail", "Rate limit exceeded"),
+            "detail": getattr(exc, "detail", "Rate limit exceeded"),
             "debug": {"exception_args": exc.args},
         },
     )

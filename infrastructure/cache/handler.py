@@ -7,7 +7,7 @@ def redis_connection_handler(request: Request, exc: Exception) -> JSONResponse:
         status_code=503,
         content={
             "code": "REDIS_CONNECTION_ERROR",
-            "message": "Service temporarily unavailable",
+            "detail": "Service temporarily unavailable",
             "debug": {"exception_args": exc.args},
         },
     )
