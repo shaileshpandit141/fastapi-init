@@ -3,7 +3,7 @@ from typing import Sequence
 from fastapi import HTTPException, status
 
 from core.repository.exceptions import ConflictError, NotFoundError
-from domain.rbac.schemas.permission import PermissionCreate
+from domain.rbac.schemas.permission import PermissionCreate, PermissionUpdate
 
 from .models import Permission, Role
 from .repository import PermissionRepository, RoleRepository
@@ -100,3 +100,15 @@ class PermissionService:
         )
 
         return permissions
+
+    async def update_permission(
+        self, permission_id: int, permission_in: PermissionUpdate
+    ) -> Permission:
+        db_permission = await self.get_permission(permission_id)
+
+        permission = await self.permission_repo.update(
+            obj=db_permission,
+            data=permission_in,
+        )
+
+        return permission
