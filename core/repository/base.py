@@ -3,7 +3,7 @@
 from logging import getLogger
 from typing import Any, Iterable, Sequence, cast
 
-from sqlalchemy import Select
+from sqlalchemy import ScalarResult, Select
 from sqlalchemy.engine import Result
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -52,7 +52,7 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
         self.model = model
         self.session = session
 
-    async def exec(self, stmt: Executable) -> Result[tuple[Model]]:
+    async def exec(self, stmt: Executable) -> Result[Any]:
         """
         Execute a SQLModel statement and return the raw result.
 
@@ -68,13 +68,29 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
         """
         return await self.session.execute(stmt)
 
+    async def exec_scalar(self, stmt: Select[tuple[Model]]) -> ScalarResult[Model]:
+        """
+        Execute a SELECT statement and return scalar results.
+
+        Parameters
+        ----------
+        stmt
+            Executable a SQLModel  select statement.
+
+        Returns
+        -------
+        Result
+            The SQLModel scalar result object.
+        """
+        return (await self.session.execute(stmt)).scalars()
+
     def base_query(self) -> Select[tuple[Model]]:
         """
         Return the base SELECT query for the model.
 
         Returns
         -------
-        SQLModel.Select
+        SQLModel.select
             A SELECT statement targeting the model.
         """
         return select(self.model)
