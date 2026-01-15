@@ -2,7 +2,7 @@
 
 from typing import Any, Callable, cast
 
-from celery import Celery
+from celery import Celery  # type: ignore
 from celery.local import PromiseProxy, Proxy
 
 from core.settings import settings
