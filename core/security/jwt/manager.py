@@ -16,7 +16,7 @@ class JwtTokenManager:
         self.blocklist = JwtBlocklist(redis)
         self.verifier = JwtVerifier(self.blocklist)
 
-    def create_access_token(self, *, claims: dict[str, Any]) -> str:
+    def create_access_token(self, claims: dict[str, Any]) -> str:
         return JwtFactory.create(
             claims=claims,
             subject=ACCESS_SUBJECT,
@@ -25,7 +25,7 @@ class JwtTokenManager:
             expires_in=timedelta(minutes=settings.access_token_expire_minutes),
         )
 
-    def create_refresh_token(self, *, claims: dict[str, Any]) -> str:
+    def create_refresh_token(self, claims: dict[str, Any]) -> str:
         return JwtFactory.create(
             claims=claims,
             subject=REFRESH_SUBJECT,
@@ -34,7 +34,7 @@ class JwtTokenManager:
             expires_in=timedelta(minutes=settings.refresh_token_expire_minutes),
         )
 
-    async def verify_access_token(self, *, token: str) -> dict[str, Any]:
+    async def verify_access_token(self, token: str) -> dict[str, Any]:
         return await self.verifier.verify(
             token=token,
             expected_sub=ACCESS_SUBJECT,
@@ -42,7 +42,7 @@ class JwtTokenManager:
             algorithm=settings.algorithm,
         )
 
-    async def verify_refresh_token(self, *, token: str) -> dict[str, Any]:
+    async def verify_refresh_token(self, token: str) -> dict[str, Any]:
         return await self.verifier.verify(
             token=token,
             expected_sub=REFRESH_SUBJECT,
@@ -50,5 +50,5 @@ class JwtTokenManager:
             algorithm=settings.algorithm,
         )
 
-    async def revoke_token(self, *, jti: str, exp: int) -> None:
+    async def revoke_token(self, jti: str, exp: int) -> None:
         await self.blocklist.revoke(jti=jti, exp=exp)

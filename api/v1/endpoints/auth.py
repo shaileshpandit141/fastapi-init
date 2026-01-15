@@ -3,7 +3,7 @@ from fastapi import APIRouter
 from domain.auth.deps import AuthServiceDep, OAuth2PasswordRequestFormDep
 from domain.auth.schemas import JwtTokenCreate, TokenRead, TokenRefresh, TokenRevoked
 from domain.response.schemas import DetailResponse
-from domain.user.deps import ActiveUserDep, UserServiceDep
+from domain.user.deps import CurrentUserServiceDep, UserServiceDep
 from domain.user.models import User
 from domain.user.schemas import UserCreate, UserRead
 
@@ -64,5 +64,5 @@ async def revoke_token(
     description="Get authenticated user information.",
     response_model=UserRead,
 )
-async def read_me(current_user: ActiveUserDep) -> User:
-    return current_user
+async def read_me(current_user_service: CurrentUserServiceDep) -> User:
+    return await current_user_service.get_active_user()

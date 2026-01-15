@@ -1,12 +1,67 @@
+# pyright: reportArgumentType=false
+
 from typing import Sequence
 
 from fastapi import HTTPException, status
+from redis.asyncio.client import Redis
+from sqlalchemy.orm import selectinload
+from sqlmodel import select
 
 from core.repository.exceptions import ConflictError, NotFoundError
+from core.security.jwt.exceptions import JwtError
+from core.security.jwt.manager import JwtTokenManager
 from core.security.password.hasher import PasswordHasher
+from domain.rbac.models import UserRoleLink
 from domain.user.models import User, UserStatus
 from domain.user.repository import UserRepository
 from domain.user.schemas import UserCreate, UserUpdate
+
+
+class CurrentUserService:
+    def __init__(self, user_repo: UserRepository, redis: Redis, token: str) -> None:
+        self.user_repo = user_repo
+        self.redis = redis
+        self.token = token
+
+    async def get_current_user(self) -> User:
+        jwt_token_manager = JwtTokenManager(self.redis)
+
+        try:
+            claims = await jwt_token_manager.verify_access_token(self.token)
+        except (JwtError, KeyError, ValueError):
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid or expired access token",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        stmt = (
+            select(User)
+            .where(User.id == claims["id"])
+            .options(selectinload(User.roles).selectinload(UserRoleLink.role))
+        )
+
+        user = (await self.user_repo.exec_scalar(stmt)).one_or_none()
+
+        if user is None:
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid access token",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        return user
+
+    async def get_active_user(self) -> User:
+        user = await self.get_current_user()
+
+        if user.status != UserStatus.ACTIVE:
+            raise HTTPException(
+                status_code=403,
+                detail="Inactive user",
+            )
+
+        return user
 
 
 class UserService:
@@ -69,6 +124,5 @@ class UserService:
             await self.user_repo.delete_by_id(id=user_id)
         except NotFoundError:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User does not exist"
+                status_code=status.HTTP_404_NOT_FOUND, detail="User does not exist"
             )
