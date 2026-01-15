@@ -220,3 +220,14 @@ class UserRoleService:
             )
 
         return user_role
+
+    async def get_user_role(self, user_role_id: int) -> UserRole:
+        try:
+            user_role = await self.user_role_repo.get_or_raise(id=user_role_id)
+        except NotFoundError:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User role does not exist",
+            )
+
+        return user_role
