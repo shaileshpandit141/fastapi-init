@@ -7,7 +7,7 @@ from domain.rbac.schemas import PermissionCreate, PermissionUpdate
 
 from .models import Permission, Role, RolePermission
 from .repository import PermissionRepository, RolePermissionRepository, RoleRepository
-from .schemas import RoleCreate, RolePermissionCreate, RoleUpdate
+from .schemas import RoleCreate, RolePermissionCreate, RolePermissionUpdate, RoleUpdate
 
 # === Role Service ===
 
@@ -167,3 +167,15 @@ class RolePermissionService:
         )
 
         return role_permissions
+
+    async def update_role_permission(
+        self, role_permission_id: int, role_permission_in: RolePermissionUpdate
+    ) -> RolePermission:
+        db_role_permission = await self.get_role_permission(role_permission_id)
+
+        role_permission = await self.role_permission.update(
+            obj=db_role_permission,
+            data=role_permission_in,
+        )
+
+        return role_permission
