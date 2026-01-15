@@ -1,59 +1,16 @@
-from collections.abc import Callable, Iterable
-from typing import Annotated, Awaitable
+from typing import Annotated
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
 
-from domain.user.deps import ActiveUserDep
-from domain.user.models import User
+from core.db.deps import AsyncSessionDep
 
-
-def require_roles(
-    allowed_roles: Iterable[str],
-) -> Callable[[ActiveUserDep], Awaitable[User]]:
-    allowed_roles_set = set(allowed_roles)
-
-    async def _checker(user: ActiveUserDep) -> User:
-        user_role_names: set[str] = {link.role.name for link in user.roles}
-
-        if not user_role_names.intersection(allowed_roles_set):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Insufficient permissions",
-            )
-
-        return user
-
-    return _checker
+from .models import Role
+from .repository import RoleRepository
+from .service import RoleService
 
 
-def require_permissions(
-    required: Iterable[str],
-) -> Callable[[ActiveUserDep], Awaitable[User]]:
-    required_set = set(required)
-
-    async def _checker(user: ActiveUserDep) -> User:
-        user_permissions: set[str] = {
-            perm.permission.code
-            for role_link in user.roles
-            for perm in role_link.role.permissions
-        }
-
-        if required_set - user_permissions:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Insufficient permissions",
-            )
-
-        return user
-
-    return _checker
+async def get_role_service(session: AsyncSessionDep) -> RoleService:
+    return RoleService(RoleRepository(model=Role, session=session))
 
 
-UserDep = Annotated[User, Depends(require_roles(["user"]))]
-AdminUserDep = Annotated[User, Depends(require_roles(["admin"]))]
-
-
-CanCreateUsersDep = Annotated[User, Depends(require_permissions(["users.create"]))]
-CanReadUsersDep = Annotated[User, Depends(require_permissions(["users.read"]))]
-CanUpdateUsersDep = Annotated[User, Depends(require_permissions(["users.update"]))]
-CanDeleteUsersDep = Annotated[User, Depends(require_permissions(["users.delete"]))]
+RoleServiceDep = Annotated[RoleService, Depends(get_role_service)]
