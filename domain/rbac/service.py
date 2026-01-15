@@ -157,3 +157,13 @@ class RolePermissionService:
             )
 
         return role_permission
+
+    async def list_role_permission(
+        self, limit: int = 20, offset: int = 0
+    ) -> Sequence[RolePermission]:
+        role_permissions = await self.role_permission.list(
+            limit=limit,
+            offset=offset,
+        )
+
+        return role_permissions
