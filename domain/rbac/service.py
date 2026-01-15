@@ -179,3 +179,12 @@ class RolePermissionService:
         )
 
         return role_permission
+
+    async def delete_role_permission(self, role_permission_id: int) -> None:
+        try:
+            await self.role_permission.delete_by_id(id=role_permission_id)
+        except NotFoundError:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Role permission does not exist",
+            )
