@@ -14,11 +14,7 @@ from .repository import UserRepository
 async def get_current_user_service(
     token: Oauth2SchemeDep, redis: RedisDep, session: AsyncSessionDep
 ) -> CurrentUserService:
-    return CurrentUserService(
-        user_repo=UserRepository(model=User, session=session),
-        redis=redis,
-        token=token,
-    )
+    return CurrentUserService(token=token, redis=redis, session=session)
 
 
 async def get_user_service(session: AsyncSessionDep) -> UserService:

@@ -7,6 +7,7 @@ from redis.asyncio.client import Redis
 from sqlalchemy.orm import selectinload
 from sqlmodel import select
 
+from core.db import AsyncSession
 from core.repository.exceptions import ConflictError, NotFoundError
 from core.security.jwt.exceptions import JwtError
 from core.security.jwt.manager import JwtTokenManager
@@ -18,10 +19,10 @@ from domain.user.schemas import UserCreate, UserUpdate
 
 
 class CurrentUserService:
-    def __init__(self, user_repo: UserRepository, redis: Redis, token: str) -> None:
-        self.user_repo = user_repo
-        self.redis = redis
+    def __init__(self, token: str, redis: Redis, session: AsyncSession) -> None:
         self.token = token
+        self.redis = redis
+        self.session = session
 
     async def get_current_user(self) -> User:
         jwt_token_manager = JwtTokenManager(self.redis)
@@ -41,7 +42,7 @@ class CurrentUserService:
             .options(selectinload(User.roles).selectinload(UserRoleLink.role))
         )
 
-        user = (await self.user_repo.exec_scalar(stmt)).one_or_none()
+        user = (await self.session.exec(stmt)).one_or_none()
 
         if user is None:
             raise HTTPException(
