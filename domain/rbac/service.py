@@ -5,9 +5,9 @@ from fastapi import HTTPException, status
 from core.repository.exceptions import ConflictError, NotFoundError
 from domain.rbac.schemas import PermissionCreate, PermissionUpdate
 
-from .models import Permission, Role
-from .repository import PermissionRepository, RoleRepository
-from .schemas import RoleCreate, RoleUpdate
+from .models import Permission, Role, RolePermission
+from .repository import PermissionRepository, RolePermissionRepository, RoleRepository
+from .schemas import RoleCreate, RolePermissionCreate, RoleUpdate
 
 # === Role Service ===
 
@@ -121,3 +121,26 @@ class PermissionService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Permission does not exist",
             )
+
+
+# === Role Permission Service ===
+
+
+class RolePermissionService:
+    def __init__(self, role_permission: RolePermissionRepository) -> None:
+        self.role_permission = role_permission
+
+    async def create_role_permission(
+        self, role_permission_in: RolePermissionCreate
+    ) -> RolePermission:
+        try:
+            role_permission = await self.role_permission.create(
+                data=role_permission_in,
+            )
+        except ConflictError:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Role Permission already exist",
+            )
+
+        return role_permission
