@@ -90,3 +90,13 @@ class PermissionService:
             )
 
         return permission
+
+    async def list_permission(
+        self, limit: int = 20, offset: int = 0
+    ) -> Sequence[Permission]:
+        permissions = await self.permission_repo.list(
+            limit=limit,
+            offset=offset,
+        )
+
+        return permissions
