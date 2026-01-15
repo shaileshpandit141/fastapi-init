@@ -231,3 +231,13 @@ class UserRoleService:
             )
 
         return user_role
+
+    async def list_user_role(
+        self, limit: int = 20, offset: int = 0
+    ) -> Sequence[UserRole]:
+        user_roles = await self.user_role_repo.list(
+            limit=limit,
+            offset=offset,
+        )
+
+        return user_roles
