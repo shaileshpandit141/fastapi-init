@@ -4,4 +4,5 @@ from .models import User
 from .schemas import UserCreate, UserUpdate
 
 
-class UserRepository(AsyncRepository[User, UserCreate, UserUpdate]): ...
+class UserRepository(AsyncRepository[User, UserCreate, UserUpdate]):
+    pass
