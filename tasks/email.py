@@ -6,8 +6,7 @@ from typing import Any
 from celery.app.task import Task
 
 from celery_app import shared_task
-from domain.email.schemas import EmailMessage
-from domain.email.service import build_email_message, send_via_smtp
+from core.email.base import EmailMessage, build_email_message, send_via_smtp
 
 
 @shared_task(
@@ -26,3 +25,9 @@ def send_email_task(self: Task, email_message: dict[str, Any]) -> str:
         raise self.retry(exc=exc)  # type: ignore
 
     return f"Email sent to {email.to}"
+
+
+class EmailTask:
+    @staticmethod
+    def send_email(message: EmailMessage) -> None:
+        send_email_task.delay(message.model_dump())  # type: ignore

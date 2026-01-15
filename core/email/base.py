@@ -3,11 +3,25 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from typing import Any
+
+from pydantic import BaseModel, EmailStr
 
 from core.settings import settings
-from domain.email.template import render_email_template
 
-from .schemas import EmailMessage
+from .template import render_email_template
+
+
+class EmailContent(BaseModel):
+    html_template: str
+    text: str | None = None
+
+
+class EmailMessage(BaseModel):
+    subject: str
+    to: EmailStr
+    content: EmailContent
+    context: dict[str, Any] = {}
 
 
 def build_email_message(email: EmailMessage) -> MIMEMultipart:
