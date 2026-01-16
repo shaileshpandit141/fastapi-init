@@ -12,7 +12,9 @@ from core.repository.exceptions import ConflictError, NotFoundError
 from core.security.jwt.exceptions import JwtError
 from core.security.jwt.manager import JwtTokenManager
 from core.security.password.hasher import PasswordHasher
-from domain.rbac.models import Role, RolePermission, UserRole
+from domain.rbac.models.role import Role
+from domain.rbac.models.role_permission import RolePermission
+from domain.rbac.models.user_role import UserRole
 from domain.user.models import User, UserStatus
 from domain.user.repository import UserRepository
 from domain.user.schemas import UserCreate, UserUpdate

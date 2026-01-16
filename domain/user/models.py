@@ -9,12 +9,17 @@ from sqlmodel import Field, Relationship, SQLModel  # type: ignore
 from core.db.base import BaseIntIDModel, BaseTimestampModel
 
 if TYPE_CHECKING:
-    from domain.rbac.models import UserRole
+    from domain.rbac.models.user_role import UserRole
+
+# === User Enums ===
 
 
 class UserStatus(str, Enum):
     ACTIVE = "active"
     INACTIVE = "inactive"
+
+
+# === User SQLModels ===
 
 
 class UserBase(SQLModel):
