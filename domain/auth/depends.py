@@ -9,6 +9,8 @@ from infrastructure.cache.redis import RedisDep
 from .schemas import oauth2_scheme
 from .service import AuthService
 
+# === Auth Service Dep ===
+
 
 async def get_auth_service(session: AsyncSessionDep, redis: RedisDep) -> AuthService:
     return AuthService(session=session, redis=redis)

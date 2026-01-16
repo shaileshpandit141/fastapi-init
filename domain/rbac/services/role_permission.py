@@ -2,6 +2,7 @@ from typing import Sequence
 
 from fastapi import HTTPException, status
 
+from core.db import AsyncSession
 from core.repository.exceptions import ConflictError, NotFoundError
 
 from ..models.role_permission import RolePermission
@@ -12,8 +13,10 @@ from ..schemas.role_permission import RolePermissionCreate, RolePermissionUpdate
 
 
 class RolePermissionService:
-    def __init__(self, role_permission_repo: RolePermissionRepository) -> None:
-        self.role_permission_repo = role_permission_repo
+    def __init__(self, model: type[RolePermission], session: AsyncSession) -> None:
+        self.role_permission_repo = RolePermissionRepository(
+            model=model, session=session
+        )
 
     async def create_role_permission(
         self, role_permission_in: RolePermissionCreate

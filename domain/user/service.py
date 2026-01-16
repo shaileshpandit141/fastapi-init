@@ -19,6 +19,8 @@ from domain.user.models import User, UserStatus
 from domain.user.repository import UserRepository
 from domain.user.schemas import UserCreate, UserUpdate
 
+# === Current User Service ===
+
 
 class CurrentUserService:
     def __init__(self, token: str, redis: Redis, session: AsyncSession) -> None:
@@ -72,9 +74,12 @@ class CurrentUserService:
         return user
 
 
+# === User Service ===
+
+
 class UserService:
-    def __init__(self, user_repo: UserRepository) -> None:
-        self.user_repo = user_repo
+    def __init__(self, model: type[User], session: AsyncSession) -> None:
+        self.user_repo = UserRepository(model=model, session=session)
 
     async def create_user(self, user_in: UserCreate) -> User:
 

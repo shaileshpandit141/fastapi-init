@@ -5,7 +5,6 @@ from fastapi import Depends
 from core.db.deps import AsyncSessionDep
 
 from ..models.role_permission import RolePermission
-from ..repositories.role_permission import RolePermissionRepository
 from ..services.role_permission import RolePermissionService
 
 # === Role Permission Service Dep ===
@@ -14,9 +13,7 @@ from ..services.role_permission import RolePermissionService
 async def get_role_permission_service(
     session: AsyncSessionDep,
 ) -> RolePermissionService:
-    return RolePermissionService(
-        RolePermissionRepository(model=RolePermission, session=session)
-    )
+    return RolePermissionService(model=RolePermission, session=session)
 
 
 RolePermissionServiceDep = Annotated[

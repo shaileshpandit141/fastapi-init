@@ -15,6 +15,8 @@ from .schemas import JwtTokenCreate, TokenRead, TokenRefresh, TokenRevoked
 
 VerifyFn = Callable[..., Awaitable[Mapping[str, Any]]]
 
+# === Auth Service ===
+
 
 class AuthService:
     def __init__(self, *, session: AsyncSession, redis: Redis) -> None:

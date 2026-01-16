@@ -2,6 +2,7 @@ from typing import Sequence
 
 from fastapi import HTTPException, status
 
+from core.db import AsyncSession
 from core.repository.exceptions import ConflictError, NotFoundError
 
 from ..models.role import Role
@@ -12,8 +13,8 @@ from ..schemas.role import RoleCreate, RoleUpdate
 
 
 class RoleService:
-    def __init__(self, role_repo: RoleRepository) -> None:
-        self.role_repo = role_repo
+    def __init__(self, model: type[Role], session: AsyncSession) -> None:
+        self.role_repo = RoleRepository(model=model, session=session)
 
     async def create_role(self, role_in: RoleCreate) -> Role:
         try:

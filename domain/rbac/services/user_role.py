@@ -2,6 +2,7 @@ from typing import Sequence
 
 from fastapi import HTTPException, status
 
+from core.db import AsyncSession
 from core.repository.exceptions import ConflictError, NotFoundError
 
 from ..models.user_role import UserRole
@@ -12,8 +13,8 @@ from ..schemas.user_role import UserRoleCreate, UserRoleUpdate
 
 
 class UserRoleService:
-    def __init__(self, user_role_repo: UserRoleRepository) -> None:
-        self.user_role_repo = user_role_repo
+    def __init__(self, model: type[UserRole], session: AsyncSession) -> None:
+        self.user_role_repo = UserRoleRepository(model=model, session=session)
 
     async def create_user_role(self, user_role_in: UserRoleCreate) -> UserRole:
         try:

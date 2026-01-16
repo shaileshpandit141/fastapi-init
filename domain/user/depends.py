@@ -8,7 +8,8 @@ from domain.user.service import CurrentUserService, UserService
 from infrastructure.cache.redis import RedisDep
 
 from .models import User
-from .repository import UserRepository
+
+# === Current User Service Dep ===
 
 
 async def get_current_user_service(
@@ -17,9 +18,13 @@ async def get_current_user_service(
     return CurrentUserService(token=token, redis=redis, session=session)
 
 
-async def get_user_service(session: AsyncSessionDep) -> UserService:
-    return UserService(UserRepository(model=User, session=session))
-
-
 CurrentUserServiceDep = Annotated[CurrentUserService, Depends(get_current_user_service)]
+
+# === User Service Dep ===
+
+
+async def get_user_service(session: AsyncSessionDep) -> UserService:
+    return UserService(model=User, session=session)
+
+
 UserServiceDep = Annotated[UserService, Depends(get_user_service)]

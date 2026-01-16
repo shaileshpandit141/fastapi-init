@@ -1,7 +1,9 @@
 from sqlmodel import Field  # type: ignore
 
 from core.db.base import BaseIntIDModel, NonEmptyUpdateModel
-from domain.rbac.models import PermissionBase
+from domain.rbac.models.permission import PermissionBase
+
+# === Permission Schemas ===
 
 
 class PermissionRead(PermissionBase, BaseIntIDModel):

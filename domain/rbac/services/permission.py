@@ -2,6 +2,7 @@ from typing import Sequence
 
 from fastapi import HTTPException, status
 
+from core.db import AsyncSession
 from core.repository.exceptions import ConflictError, NotFoundError
 
 from ..models.permission import Permission
@@ -12,8 +13,8 @@ from ..schemas.permission import PermissionCreate, PermissionUpdate
 
 
 class PermissionService:
-    def __init__(self, permission_repo: PermissionRepository) -> None:
-        self.permission_repo = permission_repo
+    def __init__(self, model: type[Permission], session: AsyncSession) -> None:
+        self.permission_repo = PermissionRepository(model=model, session=session)
 
     async def create_permission(self, permission_in: PermissionCreate) -> Permission:
         try:

@@ -7,6 +7,8 @@ from core.db.base import BaseIntIDModel, NonEmptyUpdateModel
 
 from .models import UserBase
 
+# === User Schemas ===
+
 
 class UserRead(UserBase, BaseIntIDModel):
     updated_at: datetime

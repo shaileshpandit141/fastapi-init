@@ -2,6 +2,8 @@ from core.db.base import NonEmptyUpdateModel
 
 from ..models.user_role import UserRoleBase
 
+# === User Role Schemas ===
+
 
 class UserRoleRead(UserRoleBase):
     pass

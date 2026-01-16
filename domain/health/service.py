@@ -15,6 +15,8 @@ HEALTH_CACHE_KEY = "health_status"
 HEALTHY_TTL_SECONDS = 30
 UNHEALTHY_TTL_SECONDS = 5
 
+# === Health Check Service ===
+
 
 class HealthCheckService:
     def __init__(self, redis: Redis, session: AsyncSession, response: Response) -> None:
