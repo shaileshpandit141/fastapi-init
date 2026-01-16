@@ -1,9 +1,11 @@
-from typing import Sequence
+from typing import Iterable, Sequence
 
 from fastapi import HTTPException, status
 
 from core.repository.exceptions import ConflictError, NotFoundError
 from domain.rbac.schemas import PermissionCreate, PermissionUpdate
+from domain.user.models import User
+from domain.user.service import CurrentUserService
 
 from .models import Permission, Role, RolePermission, UserRole
 from .repository import (
@@ -263,3 +265,57 @@ class UserRoleService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="User role does not exist",
             )
+
+
+# === Require Access Service ===
+
+
+class RequireAccessService:
+    def __init__(
+        self,
+        current_user_service: CurrentUserService,
+    ) -> None:
+        self.current_user_service = current_user_service
+
+    async def require_access(
+        self,
+        *,
+        roles: Iterable[str] | None = None,
+        permissions: Iterable[str] | None = None,
+    ) -> User:
+        return await self._require_user_access(
+            roles=roles,
+            permissions=permissions,
+        )
+
+    async def _require_user_access(
+        self,
+        *,
+        roles: Iterable[str] | None = None,
+        permissions: Iterable[str] | None = None,
+    ) -> User:
+        user = await self.current_user_service.get_active_user()
+
+        # --- Role check ---
+        if roles:
+            user_roles = {ur.role.name for ur in user.roles}
+
+            if not user_roles.intersection(roles):
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Insufficient permissions",
+                )
+
+        # --- Permission check ---
+        if permissions:
+            user_permissions = {
+                rp.permission.code for ur in user.roles for rp in ur.role.permissions
+            }
+
+            if not set(permissions).issubset(user_permissions):
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Insufficient permissions",
+                )
+
+        return user
