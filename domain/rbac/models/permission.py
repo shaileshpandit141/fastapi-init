@@ -7,7 +7,7 @@ from sqlmodel import Field, Relationship, SQLModel  # type: ignore
 from core.db.base import BaseIntIDModel
 
 if TYPE_CHECKING:
-    from domain.rbac.models.role_permission import RolePermission
+    from .role_permission import RolePermission
 
 # === Permission SQLModels ===
 
