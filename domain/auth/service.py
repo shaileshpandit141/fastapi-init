@@ -2,7 +2,6 @@ from typing import Any, Awaitable, Callable, Mapping
 
 from fastapi import HTTPException, status
 from redis.asyncio.client import Redis
-from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
 
 from core.db import AsyncSession
@@ -11,7 +10,6 @@ from core.security.jwt.exceptions import JwtError
 from core.security.password import PasswordHasher
 from domain.response.schemas import DetailResponse
 from domain.user.models import User, UserStatus
-from domain.user.schemas import UserCreate
 
 from .schemas import JwtTokenCreate, TokenRead, TokenRefresh, TokenRevoked
 
@@ -23,26 +21,6 @@ class AuthService:
         self._session = session
         self._jwt_token_manager = JwtTokenManager(redis=redis)
         self._password_hasher = PasswordHasher()
-
-    async def register(self, *, user_in: UserCreate) -> User:
-        try:
-            user = User(
-                email=user_in.email,
-                password_hash=self._password_hasher.hash_password(
-                    password=user_in.password
-                ),
-                status=UserStatus.ACTIVE,
-            )  # pyright: ignore[reportCallIssue]
-            self._session.add(user)
-            await self._session.commit()
-            await self._session.refresh(user)
-        except IntegrityError:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email already registered",
-            )
-
-        return user
 
     async def create_jwt_token(self, *, form_in: JwtTokenCreate) -> TokenRead:
 
