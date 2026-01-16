@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from core.response import OpenAPIResponses
-from domain.health.deps import HealthCheckServiceDep
+from domain.health.depends import HealthCheckServiceDep
 from domain.health.schemas import HealthyRead, UnhealthyRead
 
 router = APIRouter(prefix="/health", tags=["Health Endpoints"])
