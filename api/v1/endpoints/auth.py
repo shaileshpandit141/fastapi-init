@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
+from core.response import DetailResponse
 from domain.auth.deps import AuthServiceDep, OAuth2PasswordRequestFormDep
 from domain.auth.schemas import JwtTokenCreate, TokenRead, TokenRefresh, TokenRevoked
-from domain.response.schemas import DetailResponse
 from domain.user.deps import CurrentUserServiceDep, UserServiceDep
 from domain.user.models import User
 from domain.user.schemas import UserCreate, UserRead

@@ -5,10 +5,10 @@ from redis.asyncio.client import Redis
 from sqlmodel import select
 
 from core.db import AsyncSession
+from core.response import DetailResponse
 from core.security.jwt import JwtTokenManager
 from core.security.jwt.exceptions import JwtError
 from core.security.password import PasswordHasher
-from domain.response.schemas import DetailResponse
 from domain.user.models import User, UserStatus
 
 from .schemas import JwtTokenCreate, TokenRead, TokenRefresh, TokenRevoked
