@@ -5,7 +5,8 @@ from sqlmodel import select
 
 from core.db.sessions import sessions
 from core.security.password.hasher import PasswordHasher
-from domain.rbac.models import Role, UserRole
+from domain.rbac.models.role import Role
+from domain.rbac.models.user_role import UserRole
 from domain.user.models import User
 
 

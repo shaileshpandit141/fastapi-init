@@ -3,7 +3,9 @@ from typing import cast
 from click import command, echo
 
 from core.db.sessions import sessions
-from domain.rbac.models import Permission, Role, RolePermission
+from domain.rbac.models.permission import Permission
+from domain.rbac.models.role import Role
+from domain.rbac.models.role_permission import RolePermission
 
 INITIAL_ROLES: list[Role] = [
     Role(name="admin", description="Administrator with full access."),
