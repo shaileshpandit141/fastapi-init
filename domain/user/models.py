@@ -9,7 +9,7 @@ from sqlmodel import Field, Relationship, SQLModel  # type: ignore
 from core.db.base import BaseIntIDModel, BaseTimestampModel
 
 if TYPE_CHECKING:
-    from domain.rbac.models import UserRoleLink
+    from domain.rbac.models import UserRole
 
 
 class UserStatus(str, Enum):
@@ -27,4 +27,4 @@ class User(BaseIntIDModel, UserBase, BaseTimestampModel, table=True):
 
     password_hash: str = Field(max_length=255, nullable=False)
 
-    roles: list["UserRoleLink"] = Relationship(back_populates="user")
+    roles: list["UserRole"] = Relationship(back_populates="user")

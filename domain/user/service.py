@@ -12,7 +12,7 @@ from core.repository.exceptions import ConflictError, NotFoundError
 from core.security.jwt.exceptions import JwtError
 from core.security.jwt.manager import JwtTokenManager
 from core.security.password.hasher import PasswordHasher
-from domain.rbac.models import UserRoleLink
+from domain.rbac.models import UserRole
 from domain.user.models import User, UserStatus
 from domain.user.repository import UserRepository
 from domain.user.schemas import UserCreate, UserUpdate
@@ -39,7 +39,7 @@ class CurrentUserService:
         stmt = (
             select(User)
             .where(User.id == claims["id"])
-            .options(selectinload(User.roles).selectinload(UserRoleLink.role))
+            .options(selectinload(User.roles).selectinload(UserRole.role))
         )
 
         user = (await self.session.exec(stmt)).one_or_none()
