@@ -12,7 +12,7 @@ from core.middleware import include_middlewares
 from core.settings import settings
 from infrastructure.cache.redis.handlers.connection import redis_connection_handler
 from infrastructure.limiter import limiter
-from infrastructure.limiter.handler import rate_limit_handler
+from infrastructure.limiter.handlers.rate_limit import rate_limit_handler
 
 
 def create_app() -> FastAPI:
