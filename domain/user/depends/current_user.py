@@ -2,9 +2,9 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from core.db.deps import AsyncSessionDep
+from core.db.depends import AsyncSessionDep
 from domain.auth.depends.oauth2 import OAuth2PasswordBearerDep
-from infrastructure.cache.redis import RedisDep
+from infrastructure.cache.redis.depends import RedisDep
 
 from ..services.current_user import CurrentUserService
 
