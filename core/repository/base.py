@@ -243,6 +243,49 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
 
         return obj
 
+    async def get_by(self, **filters: Any) -> Model | None:
+        """
+        Retrieve a model instance base on filters.
+
+        Parameters
+        ----------
+        filters
+            Any key of the model.
+
+        Returns
+        -------
+        Model | None
+            The model instance if found, otherwise None.
+        """
+        stmt = self.base_query().filter_by(**filters)
+        return (await self.session.execute(stmt)).scalar_one_or_none()
+
+    async def get_by_or_raise(self, **filters: Any) -> Model:
+        """
+        Retrieve a model instance base on filters or raise an error.
+
+        Parameters
+        ----------
+        filters
+            Any key of the model.
+
+        Returns
+        -------
+        Model
+            The retrieved model instance.
+
+        Raises
+        ------
+        NotFoundError
+            If the model instance does not exist.
+        """
+        obj = await self.get_by(**filters)
+
+        if not obj:
+            raise NotFoundError(f"{self.model.__name__} not found")
+
+        return obj
+
     async def list(
         self, *, limit: int = 20, offset: int = 0, order_by: Any | None = None
     ) -> Sequence[Model]:
