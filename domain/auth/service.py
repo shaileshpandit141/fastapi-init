@@ -9,7 +9,7 @@ from core.response import DetailResponse
 from core.security.jwt import JwtTokenManager
 from core.security.jwt.exceptions import JwtError
 from core.security.password import PasswordHasher
-from domain.user.models import User, UserStatus
+from domain.user.models.user import User, UserStatus
 
 from .schemas import JwtTokenCreate, TokenRead, TokenRefresh, TokenRevoked
 

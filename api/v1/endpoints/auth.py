@@ -3,9 +3,10 @@ from fastapi import APIRouter
 from core.response import DetailResponse
 from domain.auth.depends import AuthServiceDep, OAuth2PasswordRequestFormDep
 from domain.auth.schemas import JwtTokenCreate, TokenRead, TokenRefresh, TokenRevoked
-from domain.user.depends import CurrentUserServiceDep, UserServiceDep
+from domain.user.depends.current_user import CurrentUserServiceDep
+from domain.user.depends.user import UserServiceDep
 from domain.user.models import User
-from domain.user.schemas import UserCreate, UserRead
+from domain.user.schemas.user import UserCreate, UserRead
 
 router = APIRouter(prefix="/auth", tags=["Auth Endpoints"])
 

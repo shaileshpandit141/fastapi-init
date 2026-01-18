@@ -2,7 +2,7 @@ from typing import Annotated, Awaitable, Callable, Iterable
 
 from fastapi import Depends
 
-from domain.user.depends import CurrentUserServiceDep
+from domain.user.depends.current_user import CurrentUserServiceDep
 from domain.user.models import User
 
 from ..services.require_access import RequireAccessService

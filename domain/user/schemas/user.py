@@ -5,7 +5,7 @@ from sqlmodel import SQLModel
 
 from core.db.base import BaseIntIDModel, NonEmptyUpdateModel
 
-from .models import UserBase
+from ..models.user import UserBase
 
 # === User Schemas ===
 

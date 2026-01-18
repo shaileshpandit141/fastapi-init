@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from sqlmodel import Field, Relationship, SQLModel  # type: ignore
 
 if TYPE_CHECKING:
-    from domain.user.models import User
+    from domain.user.models.user import User
 
     from .role import Role
 

@@ -1,7 +1,7 @@
 from core.repository.base import AsyncRepository
 
-from .models import User
-from .schemas import UserCreate, UserUpdate
+from ..models.user import User
+from ..schemas.user import UserCreate, UserUpdate
 
 # === User Repository ===
 

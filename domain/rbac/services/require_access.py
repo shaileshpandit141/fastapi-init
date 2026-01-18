@@ -3,7 +3,7 @@ from typing import Iterable
 from fastapi import HTTPException, status
 
 from domain.user.models import User
-from domain.user.service import CurrentUserService
+from domain.user.services.current_user import CurrentUserService
 
 # === Require Access Service ===
 
