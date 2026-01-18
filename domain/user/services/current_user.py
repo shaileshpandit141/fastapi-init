@@ -12,6 +12,7 @@ from domain.rbac.models.role import Role
 from domain.rbac.models.role_permission import RolePermission
 from domain.rbac.models.user_role import UserRole
 
+from ..cache.current_user import CurrentUserCache
 from ..models.user import User, UserStatus
 
 # === Current User Service ===
@@ -25,6 +26,7 @@ class CurrentUserService:
 
     async def get_current_user(self) -> User:
         jwt_token_manager = JwtTokenManager(self.redis)
+        cache = CurrentUserCache(self.redis)
 
         try:
             claims = await jwt_token_manager.verify_access_token(self.token)
@@ -34,6 +36,11 @@ class CurrentUserService:
                 detail="Invalid or expired access token",
                 headers={"WWW-Authenticate": "Bearer"},
             )
+
+        cache_user = await cache.get(id=claims["id"])
+
+        if cache_user:
+            return cache_user
 
         stmt = (
             select(User)
@@ -54,6 +61,8 @@ class CurrentUserService:
                 detail="Invalid access token",
                 headers={"WWW-Authenticate": "Bearer"},
             )
+
+        await cache.set(id=user.id, instance=user)
 
         return user
 

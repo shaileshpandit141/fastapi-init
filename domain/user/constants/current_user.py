@@ -1,0 +1,2 @@
+CACHE_NAMESPACE = "current:user"
+CACHE_TTL = 300
