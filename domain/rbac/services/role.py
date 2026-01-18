@@ -2,7 +2,7 @@ from typing import Sequence
 
 from fastapi import HTTPException, status
 
-from core.db import AsyncSession
+from core.db.imports import AsyncSession
 from core.repository.exceptions import ConflictError, NotFoundError
 
 from ..models.role import Role

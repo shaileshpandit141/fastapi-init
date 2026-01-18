@@ -6,7 +6,7 @@ from redis.asyncio.client import Redis
 from sqlalchemy.exc import OperationalError
 from sqlmodel import select
 
-from core.db import AsyncSession
+from core.db.imports import AsyncSession
 
 from ..constants.health_check import (
     HEALTH_CACHE_KEY,

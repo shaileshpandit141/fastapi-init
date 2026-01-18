@@ -5,7 +5,7 @@ from redis.asyncio.client import Redis
 from sqlalchemy.orm import selectinload
 from sqlmodel import select
 
-from core.db import AsyncSession
+from core.db.imports import AsyncSession
 from core.security.jwt.exceptions import JwtError
 from core.security.jwt.manager import JwtTokenManager
 from domain.rbac.models.role import Role
