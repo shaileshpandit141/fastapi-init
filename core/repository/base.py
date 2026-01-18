@@ -8,6 +8,7 @@ from sqlalchemy.engine import Result
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import Executable
+from sqlalchemy.sql.elements import BinaryExpression
 from sqlmodel import SQLModel, delete, func, select
 
 from .exceptions import ConflictError, NotFoundError
@@ -268,6 +269,49 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
 
         result = await self.session.execute(stmt)
         return result.scalars().all()
+
+    async def filter(
+        self,
+        *,
+        where: Iterable[BinaryExpression[bool]],
+        limit: int | None = None,
+        offset: int | None = None,
+        order_by: Any | None = None,
+    ) -> Sequence[Model]:
+        """
+        Filter model instances with optional pagination and ordering.
+
+        Parameters
+        ----------
+        where
+            Boolean expressions to filter data base on it
+        limit
+            Maximum number of records to return.
+        offset
+            Number of records to skip.
+        order_by
+            Optional SQLModel order_by clause.
+
+        Returns
+        -------
+            Sequence[Model]
+        """
+
+        stmt = self.base_query()
+
+        for condition in where:
+            stmt = stmt.where(condition)
+
+        if order_by is not None:
+            stmt = stmt.order_by(order_by)
+
+        if limit is not None:
+            stmt = stmt.limit(limit)
+
+        if offset is not None:
+            stmt = stmt.offset(offset)
+
+        return (await self.session.execute(stmt)).scalars().all()
 
     async def paginate(
         self, *, limit: int = 20, offset: int = 0
