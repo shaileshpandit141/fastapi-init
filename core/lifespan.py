@@ -7,7 +7,8 @@ from redis.asyncio import from_url  # type: ignore
 
 from core.settings import settings
 
-from .db import engines, init_db
+from .db import init_db
+from .db.engines.async_engine import async_engine
 
 logger = getLogger(__name__)
 
@@ -31,5 +32,5 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         # ---- Shutdown ----
     finally:
         await app.state.redis.close()
-        await engines.async_engine.dispose()
+        await async_engine.dispose()
         logger.info("Resources have been cleaned up.")
