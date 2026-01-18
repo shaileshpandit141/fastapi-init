@@ -1,6 +1,6 @@
 from redis.asyncio import Redis
 
-from infrastructure.cache.redis.base import BaseRedisCache
+from infrastructure.cache.abstractions.redis import BaseRedisCache
 
 from ..constants.current_user import CACHE_NAMESPACE, CACHE_TTL
 from ..models.user import User

@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from core.db.depends import AsyncSessionDep
-from infrastructure.cache.redis.depends import RedisDep
+from infrastructure.cache.depends.redis import RedisDep
 
 from ..services.jwt_token import JwtTokenService
 

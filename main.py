@@ -10,7 +10,7 @@ from core.lifespan import lifespan
 from core.logging import LOGGING_CONFIG
 from core.middleware import include_middlewares
 from core.settings import settings
-from infrastructure.cache.redis.handlers.connection import redis_connection_handler
+from infrastructure.cache.handlers.redis import redis_connection_handler
 from infrastructure.limiter import limiter
 from infrastructure.limiter.handlers.rate_limit import rate_limit_handler
 

@@ -4,7 +4,7 @@ from fastapi import Depends
 
 from core.db.depends import AsyncSessionDep
 from domain.auth.depends.oauth2 import OAuth2PasswordBearerDep
-from infrastructure.cache.redis.depends import RedisDep
+from infrastructure.cache.depends.redis import RedisDep
 
 from ..services.current_user import CurrentUserService
 

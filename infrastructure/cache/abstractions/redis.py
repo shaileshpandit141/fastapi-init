@@ -22,7 +22,7 @@ from pydantic import BaseModel
 from redis.asyncio import Redis
 from sqlmodel import SQLModel
 
-from .constants.cache_keys import BASE_REDIS_CACHE
+from ..constants.redis import DEFAULT_CACHE_TTL
 
 logger = getLogger(__name__)
 
@@ -51,7 +51,7 @@ class BaseRedisCache[Model: BaseModel | SQLModel]:
         model: type[Model],
         redis: Redis,
         namespace: str,
-        ttl: int = BASE_REDIS_CACHE,
+        ttl: int = DEFAULT_CACHE_TTL,
     ) -> None:
         """
         Initialize the Redis cache.
