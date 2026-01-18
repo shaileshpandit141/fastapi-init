@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from core.db.depends import AsyncSessionDep
+from core.db.depends.async_session import AsyncSessionDep
 
 from ..models.role_permission import RolePermission
 from ..services.role_permission import RolePermissionService

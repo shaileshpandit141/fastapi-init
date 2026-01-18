@@ -2,7 +2,7 @@ from typing import cast
 
 from click import command, echo
 
-from core.db.sessions import sessions
+from core.db.sessions.session import session
 from domain.rbac.models.permission import Permission
 from domain.rbac.models.role import Role
 from domain.rbac.models.role_permission import RolePermission
@@ -26,25 +26,25 @@ INITIAL_PERMISSIONS: list[Permission] = [
 @command()
 def rbac() -> None:
     """Seed roles and permissions (SQLite dev, PostgreSQL prod)."""
-    with sessions.session() as session:
+    with session() as sessionx:
         try:
             # Add roles
             for role in INITIAL_ROLES:
-                session.add(role)
-            session.commit()
+                sessionx.add(role)
+            sessionx.commit()
 
             # Refresh roles to get their IDs
             for role in INITIAL_ROLES:
-                session.refresh(role)
+                sessionx.refresh(role)
 
             # Add permissions
             for perm in INITIAL_PERMISSIONS:
-                session.add(perm)
-            session.commit()
+                sessionx.add(perm)
+            sessionx.commit()
 
             # Refresh permissions to get their IDs
             for perm in INITIAL_PERMISSIONS:
-                session.refresh(perm)
+                sessionx.refresh(perm)
 
             # Link roles to permissions (example: admin gets all permissions)
             links: list[RolePermission] = []
@@ -69,11 +69,11 @@ def rbac() -> None:
                         )
                     )
 
-            session.add_all(links)
-            session.commit()
+            sessionx.add_all(links)
+            sessionx.commit()
 
             echo("Roles and permissions seeded successfully.")
 
         except Exception as err:
-            session.rollback()
+            sessionx.rollback()
             echo(f"RBAC seeding failed: {err}")

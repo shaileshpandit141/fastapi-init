@@ -1,4 +1,4 @@
-from core.db.base import NonEmptyUpdateModel
+from core.db.models.base import NonEmptyUpdateModel
 from domain.rbac.models.role_permission import RolePermissionBase
 
 # === Role Permission Schemas ===

@@ -1,6 +1,6 @@
 from sqlmodel import Field  # type: ignore
 
-from core.db.base import NonEmptyUpdateModel
+from core.db.models.base import NonEmptyUpdateModel
 from domain.rbac.models.role import RoleBase
 
 # === Role Schemas ===

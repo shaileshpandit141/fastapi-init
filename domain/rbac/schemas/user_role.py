@@ -1,4 +1,4 @@
-from core.db.base import NonEmptyUpdateModel
+from core.db.models.base import NonEmptyUpdateModel
 
 from ..models.user_role import UserRoleBase
 
