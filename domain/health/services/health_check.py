@@ -7,13 +7,15 @@ from sqlalchemy.exc import OperationalError
 from sqlmodel import select
 
 from core.db import AsyncSession
-from domain.health.schemas import HealthyRead, UnhealthyRead
+
+from ..constants.health_check import (
+    HEALTH_CACHE_KEY,
+    HEALTHY_TTL_SECONDS,
+    UNHEALTHY_TTL_SECONDS,
+)
+from ..schemas.health_check import HealthyRead, UnhealthyRead
 
 logger = getLogger(__name__)
-
-HEALTH_CACHE_KEY = "health_status"
-HEALTHY_TTL_SECONDS = 30
-UNHEALTHY_TTL_SECONDS = 5
 
 # === Health Check Service ===
 
