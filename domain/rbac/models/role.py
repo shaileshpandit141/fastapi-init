@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 class RoleBase(SQLModel):
-    name: str = Field(max_length=50, unique=True, index=True)
+    name: str = Field(max_length=50, unique=True, index=True, nullable=False)
     description: str | None = Field(default=None, max_length=255)
 
 

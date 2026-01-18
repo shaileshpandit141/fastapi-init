@@ -23,7 +23,9 @@ class UserStatus(str, Enum):
 
 
 class UserBase(SQLModel):
-    email: EmailStr = Field(max_length=255, index=True, unique=True, nullable=False)
+    email: EmailStr = Field(
+        max_length=255, index=True, nullable=False, sa_column_kwargs={"unique": True}
+    )
     status: UserStatus = Field(default=UserStatus.ACTIVE, nullable=False)
 
 
@@ -32,4 +34,7 @@ class User(BaseIntIDModel, UserBase, BaseTimestampModel, table=True):
 
     password_hash: str = Field(max_length=255, nullable=False)
 
-    roles: list["UserRole"] = Relationship(back_populates="user")
+    roles: list["UserRole"] = Relationship(
+        back_populates="user",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
+    )

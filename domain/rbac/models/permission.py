@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class PermissionBase(SQLModel):
-    code: str = Field(max_length=100, unique=True, index=True)
+    code: str = Field(max_length=50, unique=True, index=True, nullable=False)
     description: str | None = Field(default=None, max_length=255)
 
 

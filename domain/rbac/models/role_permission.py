@@ -12,8 +12,10 @@ if TYPE_CHECKING:
 
 
 class RolePermissionBase(SQLModel):
-    role_id: int = Field(foreign_key="roles.id", primary_key=True)
-    permission_id: int = Field(foreign_key="permissions.id", primary_key=True)
+    role_id: int = Field(foreign_key="roles.id", primary_key=True, index=True)
+    permission_id: int = Field(
+        foreign_key="permissions.id", primary_key=True, index=True
+    )
 
 
 class RolePermission(RolePermissionBase, table=True):
