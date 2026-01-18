@@ -1,8 +1,14 @@
 from fastapi import APIRouter
 
 from core.response import DetailResponse
-from domain.auth.depends import AuthServiceDep, OAuth2PasswordRequestFormDep
-from domain.auth.schemas import JwtTokenCreate, TokenRead, TokenRefresh, TokenRevoked
+from domain.auth.depends.jwt_token import JwtTokenServiceDep
+from domain.auth.depends.oauth2 import OAuth2PasswordRequestFormDep
+from domain.auth.schemas.jwt_token import (
+    JwtTokenCreate,
+    JwtTokenRead,
+    JwtTokenRefresh,
+    JwtTokenRevoked,
+)
 from domain.user.depends.current_user import CurrentUserServiceDep
 from domain.user.depends.user import UserServiceDep
 from domain.user.models import User
@@ -25,12 +31,12 @@ async def create_user(user_in: UserCreate, user_service: UserServiceDep) -> User
     "/token",
     summary="Issue new jwt tokens",
     description="Issue new jwt tokens to make requests on protected routes.",
-    response_model=TokenRead,
+    response_model=JwtTokenRead,
 )
 async def create_jwt_token(
-    form_in: OAuth2PasswordRequestFormDep, auth_service: AuthServiceDep
-) -> TokenRead:
-    return await auth_service.create_jwt_token(
+    form_in: OAuth2PasswordRequestFormDep, jwt_token_service: JwtTokenServiceDep
+) -> JwtTokenRead:
+    return await jwt_token_service.create_jwt_token(
         form_in=JwtTokenCreate(email=form_in.username, password=form_in.password)
     )
 
@@ -39,12 +45,12 @@ async def create_jwt_token(
     "/refresh",
     summary="Issue new access token",
     description="Issue new access token by using refresh token.",
-    response_model=TokenRead,
+    response_model=JwtTokenRead,
 )
 async def refresh_access_token(
-    token_in: TokenRefresh, auth_service: AuthServiceDep
-) -> TokenRead:
-    return await auth_service.refresh_access_token(token_in=token_in)
+    token_in: JwtTokenRefresh, jwt_token_service: JwtTokenServiceDep
+) -> JwtTokenRead:
+    return await jwt_token_service.refresh_access_token(token_in=token_in)
 
 
 @router.post(
@@ -54,9 +60,9 @@ async def refresh_access_token(
     response_model=DetailResponse,
 )
 async def revoke_token(
-    token_in: TokenRevoked, auth_service: AuthServiceDep
+    token_in: JwtTokenRevoked, jwt_token_service: JwtTokenServiceDep
 ) -> DetailResponse:
-    return await auth_service.revoke_token(token_in=token_in)
+    return await jwt_token_service.revoke_token(token_in=token_in)
 
 
 @router.get(

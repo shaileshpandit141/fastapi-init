@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from core.db.deps import AsyncSessionDep
-from domain.auth.depends import Oauth2SchemeDep
+from domain.auth.depends.oauth2 import OAuth2PasswordBearerDep
 from infrastructure.cache.redis import RedisDep
 
 from ..services.current_user import CurrentUserService
@@ -12,7 +12,7 @@ from ..services.current_user import CurrentUserService
 
 
 async def get_current_user_service(
-    token: Oauth2SchemeDep, redis: RedisDep, session: AsyncSessionDep
+    token: OAuth2PasswordBearerDep, redis: RedisDep, session: AsyncSessionDep
 ) -> CurrentUserService:
     return CurrentUserService(token=token, redis=redis, session=session)
 

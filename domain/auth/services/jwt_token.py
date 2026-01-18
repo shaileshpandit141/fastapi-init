@@ -11,20 +11,25 @@ from core.security.jwt.exceptions import JwtError
 from core.security.password import PasswordHasher
 from domain.user.models.user import User, UserStatus
 
-from .schemas import JwtTokenCreate, TokenRead, TokenRefresh, TokenRevoked
+from ..schemas.jwt_token import (
+    JwtTokenCreate,
+    JwtTokenRead,
+    JwtTokenRefresh,
+    JwtTokenRevoked,
+)
 
 VerifyFn = Callable[..., Awaitable[Mapping[str, Any]]]
 
-# === Auth Service ===
+# === Jwt Token Service ===
 
 
-class AuthService:
+class JwtTokenService:
     def __init__(self, *, session: AsyncSession, redis: Redis) -> None:
         self._session = session
         self._jwt_token_manager = JwtTokenManager(redis=redis)
         self._password_hasher = PasswordHasher()
 
-    async def create_jwt_token(self, *, form_in: JwtTokenCreate) -> TokenRead:
+    async def create_jwt_token(self, *, form_in: JwtTokenCreate) -> JwtTokenRead:
 
         stmt = select(User).where(User.email == form_in.email)
         user = (await self._session.exec(stmt)).one_or_none()
@@ -49,7 +54,7 @@ class AuthService:
                 detail="Incorrect email password",
             )
 
-        return TokenRead(
+        return JwtTokenRead(
             access_token=self._jwt_token_manager.create_access_token(
                 claims={"id": user.id}
             ),
@@ -59,7 +64,7 @@ class AuthService:
             token_type="bearer",
         )
 
-    async def refresh_access_token(self, *, token_in: TokenRefresh) -> TokenRead:
+    async def refresh_access_token(self, *, token_in: JwtTokenRefresh) -> JwtTokenRead:
         try:
             claims = await self._jwt_token_manager.verify_refresh_token(
                 token=token_in.refresh_token
@@ -70,7 +75,7 @@ class AuthService:
                 detail="Invalid or expire refresh token",
             )
 
-        return TokenRead(
+        return JwtTokenRead(
             access_token=self._jwt_token_manager.create_access_token(
                 claims={"id": claims["id"]}
             ),
@@ -78,7 +83,7 @@ class AuthService:
             token_type="bearer",
         )
 
-    async def revoke_token(self, *, token_in: TokenRevoked) -> DetailResponse:
+    async def revoke_token(self, *, token_in: JwtTokenRevoked) -> DetailResponse:
         async def _revoke_if_valid(verify_fn: VerifyFn, token: str) -> None:
             try:
                 claims = await verify_fn(token=token)
