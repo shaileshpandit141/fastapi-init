@@ -1,20 +1,3 @@
-"""
-Redis cache abstraction with strong typing support for Pydantic and SQLModel models.
-
-This module provides a reusable, type-safe base class for interacting with Redis
-as a cache layer. It is designed for modern async Python applications (e.g. FastAPI)
-and focuses on:
-
-- Type safety via generics
-- Automatic JSON serialization/deserialization
-- Centralized cache key namespacing
-- TTL-based expiration
-- Graceful handling of corrupted or invalid cache data
-
-The cache is intended to be used as a *read-through cache* where data is fetched
-from Redis first and lazily populated if missing.
-"""
-
 from logging import getLogger
 from typing import Awaitable, Callable
 
