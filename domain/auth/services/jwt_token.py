@@ -50,7 +50,7 @@ class JwtTokenService:
             plain_password=form_in.password, hashed_password=user.password_hash
         ):
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
+                status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Incorrect email password",
             )
 
