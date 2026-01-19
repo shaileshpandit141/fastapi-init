@@ -5,9 +5,21 @@ from fastapi import APIRouter
 from domain.rbac.depends.require_access import AdminUserDep
 from domain.user.depends.user import UserServiceDep
 from domain.user.models.user import User
-from domain.user.schemas.user import UserRead
+from domain.user.schemas.user import UserCreate, UserRead
 
 router = APIRouter(prefix="/users", tags=["User Endpoints"])
+
+
+@router.post(
+    path="/",
+    summary="Create a new user",
+    description="Create a new user. Only created by admin.",
+    response_model=UserRead,
+)
+async def create_user(
+    user: AdminUserDep, user_service: UserServiceDep, user_in: UserCreate
+) -> User:
+    return await user_service.create_user(user_in=user_in)
 
 
 @router.get(
