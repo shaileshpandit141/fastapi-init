@@ -39,8 +39,11 @@ class CurrentUserService:
 
         cache_user = await cache.get(id=claims["id"])
 
-        if cache_user:
-            return cache_user
+        # print("==========================")
+        # print("Cache User: ", cache_user)
+
+        # if cache_user:
+        #     return cache_user
 
         stmt = (
             select(User)
