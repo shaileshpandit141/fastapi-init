@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from domain.rbac.depends.require_access import AdminUserDep
 from domain.user.depends.user import UserServiceDep
 from domain.user.models.user import User
-from domain.user.schemas.user import UserCreate, UserRead
+from domain.user.schemas.user import UserCreate, UserRead, UserUpdate
 
 router = APIRouter(prefix="/users", tags=["User Endpoints"])
 
@@ -42,3 +42,15 @@ async def list_user(
 )
 async def read_user(user: AdminUserDep, user_service: UserServiceDep, id: int) -> User:
     return await user_service.get_user(id)
+
+
+@router.patch(
+    path="/{id}",
+    summary="Update a user info",
+    description="Update a user info. Only admin can update.",
+    response_model=UserRead,
+)
+async def update_user(
+    user: AdminUserDep, user_service: UserServiceDep, id: int, user_in: UserUpdate
+) -> User:
+    return await user_service.update_user(id, user_in)
