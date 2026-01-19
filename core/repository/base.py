@@ -1,5 +1,3 @@
-# pyright: reportCallIssue=false
-
 from logging import getLogger
 from typing import Any, Iterable, Sequence, cast
 
@@ -239,7 +237,9 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
         obj = await self.get(id=id)
 
         if not obj:
-            raise NotFoundError(f"{self.model.__name__} not found")
+            raise NotFoundError(
+                code="not_found", detail=f"{self.model.__name__} not found"
+            )
 
         return obj
 
@@ -282,7 +282,9 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
         obj = await self.get_by(**filters)
 
         if not obj:
-            raise NotFoundError(f"{self.model.__name__} not found")
+            raise NotFoundError(
+                code="not_found", detail=f"{self.model.__name__} not found"
+            )
 
         return obj
 
@@ -559,6 +561,8 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
         obj = (await self.session.execute(stmt)).scalar_one_or_none()
 
         if not obj:
-            raise NotFoundError()
+            raise NotFoundError(
+                code="not_found", detail=f"{self.model.__name__} not found"
+            )
 
         return obj
