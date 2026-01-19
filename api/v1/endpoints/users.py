@@ -1,7 +1,8 @@
 from typing import Sequence
 
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 
+from core.response import DetailResponse, OpenAPIResponses
 from domain.rbac.depends.require_access import AdminUserDep
 from domain.user.depends.user import UserServiceDep
 from domain.user.models.user import User
@@ -54,3 +55,22 @@ async def update_user(
     user: AdminUserDep, user_service: UserServiceDep, id: int, user_in: UserUpdate
 ) -> User:
     return await user_service.update_user(id, user_in)
+
+
+DELETE_RESPONSES: OpenAPIResponses = {
+    204: {"description": "No Content"},
+    404: {"model": DetailResponse, "description": "User does not exist."},
+}
+
+
+@router.delete(
+    path="/{id}",
+    summary="Delete a user",
+    description="Delete a user. Only admin can delete.",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses=DELETE_RESPONSES,
+)
+async def delete_user(
+    user: AdminUserDep, user_service: UserServiceDep, id: int
+) -> None:
+    return await user_service.delete_user(id)
