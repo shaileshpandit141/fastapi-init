@@ -32,3 +32,13 @@ async def list_user(
     user: AdminUserDep, user_service: UserServiceDep, limit: int = 20, offset: int = 0
 ) -> Sequence[User]:
     return await user_service.list_user(limit=limit, offset=offset)
+
+
+@router.get(
+    path="/{id}",
+    summary="Retrive a user",
+    description="Retrive a user. Only retrive by admin.",
+    response_model=UserRead,
+)
+async def read_user(user: AdminUserDep, user_service: UserServiceDep, id: int) -> User:
+    return await user_service.get_user(id)
