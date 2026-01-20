@@ -17,6 +17,9 @@ from domain.user.schemas.user import UserCreate, UserRead, UserUpdate
 router = APIRouter(prefix="/users", tags=["User Endpoints"])
 
 
+# === User specific endpoints ===
+
+
 @router.post(
     path="/",
     summary="Create a new user",
@@ -84,3 +87,6 @@ async def delete_user(
     user: AdminUserDep, user_service: UserServiceDep, id: int
 ) -> None:
     return await user_service.delete_user(id)
+
+
+# === RBAC specific endpoints ===
