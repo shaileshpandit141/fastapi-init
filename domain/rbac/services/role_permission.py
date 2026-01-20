@@ -25,7 +25,7 @@ class RolePermissionService:
                 data=role_permission_in,
             )
         except EntityConflictException:
-            raise AlreadyExistsException(resource="Role")
+            raise AlreadyExistsException(detail="Role already exists.")
 
         return role_permission
 
@@ -35,7 +35,7 @@ class RolePermissionService:
                 id=role_permission_id
             )
         except EntityNotFoundException:
-            raise NotFoundException(resource="Role permission")
+            raise NotFoundException(detail="Role permission not found.")
 
         return role_permission
 
@@ -65,4 +65,4 @@ class RolePermissionService:
         try:
             await self.role_permission_repo.delete_by_id(id=role_permission_id)
         except EntityNotFoundException:
-            raise NotFoundException(resource="Role permission")
+            raise NotFoundException(detail="Role permission not found.")

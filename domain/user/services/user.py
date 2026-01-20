@@ -33,7 +33,7 @@ class UserService:
                 },
             )
         except EntityConflictException:
-            raise AlreadyExistsException(resource="Email")
+            raise AlreadyExistsException(detail="Email already exists.")
 
         return user
 
@@ -41,7 +41,7 @@ class UserService:
         try:
             user = await self.user_repo.get_or_raise(id=user_id)
         except EntityNotFoundException:
-            raise NotFoundException(resource="User")
+            raise NotFoundException(detail="User not found.")
 
         return user
 
@@ -67,4 +67,4 @@ class UserService:
         try:
             await self.user_repo.delete_by_id(id=user_id)
         except EntityNotFoundException:
-            raise NotFoundException(resource="User")
+            raise NotFoundException(detail="User not found.")

@@ -148,10 +148,7 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
                 exc_info=exc,
             )
             await self.session.rollback()
-            raise EntityConflictException(
-                code="resorce_conflict",
-                message="Resource creation failed due to invalid or conflicting data.",
-            )
+            raise EntityConflictException(detail="Resource already exist.")
 
     async def bulk_create(
         self,
@@ -237,9 +234,7 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
         obj = await self.get(id=id)
 
         if not obj:
-            raise EntityNotFoundException(
-                code="NOT_FOUND", message="Resource does not exist."
-            )
+            raise EntityNotFoundException(detail="Resource does not exist.")
 
         return obj
 
@@ -282,9 +277,7 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
         obj = await self.get_by(**filters)
 
         if not obj:
-            raise EntityNotFoundException(
-                code="NOT_FOUND", message="Resource does not exist."
-            )
+            raise EntityNotFoundException(detail="Resource does not exist.")
 
         return obj
 
@@ -561,8 +554,6 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
         obj = (await self.session.execute(stmt)).scalar_one_or_none()
 
         if not obj:
-            raise EntityNotFoundException(
-                code="NOT_FOUND", message="Resource does not exist."
-            )
+            raise EntityNotFoundException(detail="Resource does not exist.")
 
         return obj

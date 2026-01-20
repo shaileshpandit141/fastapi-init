@@ -1,20 +1,12 @@
-from typing import Any
+from core.response.schemas import ErrorDetailDict
 
 # === A global app exception ===
 
 
 class AppException(Exception):
-    def __init__(
-        self,
-        *,
-        code: str,
-        message: str,
-        details: list[dict[str, Any]] | None = None,
-    ) -> None:
-        super().__init__(message)
-        self.code = code
-        self.message = message
-        self.details = details or []
+    def __init__(self, *, detail: str | list[ErrorDetailDict]) -> None:
+        super().__init__(detail)
+        self.detail = detail
 
 
 # ===  Root App http exception ===
@@ -24,10 +16,8 @@ class AppHTTPException(AppException):
     def __init__(
         self,
         *,
-        code: str,
-        message: str,
+        detail: str | list[ErrorDetailDict],
         status_code: int,
-        details: list[dict[str, Any]] | None = None,
     ) -> None:
+        super().__init__(detail=detail)
         self.status_code = status_code
-        super().__init__(code=code, message=message, details=details)

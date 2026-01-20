@@ -35,7 +35,7 @@ class RequireAccessService:
             user_roles = {ur.role.name for ur in user.roles}
 
             if not user_roles.intersection(roles):
-                raise AccessDeniedException(message="Insufficient permissions")
+                raise AccessDeniedException(detail="Insufficient permissions.")
 
         # --- Permission check ---
         if permissions:
@@ -44,6 +44,6 @@ class RequireAccessService:
             }
 
             if not set(permissions).issubset(user_permissions):
-                raise AccessDeniedException(message="Insufficient permissions")
+                raise AccessDeniedException(detail="Insufficient permissions.")
 
         return user

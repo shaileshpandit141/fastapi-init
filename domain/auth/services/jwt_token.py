@@ -35,15 +35,15 @@ class JwtTokenService:
         user = (await self._session.exec(stmt)).one_or_none()
 
         if not user:
-            raise BadRequestException(message="User not found")
+            raise BadRequestException(detail="User not found.")
 
         if user.status == UserStatus.INACTIVE:
-            raise AccessDeniedException(message="User is inactive")
+            raise AccessDeniedException(detail="User is inactive.")
 
         if not self._password_hasher.verify_password(
             plain_password=form_in.password, hashed_password=user.password_hash
         ):
-            raise BadRequestException(message="Incorrect email password")
+            raise BadRequestException(detail="Incorrect email password.")
 
         return JwtTokenRead(
             access_token=self._jwt_token_manager.create_access_token(
@@ -61,7 +61,7 @@ class JwtTokenService:
                 token=token_in.refresh_token
             )
         except JwtException:
-            raise BadRequestException(message="Invalid or expire refresh token")
+            raise BadRequestException(detail="Invalid or expire refresh token.")
 
         return JwtTokenRead(
             access_token=self._jwt_token_manager.create_access_token(
@@ -90,4 +90,4 @@ class JwtTokenService:
             token_in.refresh_token,
         )
 
-        return DetailResponse(detail="Token revoke successful")
+        return DetailResponse(detail="Token revoke successful.")

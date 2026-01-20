@@ -31,7 +31,7 @@ class CurrentUserService:
         try:
             claims = await jwt_token_manager.verify_access_token(self.token)
         except JwtException:
-            raise UnauthorizedException(message="Invalid or expired access token")
+            raise UnauthorizedException(detail="Invalid or expired access token.")
 
         cache_user = await cache.get(id=claims["id"])  # type: ignore # noqa: F841
 
@@ -55,7 +55,7 @@ class CurrentUserService:
         user = (await self.session.exec(stmt)).one_or_none()
 
         if user is None:
-            raise UnauthorizedException(message="Invalid access token")
+            raise UnauthorizedException(detail="Invalid access token.")
 
         await cache.set(id=user.id, instance=user)
 
@@ -65,6 +65,6 @@ class CurrentUserService:
         user = await self.get_current_user()
 
         if user.status != UserStatus.ACTIVE:
-            raise AccessDeniedException(message="Inactive user")
+            raise AccessDeniedException(detail="Inactive user.")
 
         return user

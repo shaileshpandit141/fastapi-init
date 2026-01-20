@@ -21,7 +21,7 @@ class UserRoleService:
                 data=user_role_in,
             )
         except EntityConflictException:
-            raise AlreadyExistsException(resource="User role")
+            raise AlreadyExistsException(detail="User role already exists.")
 
         return user_role
 
@@ -29,7 +29,7 @@ class UserRoleService:
         try:
             user_role = await self.user_role_repo.get_or_raise(id=user_role_id)
         except EntityNotFoundException:
-            raise NotFoundException(resource="User role")
+            raise NotFoundException(detail="User role not found.")
 
         return user_role
 
@@ -59,4 +59,4 @@ class UserRoleService:
         try:
             await self.user_role_repo.delete_by_id(id=user_role_id)
         except EntityNotFoundException:
-            raise NotFoundException(resource="User role")
+            raise NotFoundException(detail="User role not found.")

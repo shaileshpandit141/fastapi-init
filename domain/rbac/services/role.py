@@ -19,7 +19,7 @@ class RoleService:
         try:
             role = await self.role_repo.create(data=role_in)
         except EntityConflictException:
-            raise AlreadyExistsException(resource="Role")
+            raise AlreadyExistsException(detail="Role already exists.")
 
         return role
 
@@ -27,7 +27,7 @@ class RoleService:
         try:
             role = await self.role_repo.get_or_raise(id=role_id)
         except EntityNotFoundException:
-            raise NotFoundException(resource="Role")
+            raise NotFoundException(detail="Role not found.")
 
         return role
 
@@ -52,4 +52,4 @@ class RoleService:
         try:
             await self.role_repo.delete_by_id(id=role_in)
         except EntityNotFoundException:
-            raise NotFoundException(resource="Role")
+            raise NotFoundException(detail="Role not found.")

@@ -1,17 +1,28 @@
-from typing import Any
+from typing import TypedDict
 
-from sqlmodel import SQLModel
+from pydantic import BaseModel
+
+# === Detail response schema ===
 
 
-class DetailResponse(SQLModel):
+class DetailResponse(BaseModel):
     detail: str
 
 
-class ErrorPayload(SQLModel):
-    code: str
-    message: str
-    details: list[dict[str, Any]] = []
+# === Error response schemas ===
 
 
-class ErrorResponse(SQLModel):
-    error: ErrorPayload
+class ErrorDetailDict(TypedDict):
+    loc: list[str]
+    msg: str
+    type: str
+
+
+class ErrorDetail(BaseModel):
+    loc: list[str]
+    msg: str
+    type: str
+
+
+class ErrorResponse(BaseModel):
+    detail: str | list[ErrorDetail]

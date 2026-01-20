@@ -19,7 +19,7 @@ class PermissionService:
         try:
             permission = await self.permission_repo.create(data=permission_in)
         except EntityConflictException:
-            raise AlreadyExistsException(resource="Permission")
+            raise AlreadyExistsException(detail="Permission already exists.")
 
         return permission
 
@@ -27,7 +27,7 @@ class PermissionService:
         try:
             permission = await self.permission_repo.get_or_raise(id=permission_id)
         except EntityNotFoundException:
-            raise NotFoundException(resource="Permission")
+            raise NotFoundException(detail="Permission not found.")
 
         return permission
 
@@ -57,4 +57,4 @@ class PermissionService:
         try:
             await self.permission_repo.delete_by_id(id=permission_id)
         except EntityNotFoundException:
-            raise NotFoundException(resource="Permission")
+            raise NotFoundException(detail="Permission not found.")
