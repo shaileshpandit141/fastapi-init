@@ -42,6 +42,7 @@ def require_access(
 
 
 AdminUserDep = Annotated[User, Depends(require_access(roles=["admin"]))]
+AuthenticatedUserDep = Annotated[User, Depends(require_access(roles=["user"]))]
 
 
 # === Permission-based deps ===
