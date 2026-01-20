@@ -3,7 +3,12 @@ from typing import Sequence
 from fastapi import APIRouter, status
 
 from core.response.schemas import DetailResponse
-from core.response.swagger import OpenAPIResponses
+from core.response.swagger import (
+    ADMIN_READ,
+    ADMIN_WRITE,
+    DELETE_RECORD,
+    OpenAPIResponses,
+)
 from domain.rbac.depends.require_access import AdminUserDep
 from domain.user.depends.user import UserServiceDep
 from domain.user.models.user import User
@@ -17,6 +22,7 @@ router = APIRouter(prefix="/users", tags=["User Endpoints"])
     summary="Create a new user",
     description="Create a new user. Only created by admin.",
     response_model=UserRead,
+    responses=ADMIN_WRITE,
 )
 async def create_user(
     user: AdminUserDep, user_service: UserServiceDep, user_in: UserCreate
@@ -29,6 +35,7 @@ async def create_user(
     summary="Retrive list of users",
     description="Retrive list of users. Only access by admin.",
     response_model=list[UserRead],
+    responses=ADMIN_READ,
 )
 async def list_user(
     user: AdminUserDep, user_service: UserServiceDep, limit: int = 20, offset: int = 0
@@ -41,6 +48,7 @@ async def list_user(
     summary="Retrive a user",
     description="Retrive a user. Only retrive by admin.",
     response_model=UserRead,
+    responses=ADMIN_READ,
 )
 async def read_user(user: AdminUserDep, user_service: UserServiceDep, id: int) -> User:
     return await user_service.get_user(id)
@@ -51,6 +59,7 @@ async def read_user(user: AdminUserDep, user_service: UserServiceDep, id: int) -
     summary="Update a user info",
     description="Update a user info. Only admin can update.",
     response_model=UserRead,
+    responses=ADMIN_READ,
 )
 async def update_user(
     user: AdminUserDep, user_service: UserServiceDep, id: int, user_in: UserUpdate
@@ -69,7 +78,7 @@ DELETE_RESPONSES: OpenAPIResponses = {
     summary="Delete a user",
     description="Delete a user. Only admin can delete.",
     status_code=status.HTTP_204_NO_CONTENT,
-    responses=DELETE_RESPONSES,
+    responses=DELETE_RECORD,
 )
 async def delete_user(
     user: AdminUserDep, user_service: UserServiceDep, id: int

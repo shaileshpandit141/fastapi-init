@@ -80,6 +80,7 @@ PUBLIC_WRITE: OpenAPIResponses = {
 
 AUTH_READ: OpenAPIResponses = {
     **AUTH_ERRORS,
+    **PERMISSION_ERRORS,
     **READ_ERRORS,
     **VALIDATION_ERRORS,
     **SYSTEM_ERRORS,
@@ -87,6 +88,15 @@ AUTH_READ: OpenAPIResponses = {
 
 AUTH_WRITE: OpenAPIResponses = {
     **AUTH_ERRORS,
+    **PERMISSION_ERRORS,
+    **WRITE_ERRORS,
+    **VALIDATION_ERRORS,
+    **SYSTEM_ERRORS,
+}
+
+ADMIN_READ: OpenAPIResponses = {
+    **AUTH_ERRORS,
+    **PERMISSION_ERRORS,
     **WRITE_ERRORS,
     **VALIDATION_ERRORS,
     **SYSTEM_ERRORS,
