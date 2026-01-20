@@ -1,9 +1,8 @@
 from typing import Sequence
 
-from fastapi import HTTPException, status
-
 from core.db.imports import AsyncSession
-from core.repository.exceptions import ConflictError, NotFoundError
+from core.exceptions import AlreadyExistsException, NotFoundException
+from core.repository.exceptions import EntityConflictException, EntityNotFoundException
 
 from ..models.permission import Permission
 from ..repositories.permission import PermissionRepository
@@ -19,22 +18,16 @@ class PermissionService:
     async def create_permission(self, permission_in: PermissionCreate) -> Permission:
         try:
             permission = await self.permission_repo.create(data=permission_in)
-        except ConflictError:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Permission already exist",
-            )
+        except EntityConflictException:
+            raise AlreadyExistsException(resource="Permission")
 
         return permission
 
     async def get_permission(self, permission_id: int) -> Permission:
         try:
             permission = await self.permission_repo.get_or_raise(id=permission_id)
-        except NotFoundError:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Permission does not exist",
-            )
+        except EntityNotFoundException:
+            raise NotFoundException(resource="Permission")
 
         return permission
 
@@ -63,8 +56,5 @@ class PermissionService:
     async def delete_permission(self, permission_id: int) -> None:
         try:
             await self.permission_repo.delete_by_id(id=permission_id)
-        except NotFoundError:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Permission does not exist",
-            )
+        except EntityNotFoundException:
+            raise NotFoundException(resource="Permission")

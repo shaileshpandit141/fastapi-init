@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from core.response import DetailResponse
+from core.response.schemas import DetailResponse
 from domain.auth.depends.jwt_token import JwtTokenServiceDep
 from domain.auth.depends.oauth2 import OAuth2PasswordRequestFormDep
 from domain.auth.schemas.jwt_token import (

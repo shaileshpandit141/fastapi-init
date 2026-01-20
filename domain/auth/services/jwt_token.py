@@ -1,13 +1,13 @@
 from typing import Any, Awaitable, Callable, Mapping
 
-from fastapi import HTTPException, status
 from redis.asyncio.client import Redis
 from sqlmodel import select
 
 from core.db.imports import AsyncSession
-from core.response import DetailResponse
+from core.exceptions import AccessDeniedException, BadRequestException
+from core.response.schemas import DetailResponse
 from core.security.jwt import JwtTokenManager
-from core.security.jwt.exceptions import JwtError
+from core.security.jwt.exceptions import JwtException
 from core.security.password import PasswordHasher
 from domain.user.models.user import User, UserStatus
 
@@ -35,24 +35,15 @@ class JwtTokenService:
         user = (await self._session.exec(stmt)).one_or_none()
 
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="User not found",
-            )
+            raise BadRequestException(message="User not found")
 
         if user.status == UserStatus.INACTIVE:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="User is inactive",
-            )
+            raise AccessDeniedException(message="User is inactive")
 
         if not self._password_hasher.verify_password(
             plain_password=form_in.password, hashed_password=user.password_hash
         ):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Incorrect email password",
-            )
+            raise BadRequestException(message="Incorrect email password")
 
         return JwtTokenRead(
             access_token=self._jwt_token_manager.create_access_token(
@@ -69,11 +60,8 @@ class JwtTokenService:
             claims = await self._jwt_token_manager.verify_refresh_token(
                 token=token_in.refresh_token
             )
-        except JwtError:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid or expire refresh token",
-            )
+        except JwtException:
+            raise BadRequestException(message="Invalid or expire refresh token")
 
         return JwtTokenRead(
             access_token=self._jwt_token_manager.create_access_token(
@@ -90,7 +78,7 @@ class JwtTokenService:
                 await self._jwt_token_manager.revoke_token(
                     jti=claims["jti"], exp=claims["exp"]
                 )
-            except JwtError:
+            except JwtException:
                 pass
 
         await _revoke_if_valid(

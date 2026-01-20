@@ -30,5 +30,6 @@
       "source.organizeImports": "explicit"
     },
     "editor.defaultFormatter": "ms-python.black-formatter"
-  }
+  },
+  "postman.settings.dotenv-detection-notification-visibility": false
 }

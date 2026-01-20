@@ -1,7 +1,6 @@
 from typing import Iterable
 
-from fastapi import HTTPException, status
-
+from core.exceptions import AccessDeniedException
 from domain.user.models import User
 from domain.user.services.current_user import CurrentUserService
 
@@ -36,10 +35,7 @@ class RequireAccessService:
             user_roles = {ur.role.name for ur in user.roles}
 
             if not user_roles.intersection(roles):
-                raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN,
-                    detail="Insufficient permissions",
-                )
+                raise AccessDeniedException(message="Insufficient permissions")
 
         # --- Permission check ---
         if permissions:
@@ -48,9 +44,6 @@ class RequireAccessService:
             }
 
             if not set(permissions).issubset(user_permissions):
-                raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN,
-                    detail="Insufficient permissions",
-                )
+                raise AccessDeniedException(message="Insufficient permissions")
 
         return user

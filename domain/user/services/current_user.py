@@ -1,12 +1,12 @@
 # pyright: reportArgumentType=false
 
-from fastapi import HTTPException
 from redis.asyncio.client import Redis
 from sqlalchemy.orm import selectinload
 from sqlmodel import select
 
 from core.db.imports import AsyncSession
-from core.security.jwt.exceptions import JwtError
+from core.exceptions import AccessDeniedException, UnauthorizedException
+from core.security.jwt.exceptions import JwtException
 from core.security.jwt.manager import JwtTokenManager
 from domain.rbac.models.role import Role
 from domain.rbac.models.role_permission import RolePermission
@@ -30,14 +30,10 @@ class CurrentUserService:
 
         try:
             claims = await jwt_token_manager.verify_access_token(self.token)
-        except (JwtError, KeyError, ValueError):
-            raise HTTPException(
-                status_code=401,
-                detail="Invalid or expired access token",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+        except JwtException:
+            raise UnauthorizedException(message="Invalid or expired access token")
 
-        cache_user = await cache.get(id=claims["id"])
+        cache_user = await cache.get(id=claims["id"])  # type: ignore # noqa: F841
 
         # print("==========================")
         # print("Cache User: ", cache_user)
@@ -59,11 +55,7 @@ class CurrentUserService:
         user = (await self.session.exec(stmt)).one_or_none()
 
         if user is None:
-            raise HTTPException(
-                status_code=401,
-                detail="Invalid access token",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+            raise UnauthorizedException(message="Invalid access token")
 
         await cache.set(id=user.id, instance=user)
 
@@ -73,9 +65,6 @@ class CurrentUserService:
         user = await self.get_current_user()
 
         if user.status != UserStatus.ACTIVE:
-            raise HTTPException(
-                status_code=403,
-                detail="Inactive user",
-            )
+            raise AccessDeniedException(message="Inactive user")
 
         return user

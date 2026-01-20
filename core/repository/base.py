@@ -9,7 +9,7 @@ from sqlalchemy.sql import Executable
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlmodel import SQLModel, delete, func, select
 
-from .exceptions import ConflictError, NotFoundError
+from .exceptions import EntityConflictException, EntityNotFoundException
 
 logger = getLogger(__name__)
 
@@ -126,7 +126,7 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
 
         Raises
         ------
-        ConflictError
+        EntityConflictException
             If a database integrity constraint is violated.
         """
         try:
@@ -142,16 +142,16 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
                 await self.session.refresh(obj)
 
             return obj
-        except IntegrityError as error:
+        except IntegrityError as exc:
             logger.debug(
                 f"{self.__class__.__name__} record creation failed: ",
-                exc_info=error,
+                exc_info=exc,
             )
             await self.session.rollback()
-            raise ConflictError(
-                code="integrity_error",
-                detail=f"{self.__class__.__name__} create data violated database integrity constraint",
-            ) from error
+            raise EntityConflictException(
+                code="resorce_conflict",
+                message="Resource creation failed due to invalid or conflicting data.",
+            )
 
     async def bulk_create(
         self,
@@ -231,14 +231,14 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
 
         Raises
         ------
-        NotFoundError
+        EntityNotFoundException
             If the model instance does not exist.
         """
         obj = await self.get(id=id)
 
         if not obj:
-            raise NotFoundError(
-                code="not_found", detail=f"{self.model.__name__} not found"
+            raise EntityNotFoundException(
+                code="NOT_FOUND", message="Resource does not exist."
             )
 
         return obj
@@ -276,14 +276,14 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
 
         Raises
         ------
-        NotFoundError
+        EntityNotFoundException
             If the model instance does not exist.
         """
         obj = await self.get_by(**filters)
 
         if not obj:
-            raise NotFoundError(
-                code="not_found", detail=f"{self.model.__name__} not found"
+            raise EntityNotFoundException(
+                code="NOT_FOUND", message="Resource does not exist."
             )
 
         return obj
@@ -429,7 +429,7 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
 
         Raises
         ------
-        NotFoundError
+        EntityNotFoundException
             If the model instance does not exist.
         """
         obj = await self.get_or_raise(id=id)
@@ -493,7 +493,7 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
 
         Raises
         ------
-        NotFoundError
+        EntityNotFoundException
             If the model instance does not exist.
         """
         obj = await self.get_or_raise(id=id)
@@ -554,15 +554,15 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
 
         Raises
         ------
-        NotFoundError
+        EntityNotFoundException
             If the model instance does not exist.
         """
         stmt = select(self.model).where(self.model.id == id).with_for_update()  # type: ignore
         obj = (await self.session.execute(stmt)).scalar_one_or_none()
 
         if not obj:
-            raise NotFoundError(
-                code="not_found", detail=f"{self.model.__name__} not found"
+            raise EntityNotFoundException(
+                code="NOT_FOUND", message="Resource does not exist."
             )
 
         return obj

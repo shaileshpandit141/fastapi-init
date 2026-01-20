@@ -2,7 +2,7 @@ from typing import Sequence
 
 from fastapi import APIRouter, status
 
-from core.response import DetailResponse, OpenAPIResponses
+from core.response.schemas import DetailResponse, OpenAPIResponses
 from domain.rbac.depends.require_access import AdminUserDep
 from domain.user.depends.user import UserServiceDep
 from domain.user.models.user import User

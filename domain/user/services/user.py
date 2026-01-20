@@ -2,10 +2,9 @@
 
 from typing import Sequence
 
-from fastapi import HTTPException, status
-
 from core.db.imports import AsyncSession
-from core.repository.exceptions import ConflictError, NotFoundError
+from core.exceptions import AlreadyExistsException, NotFoundException
+from core.repository.exceptions import EntityConflictException, EntityNotFoundException
 from core.security.password.hasher import PasswordHasher
 
 from ..models.user import User, UserStatus
@@ -33,22 +32,16 @@ class UserService:
                     "status": UserStatus.ACTIVE,
                 },
             )
-        except ConflictError:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email already registered",
-            )
+        except EntityConflictException:
+            raise AlreadyExistsException(resource="Email")
 
         return user
 
     async def get_user(self, user_id: int) -> User:
         try:
             user = await self.user_repo.get_or_raise(id=user_id)
-        except NotFoundError:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User does not exist",
-            )
+        except EntityNotFoundException:
+            raise NotFoundException(resource="User")
 
         return user
 
@@ -73,7 +66,5 @@ class UserService:
     async def delete_user(self, user_id: int) -> None:
         try:
             await self.user_repo.delete_by_id(id=user_id)
-        except NotFoundError:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="User does not exist"
-            )
+        except EntityNotFoundException:
+            raise NotFoundException(resource="User")

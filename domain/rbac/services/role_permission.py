@@ -1,9 +1,8 @@
 from typing import Sequence
 
-from fastapi import HTTPException, status
-
 from core.db.imports import AsyncSession
-from core.repository.exceptions import ConflictError, NotFoundError
+from core.exceptions import AlreadyExistsException, NotFoundException
+from core.repository.exceptions import EntityConflictException, EntityNotFoundException
 
 from ..models.role_permission import RolePermission
 from ..repositories.role_permission import RolePermissionRepository
@@ -25,11 +24,8 @@ class RolePermissionService:
             role_permission = await self.role_permission_repo.create(
                 data=role_permission_in,
             )
-        except ConflictError:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Role permission already exist",
-            )
+        except EntityConflictException:
+            raise AlreadyExistsException(resource="Role")
 
         return role_permission
 
@@ -38,11 +34,8 @@ class RolePermissionService:
             role_permission = await self.role_permission_repo.get_or_raise(
                 id=role_permission_id
             )
-        except NotFoundError:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Role permission does not exist",
-            )
+        except EntityNotFoundException:
+            raise NotFoundException(resource="Role permission")
 
         return role_permission
 
@@ -71,8 +64,5 @@ class RolePermissionService:
     async def delete_role_permission(self, role_permission_id: int) -> None:
         try:
             await self.role_permission_repo.delete_by_id(id=role_permission_id)
-        except NotFoundError:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Role permission does not exist",
-            )
+        except EntityNotFoundException:
+            raise NotFoundException(resource="Role permission")

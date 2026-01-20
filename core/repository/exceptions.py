@@ -1,13 +1,19 @@
-from core.exceptions import AppError
+from core.exceptions import AppException
 
 
-class RepositoryError(AppError):
+class RepositoryException(AppException):
+    """Base repository exception"""
+
     pass
 
 
-class NotFoundError(RepositoryError):
+class EntityNotFoundException(RepositoryException):
+    """Entity not found in storage"""
+
     pass
 
 
-class ConflictError(RepositoryError):
+class EntityConflictException(RepositoryException):
+    """Unique constraint violation"""
+
     pass

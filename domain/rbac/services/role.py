@@ -1,9 +1,8 @@
 from typing import Sequence
 
-from fastapi import HTTPException, status
-
 from core.db.imports import AsyncSession
-from core.repository.exceptions import ConflictError, NotFoundError
+from core.exceptions import AlreadyExistsException, NotFoundException
+from core.repository.exceptions import EntityConflictException, EntityNotFoundException
 
 from ..models.role import Role
 from ..repositories.role import RoleRepository
@@ -19,20 +18,16 @@ class RoleService:
     async def create_role(self, role_in: RoleCreate) -> Role:
         try:
             role = await self.role_repo.create(data=role_in)
-        except ConflictError:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Role already exist"
-            )
+        except EntityConflictException:
+            raise AlreadyExistsException(resource="Role")
 
         return role
 
     async def get_role(self, role_id: int) -> Role:
         try:
             role = await self.role_repo.get_or_raise(id=role_id)
-        except NotFoundError:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Role does not exist"
-            )
+        except EntityNotFoundException:
+            raise NotFoundException(resource="Role")
 
         return role
 
@@ -56,7 +51,5 @@ class RoleService:
     async def delete_role(self, role_in: int) -> None:
         try:
             await self.role_repo.delete_by_id(id=role_in)
-        except NotFoundError:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Role does not exist"
-            )
+        except EntityNotFoundException:
+            raise NotFoundException(resource="Role")

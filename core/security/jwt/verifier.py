@@ -5,7 +5,11 @@ from jose import ExpiredSignatureError, jwt
 from jose import JWTError as JoseJWTError
 
 from .blocklist import JwtBlocklist
-from .exceptions import ExpiredTokenError, InvalidTokenError, RevokedTokenError
+from .exceptions import (
+    ExpiredTokenException,
+    InvalidTokenException,
+    RevokedTokenException,
+)
 
 logger = getLogger(__name__)
 
@@ -23,18 +27,18 @@ class JwtVerifier:
                 key=secret_key,
                 algorithms=[algorithm],
             )
-        except ExpiredSignatureError as error:
-            logger.debug("JWT expired", exc_info=True)
-            raise ExpiredTokenError(
-                code="expire_token",
-                detail="Jwt token signature expire",
-            ) from error
-        except JoseJWTError as error:
-            logger.debug("Invalid JWT", exc_info=True)
-            raise InvalidTokenError(
-                code="invalid_jwt_token",
-                detail="Invalid jwt token",
-            ) from error
+        except ExpiredSignatureError as exc:
+            logger.debug("Expired Jwt", exc_info=exc)
+            raise ExpiredTokenException(
+                code="JWT_EXPIRE",
+                message="Jwt token signature expire",
+            )
+        except JoseJWTError as exc:
+            logger.debug("Invalid Jwt", exc_info=exc)
+            raise InvalidTokenException(
+                code="INVALID_JWT",
+                message="Invalid jwt token",
+            )
 
         self._validate_claims(claims)
         self._validate_subject(claims, expected_sub)
@@ -46,22 +50,22 @@ class JwtVerifier:
     def _validate_claims(claims: dict[str, Any]) -> None:
         required = {"sub", "exp", "iat", "jti"}
         if not required.issubset(claims):
-            raise InvalidTokenError(
-                code="invalid_jwt_token",
-                detail="Jwt verification failed by missing required claims",
+            raise InvalidTokenException(
+                code="INVALID_JWT",
+                message="Jwt verification failed by missing required claims",
             )
 
     @staticmethod
     def _validate_subject(claims: dict[str, Any], expected_sub: str) -> None:
         if claims["sub"] != expected_sub:
-            raise InvalidTokenError(
-                code="invalid_jwt_token",
-                detail="Jwt verification failed because subject mismatch",
+            raise InvalidTokenException(
+                code="INVALID_JWT",
+                message="Jwt verification failed because subject mismatch",
             )
 
     async def _validate_not_revoked(self, claims: dict[str, Any]) -> None:
         if await self.blocklist.is_revoked(jti=claims["jti"]):
-            raise RevokedTokenError(
-                code="token_revoked",
-                detail="Jwt verification failed because token revoked",
+            raise RevokedTokenException(
+                code="REVOKED_JWT",
+                message="Jwt verification failed because token revoked",
             )

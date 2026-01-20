@@ -1,9 +1,8 @@
 from typing import Sequence
 
-from fastapi import HTTPException, status
-
 from core.db.imports import AsyncSession
-from core.repository.exceptions import ConflictError, NotFoundError
+from core.exceptions import AlreadyExistsException, NotFoundException
+from core.repository.exceptions import EntityConflictException, EntityNotFoundException
 
 from ..models.user_role import UserRole
 from ..repositories.user_role import UserRoleRepository
@@ -21,22 +20,16 @@ class UserRoleService:
             user_role = await self.user_role_repo.create(
                 data=user_role_in,
             )
-        except ConflictError:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="User role already exist",
-            )
+        except EntityConflictException:
+            raise AlreadyExistsException(resource="User role")
 
         return user_role
 
     async def get_user_role(self, user_role_id: int) -> UserRole:
         try:
             user_role = await self.user_role_repo.get_or_raise(id=user_role_id)
-        except NotFoundError:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User role does not exist",
-            )
+        except EntityNotFoundException:
+            raise NotFoundException(resource="User role")
 
         return user_role
 
@@ -65,8 +58,5 @@ class UserRoleService:
     async def delete_user_role(self, user_role_id: int) -> None:
         try:
             await self.user_role_repo.delete_by_id(id=user_role_id)
-        except NotFoundError:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User role does not exist",
-            )
+        except EntityNotFoundException:
+            raise NotFoundException(resource="User role")

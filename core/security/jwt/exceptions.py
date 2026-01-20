@@ -1,17 +1,19 @@
-from core.exceptions import AppError
+from core.exceptions import AppException
 
 
-class JwtError(AppError):
+class JwtException(AppException):
+    """Base JWT-related exception"""
+
     pass
 
 
-class InvalidTokenError(JwtError):
+class InvalidTokenException(JwtException):
     pass
 
 
-class ExpiredTokenError(JwtError):
+class ExpiredTokenException(JwtException):
     pass
 
 
-class RevokedTokenError(JwtError):
+class RevokedTokenException(JwtException):
     pass
