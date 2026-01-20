@@ -26,7 +26,7 @@ READ_ERRORS: OpenAPIResponses = {
 
 WRITE_ERRORS: OpenAPIResponses = {
     400: {"model": DetailResponse, "description": "Bad request"},
-    409: {"model": ErrorResponse, "description": "Resource already exists"},
+    409: {"model": DetailResponse, "description": "Resource already exists"},
 }
 
 RATE_LIMIT_ERRORS: OpenAPIResponses = {

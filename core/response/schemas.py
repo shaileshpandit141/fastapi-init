@@ -25,4 +25,4 @@ class ErrorDetail(BaseModel):
 
 
 class ErrorResponse(BaseModel):
-    detail: str | list[ErrorDetail]
+    detail: list[ErrorDetail]
