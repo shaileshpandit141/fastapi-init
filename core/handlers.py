@@ -13,9 +13,10 @@ from slowapi.errors import RateLimitExceeded
 from starlette.status import (
     HTTP_401_UNAUTHORIZED,
     HTTP_403_FORBIDDEN,
-    HTTP_409_CONFLICT,
     HTTP_422_UNPROCESSABLE_ENTITY,
+    HTTP_429_TOO_MANY_REQUESTS,
     HTTP_500_INTERNAL_SERVER_ERROR,
+    HTTP_503_SERVICE_UNAVAILABLE,
 )
 
 from core.exceptions import AppHTTPException
@@ -41,7 +42,7 @@ async def app_exception_handler(
 def rate_limit_exceeded(request: Request, exc: RateLimitExceeded) -> JSONResponse:
     logger.debug(msg="Rate limit exceeded", exc_info=exc)
     return JSONResponse(
-        status_code=HTTP_409_CONFLICT,
+        status_code=HTTP_429_TOO_MANY_REQUESTS,
         content={"detail": "Rate limit exceeded"},
     )
 
@@ -89,7 +90,7 @@ async def validation_exception_handler(
 async def redis_exception_handler(request: Request, exc: RedisError) -> JSONResponse:
     logger.debug(msg="Redis error", exc_info=exc)
     return JSONResponse(
-        status_code=503,
+        status_code=HTTP_503_SERVICE_UNAVAILABLE,
         content={"detail": "Cache service unavailable"},
     )
 
@@ -109,7 +110,7 @@ async def pydantic_validation_handler(
     request: Request, exc: ValidationError
 ) -> JSONResponse:
     return JSONResponse(
-        status_code=422,
+        status_code=HTTP_422_UNPROCESSABLE_ENTITY,
         content={"detail": exc.errors()},
     )
 
