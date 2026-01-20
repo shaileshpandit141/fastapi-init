@@ -13,13 +13,13 @@ class DetailResponse(BaseModel):
 
 
 class ErrorDetailDict(TypedDict):
-    loc: list[str]
+    loc: list[str | int]
     msg: str
     type: str
 
 
 class ErrorDetail(BaseModel):
-    loc: list[str]
+    loc: list[str | int]
     msg: str
     type: str
 
