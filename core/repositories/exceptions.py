@@ -2,18 +2,24 @@ from core.exceptions import AppException
 
 
 class RepositoryException(AppException):
-    """Base repository exception"""
+    """Base exception for repository-related errors."""
 
     pass
 
 
 class EntityNotFoundException(RepositoryException):
-    """Entity not found in storage"""
+    """
+    Raised when a requested entity cannot be found
+    in the database.
+    """
 
     pass
 
 
 class EntityConflictException(RepositoryException):
-    """Unique constraint violation"""
+    """
+    Raised when attempting to create or update
+    an entity that violates a uniqueness constraint.
+    """
 
     pass
