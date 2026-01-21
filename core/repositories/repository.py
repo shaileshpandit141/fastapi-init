@@ -1,8 +1,8 @@
 from abc import ABC
 from logging import getLogger
 
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import SQLModel, select
+from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel.sql._expression_select_cls import SelectOfScalar
 
 logger = getLogger(__name__)
