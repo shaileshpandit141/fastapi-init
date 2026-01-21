@@ -1,5 +1,7 @@
 from typing import Sequence
 
+from sqlmodel import select
+
 from core.db.imports import AsyncSession
 from core.exceptions import AlreadyExistsException, NotFoundException
 from core.repository.exceptions import EntityConflictException, EntityNotFoundException
@@ -33,13 +35,21 @@ class UserRoleService:
 
         return user_role
 
-    async def list_user_role(
-        self, limit: int = 20, offset: int = 0
+    async def list_user_roles(
+        self, user_id: int, limit: int = 20, offset: int = 0
     ) -> Sequence[UserRole]:
-        user_roles = await self.user_role_repo.list(
+        # stmt = select(UserRole).where(UserRole.user_id == user_id)
+
+        user_roles = await self.user_role_repo.filter(
+            where=[UserRole.user_id == user_id],
             limit=limit,
             offset=offset,
         )
+
+        # user_roles = await self.user_role_repo.list(
+        #     limit=limit,
+        #     offset=offset,
+        # )
 
         return user_roles
 

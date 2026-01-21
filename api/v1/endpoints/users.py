@@ -10,6 +10,9 @@ from core.response.swagger import (
     OpenAPIResponses,
 )
 from domain.rbac.depends.require_access import AdminUserDep
+from domain.rbac.depends.user_role import UserRoleServiceDep
+from domain.rbac.models.user_role import UserRole
+from domain.rbac.schemas.user_role import UserRoleRead
 from domain.user.depends.user import UserServiceDep
 from domain.user.models.user import User
 from domain.user.schemas.user import UserCreate, UserRead, UserUpdate
@@ -90,3 +93,16 @@ async def delete_user(
 
 
 # === RBAC specific endpoints ===
+
+
+@router.get(
+    path="/{id}/roles/",
+    summary="List all user roles",
+    description="List all user roles. Only access by admin.",
+    response_model=list[UserRoleRead],
+    responses=ADMIN_READ,
+)
+async def list_user_roles(
+    user: AdminUserDep, user_role_service: UserRoleServiceDep, id: int
+) -> Sequence[UserRole]:
+    return await user_role_service.list_user_roles(user_id=id)
