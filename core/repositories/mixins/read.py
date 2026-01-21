@@ -55,7 +55,11 @@ class ReadRepositoryMixin[Model: SQLModel](BaseRepository[Model]):
         return (await self.session.exec(stmt)).one_or_none()
 
     async def list(
-        self, *, limit: int = 20, offset: int = 0, order_by: Any | None = None
+        self,
+        *,
+        limit: int | None = None,
+        offset: int | None = None,
+        order_by: Any | None = None,
     ) -> Sequence[Model]:
         """
         Retrieve a paginated list of entities.
@@ -74,10 +78,11 @@ class ReadRepositoryMixin[Model: SQLModel](BaseRepository[Model]):
         Sequence[Model]
             A list of retrieved entities.
         """
-        stmt = self.base_query().limit(limit).offset(offset)
-
-        if order_by is not None:
-            stmt = stmt.order_by(order_by)
+        stmt = self.base_query(
+            limit=limit,
+            offset=offset,
+            order_by=order_by,
+        )
 
         return (await self.session.exec(stmt)).all()
 
@@ -85,8 +90,8 @@ class ReadRepositoryMixin[Model: SQLModel](BaseRepository[Model]):
         self,
         *,
         conditions: Iterable[Any] | None = None,
-        limit: int = 20,
-        offset: int = 0,
+        limit: int | None = None,
+        offset: int | None = None,
         order_by: Any | None = None,
     ) -> Sequence[Model]:
         """
@@ -108,14 +113,15 @@ class ReadRepositoryMixin[Model: SQLModel](BaseRepository[Model]):
         Sequence[Model]
             A list of entities matching the provided conditions.
         """
-        stmt = self.base_query().limit(limit).offset(offset)
+        stmt = self.base_query(
+            limit=limit,
+            offset=offset,
+            order_by=order_by,
+        )
 
         if conditions is not None:
             for condition in conditions:
                 stmt = stmt.where(condition)
-
-        if order_by is not None:
-            stmt = stmt.order_by(order_by)
 
         return (await self.session.exec(stmt)).all()
 

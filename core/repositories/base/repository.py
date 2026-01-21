@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Any
 
 from sqlmodel import SQLModel, select
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -36,7 +37,12 @@ class BaseRepository[Model: SQLModel](ABC):
         self.model = model
         self.session = session
 
-    def base_query(self) -> SelectOfScalar[Model]:
+    def base_query(
+        self,
+        limit: int | None = None,
+        offset: int | None = None,
+        order_by: Any = None,
+    ) -> SelectOfScalar[Model]:
         """
         Create a base SELECT query for the repository's model.
 
@@ -48,4 +54,15 @@ class BaseRepository[Model: SQLModel](ABC):
         SelectOfScalar[Model]
             A SQLModel SELECT statement targeting the repository model.
         """
-        return select(self.model)
+        stmt = select(self.model)
+
+        if limit:
+            stmt = stmt.limit(limit)
+
+        if offset:
+            stmt = stmt.offset(offset)
+
+        if order_by:
+            stmt = stmt.order_by(order_by)
+
+        return stmt

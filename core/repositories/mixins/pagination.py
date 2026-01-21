@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Any, Sequence
 
 from base.repository import BaseRepository
 from sqlmodel import SQLModel, func, select
@@ -16,7 +16,11 @@ class PaginationMixin[Model: SQLModel](BaseRepository[Model]):
     """
 
     async def paginate(
-        self, *, limit: int = 20, offset: int = 0
+        self,
+        *,
+        limit: int | None = None,
+        offset: int | None = None,
+        order_by: Any = None,
     ) -> tuple[Sequence[Model], int]:
         """
         Retrieve a paginated list of entities along with the total count.
@@ -35,10 +39,14 @@ class PaginationMixin[Model: SQLModel](BaseRepository[Model]):
             - A sequence of retrieved entities.
             - The total number of records available (ignoring pagination).
         """
-        data_stmt = self.base_query().limit(limit).offset(offset)
+        stmt = self.base_query(
+            limit=limit,
+            offset=offset,
+            order_by=order_by,
+        )
         count_stmt = select(func.count()).select_from(self.base_query().subquery())
 
-        data = (await self.session.exec(data_stmt)).all()
+        data = (await self.session.exec(stmt)).all()
         total = (await self.session.exec(count_stmt)).one()
 
         return data, total
