@@ -6,7 +6,6 @@ from sqlalchemy.engine import Result
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import Executable
-from sqlalchemy.sql.elements import BinaryExpression
 from sqlmodel import SQLModel, delete, func, select
 
 from .exceptions import EntityConflictException, EntityNotFoundException
@@ -311,7 +310,7 @@ class AsyncRepository[Model: SQLModel, CreateModel: SQLModel, UpdateModel: SQLMo
     async def filter(
         self,
         *,
-        where: Iterable[BinaryExpression[bool]],
+        where: Iterable[Any],
         limit: int | None = None,
         offset: int | None = None,
         order_by: Any | None = None,
