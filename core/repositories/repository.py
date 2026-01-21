@@ -1,20 +1,24 @@
-from abc import ABC
-from logging import getLogger
+from pydantic import BaseModel
+from sqlmodel import SQLModel
 
-from sqlmodel import SQLModel, select
-from sqlmodel.ext.asyncio.session import AsyncSession
-from sqlmodel.sql._expression_select_cls import SelectOfScalar
+from .mixins.delete import DeleteRepositoryMixin
+from .mixins.pagination import PaginationMixin
+from .mixins.read import ReadRepositoryMixin
+from .mixins.update import UpdateRepositoryMixin
+from .mixins.write import WriteRepositoryMixin
 
-logger = getLogger(__name__)
 
+class Repository[
+    Model: SQLModel,
+    CreateModel: SQLModel | BaseModel,
+    UpdateModel: SQLModel | BaseModel,
+](
+    DeleteRepositoryMixin[Model],
+    PaginationMixin[Model],
+    ReadRepositoryMixin[Model],
+    UpdateRepositoryMixin[Model, UpdateModel],
+    WriteRepositoryMixin[Model, CreateModel],
+):
+    """Async repository composed from mixins."""
 
-class BaseRepository[Model: SQLModel](ABC):
-
-    __slots__ = ("model", "session")
-
-    def __init__(self, *, model: type[Model], session: AsyncSession) -> None:
-        self.model = model
-        self.session = session
-
-    def base_query(self) -> SelectOfScalar[Model]:
-        return select(self.model)
+    pass
