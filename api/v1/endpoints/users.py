@@ -2,17 +2,11 @@ from typing import Sequence
 
 from fastapi import APIRouter, status
 
-from core.response.schemas import DetailResponse
-from core.response.swagger import (
-    ADMIN_READ,
-    ADMIN_WRITE,
-    DELETE_RECORD,
-    OpenAPIResponses,
-)
+from core.response.swagger import ADMIN_READ, ADMIN_WRITE, DELETE_RECORD
 from domain.rbac.depends.require_access import AdminUserDep
 from domain.rbac.depends.user_role import UserRoleServiceDep
 from domain.rbac.models.user_role import UserRole
-from domain.rbac.schemas.user_role import UserRoleRead
+from domain.rbac.schemas.user_role import UserRoleCreate, UserRoleRead
 from domain.user.depends.user import UserServiceDep
 from domain.user.models.user import User
 from domain.user.schemas.user import UserCreate, UserRead, UserUpdate
@@ -26,7 +20,7 @@ router = APIRouter(prefix="/users", tags=["User Endpoints"])
 @router.post(
     path="/",
     summary="Create a new user",
-    description="Create a new user. Only created by admin.",
+    description="Create a new user. Admin only.",
     response_model=UserRead,
     responses=ADMIN_WRITE,
 )
@@ -38,8 +32,8 @@ async def create_user(
 
 @router.get(
     path="/",
-    summary="Retrive list of users",
-    description="Retrive list of users. Only access by admin.",
+    summary="Retrieve list of users",
+    description="Retrieve list of users. Admin only.",
     response_model=list[UserRead],
     responses=ADMIN_READ,
 )
@@ -51,8 +45,8 @@ async def list_user(
 
 @router.get(
     path="/{id}",
-    summary="Retrive a user",
-    description="Retrive a user. Only retrive by admin.",
+    summary="Retrieve a user",
+    description="Retrieve a user by ID. Admin only.",
     response_model=UserRead,
     responses=ADMIN_READ,
 )
@@ -62,8 +56,8 @@ async def read_user(user: AdminUserDep, user_service: UserServiceDep, id: int) -
 
 @router.patch(
     path="/{id}",
-    summary="Update a user info",
-    description="Update a user info. Only admin can update.",
+    summary="Update a user",
+    description="Update user information. Admin only.",
     response_model=UserRead,
     responses=ADMIN_READ,
 )
@@ -73,16 +67,10 @@ async def update_user(
     return await user_service.update_user(id, user_in)
 
 
-DELETE_RESPONSES: OpenAPIResponses = {
-    204: {"description": "No Content"},
-    404: {"model": DetailResponse, "description": "User does not exist."},
-}
-
-
 @router.delete(
     path="/{id}",
     summary="Delete a user",
-    description="Delete a user. Only admin can delete.",
+    description="Delete a user. Admin only.",
     status_code=status.HTTP_204_NO_CONTENT,
     responses=DELETE_RECORD,
 )
@@ -97,8 +85,8 @@ async def delete_user(
 
 @router.get(
     path="/{id}/roles/",
-    summary="List all user roles",
-    description="List all user roles. Only access by admin.",
+    summary="List user roles",
+    description="List all roles assigned to a user. Admin only.",
     response_model=list[UserRoleRead],
     responses=ADMIN_READ,
 )
@@ -106,3 +94,21 @@ async def list_user_roles(
     user: AdminUserDep, user_role_service: UserRoleServiceDep, id: int
 ) -> Sequence[UserRole]:
     return await user_role_service.list_user_roles(user_id=id)
+
+
+@router.post(
+    path="/{id}/roles/",
+    summary="Create user role",
+    description="Create user role. Admin only.",
+    response_model=UserRoleRead,
+    responses=ADMIN_READ,
+)
+async def create_user_role(
+    user: AdminUserDep,
+    user_role_service: UserRoleServiceDep,
+    id: int,
+    user_role_in: UserRoleCreate,
+) -> UserRole:
+    return await user_role_service.create_user_role(
+        user_id=id, user_role_in=user_role_in
+    )

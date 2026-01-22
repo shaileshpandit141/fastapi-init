@@ -15,9 +15,13 @@ class UserRoleService:
     def __init__(self, session: AsyncSession) -> None:
         self.repo = UserRoleRepository(model=UserRole, session=session)
 
-    async def create_user_role(self, user_role_in: UserRoleCreate) -> UserRole:
+    async def create_user_role(
+        self, user_id: int, user_role_in: UserRoleCreate
+    ) -> UserRole:
         try:
-            user_role = await self.repo.create(data=user_role_in)
+            user_role = await self.repo.create(
+                data=user_role_in, values={"user_id": user_id}
+            )
         except EntityConflictException:
             raise AlreadyExistsException(detail="User role already exists.")
 
