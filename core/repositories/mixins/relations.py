@@ -1,8 +1,37 @@
-from typing import Any, Iterable, Sequence
+from typing import Any, Iterable, Sequence, cast
 
 from base.repository import BaseRepository
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import Load, selectinload
 from sqlmodel import SQLModel
+
+
+def build_selectinload(model: type[SQLModel], relation_path: str) -> Load:
+    """
+    Build a nested selectinload option from a dot-separated relationship path.
+
+    Example
+    -------
+    build_selectinload(Author, "books.publisher.address")
+
+    Produces
+    --------
+    selectinload(Author.books)
+        .selectinload(Book.publisher)
+        .selectinload(Publisher.address)
+    """
+    parts = relation_path.split(".")
+
+    attr = getattr(model, parts[0])
+    loader = selectinload(attr)
+
+    current = attr.property.mapper.class_
+
+    for part in parts[1:]:
+        attr = getattr(current, part)
+        loader = loader.selectinload(attr)
+        current = attr.property.mapper.class_
+
+    return cast(Load, loader)
 
 
 class RelationsRepositoryMixin[Model: SQLModel](BaseRepository[Model]):
@@ -87,9 +116,8 @@ class RelationsRepositoryMixin[Model: SQLModel](BaseRepository[Model]):
             for condition in conditions:
                 stmt = stmt.where(condition)
 
-        if relations:
-            for rel in relations:
-                stmt = stmt.options(selectinload(getattr(self.model, rel)))
+        for path in relations:
+            stmt = stmt.options(build_selectinload(self.model, path))
 
         result = await self.session.exec(stmt)
         return result.all()
