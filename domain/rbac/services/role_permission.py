@@ -12,8 +12,8 @@ from ..schemas.role_permission import RolePermissionCreate, RolePermissionUpdate
 
 
 class RolePermissionService:
-    def __init__(self, model: type[RolePermission], session: AsyncSession) -> None:
-        self.repo = RolePermissionRepository(model=model, session=session)
+    def __init__(self, session: AsyncSession) -> None:
+        self.repo = RolePermissionRepository(model=RolePermission, session=session)
 
     async def create_role_permission(
         self, role_permission_in: RolePermissionCreate

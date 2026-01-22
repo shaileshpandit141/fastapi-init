@@ -12,8 +12,8 @@ from ..schemas.permission import PermissionCreate, PermissionUpdate
 
 
 class PermissionService:
-    def __init__(self, model: type[Permission], session: AsyncSession) -> None:
-        self.repo = PermissionRepository(model=model, session=session)
+    def __init__(self, session: AsyncSession) -> None:
+        self.repo = PermissionRepository(model=Permission, session=session)
 
     async def create_permission(self, permission_in: PermissionCreate) -> Permission:
         try:

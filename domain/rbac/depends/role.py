@@ -4,14 +4,13 @@ from fastapi import Depends
 
 from core.db.depends.async_session import AsyncSessionDep
 
-from ..models.role import Role
 from ..services.role import RoleService
 
 # === Role Service Dep ===
 
 
 async def get_role_service(session: AsyncSessionDep) -> RoleService:
-    return RoleService(model=Role, session=session)
+    return RoleService(session=session)
 
 
 RoleServiceDep = Annotated[RoleService, Depends(get_role_service)]

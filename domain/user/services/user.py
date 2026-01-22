@@ -15,8 +15,8 @@ from ..schemas.user import UserCreate, UserUpdate
 
 
 class UserService:
-    def __init__(self, model: type[User], session: AsyncSession) -> None:
-        self.repo = UserRepository(model=model, session=session)
+    def __init__(self, session: AsyncSession) -> None:
+        self.repo = UserRepository(model=User, session=session)
 
     async def create_user(self, user_in: UserCreate) -> User:
 

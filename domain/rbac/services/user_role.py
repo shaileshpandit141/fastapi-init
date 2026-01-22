@@ -12,8 +12,8 @@ from ..schemas.user_role import UserRoleCreate, UserRoleUpdate
 
 
 class UserRoleService:
-    def __init__(self, model: type[UserRole], session: AsyncSession) -> None:
-        self.repo = UserRoleRepository(model=model, session=session)
+    def __init__(self, session: AsyncSession) -> None:
+        self.repo = UserRoleRepository(model=UserRole, session=session)
 
     async def create_user_role(self, user_role_in: UserRoleCreate) -> UserRole:
         try:
