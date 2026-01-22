@@ -1,4 +1,4 @@
-from core.repository.base import AsyncRepository
+from core.repositories.repository import Repository
 
 from ..models.role_permission import RolePermission
 from ..schemas.role_permission import RolePermissionCreate, RolePermissionUpdate
@@ -7,6 +7,6 @@ from ..schemas.role_permission import RolePermissionCreate, RolePermissionUpdate
 
 
 class RolePermissionRepository(
-    AsyncRepository[RolePermission, RolePermissionCreate, RolePermissionUpdate]
+    Repository[RolePermission, RolePermissionCreate, RolePermissionUpdate]
 ):
     pass

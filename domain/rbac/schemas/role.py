@@ -1,12 +1,12 @@
 from sqlmodel import Field  # type: ignore
 
-from core.db.models.base import NonEmptyUpdateModel
+from core.db.models.base import BaseIntIDModel, NonEmptyUpdateModel
 from domain.rbac.models.role import RoleBase
 
 # === Role Schemas ===
 
 
-class RoleRead(RoleBase):
+class RoleRead(RoleBase, BaseIntIDModel):
     pass
 
 

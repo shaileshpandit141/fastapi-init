@@ -2,7 +2,7 @@ from typing import Sequence
 
 from core.db.imports import AsyncSession
 from core.exceptions import AlreadyExistsException, NotFoundException
-from core.repository.exceptions import EntityConflictException, EntityNotFoundException
+from core.repositories.exceptions import EntityConflictException
 
 from ..models.permission import Permission
 from ..repositories.permission import PermissionRepository
@@ -13,20 +13,20 @@ from ..schemas.permission import PermissionCreate, PermissionUpdate
 
 class PermissionService:
     def __init__(self, model: type[Permission], session: AsyncSession) -> None:
-        self.permission_repo = PermissionRepository(model=model, session=session)
+        self.repo = PermissionRepository(model=model, session=session)
 
     async def create_permission(self, permission_in: PermissionCreate) -> Permission:
         try:
-            permission = await self.permission_repo.create(data=permission_in)
+            permission = await self.repo.create(data=permission_in)
         except EntityConflictException:
             raise AlreadyExistsException(detail="Permission already exists.")
 
         return permission
 
     async def get_permission(self, permission_id: int) -> Permission:
-        try:
-            permission = await self.permission_repo.get_or_raise(id=permission_id)
-        except EntityNotFoundException:
+        permission = await self.repo.get(id=permission_id)
+
+        if not permission:
             raise NotFoundException(detail="Permission not found.")
 
         return permission
@@ -34,9 +34,8 @@ class PermissionService:
     async def list_permission(
         self, limit: int = 20, offset: int = 0
     ) -> Sequence[Permission]:
-        permissions = await self.permission_repo.list(
-            limit=limit,
-            offset=offset,
+        permissions = await self.repo.list(
+            limit=limit, offset=offset, order_by=Permission.id
         )
 
         return permissions
@@ -46,7 +45,7 @@ class PermissionService:
     ) -> Permission:
         db_permission = await self.get_permission(permission_id)
 
-        permission = await self.permission_repo.update(
+        permission = await self.repo.update(
             obj=db_permission,
             data=permission_in,
         )
@@ -54,7 +53,6 @@ class PermissionService:
         return permission
 
     async def delete_permission(self, permission_id: int) -> None:
-        try:
-            await self.permission_repo.delete_by_id(id=permission_id)
-        except EntityNotFoundException:
-            raise NotFoundException(detail="Permission not found.")
+        perm = await self.get_permission(permission_id=permission_id)
+
+        await self.repo.delete(obj=perm)

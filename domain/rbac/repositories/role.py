@@ -1,4 +1,4 @@
-from core.repository.base import AsyncRepository
+from core.repositories.repository import Repository
 
 from ..models.role import Role
 from ..schemas.role import RoleCreate, RoleUpdate
@@ -6,5 +6,5 @@ from ..schemas.role import RoleCreate, RoleUpdate
 # === Role Repository ===
 
 
-class RoleRepository(AsyncRepository[Role, RoleCreate, RoleUpdate]):
+class RoleRepository(Repository[Role, RoleCreate, RoleUpdate]):
     pass
