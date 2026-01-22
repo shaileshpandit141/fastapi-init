@@ -52,6 +52,10 @@ class UserRoleService:
 
         return user_role
 
-    async def delete_user_role(self, user_id: int) -> None:
-        user_role = await self.get_user_role(user_id=user_id)
-        await self.repo.delete(obj=user_role)
+    async def delete_user_role(self, user_id: int, role_id: int) -> None:
+        role = await self.repo.get_by(user_id=user_id, role_id=role_id)
+
+        if not role:
+            raise NotFoundException(detail="Role does not exists")
+
+        await self.repo.delete(obj=role)

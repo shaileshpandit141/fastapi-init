@@ -132,3 +132,21 @@ async def update_user_role(
     return await user_role_service.update_user_role(
         user_id=user_id, user_role_in=user_role_in
     )
+
+
+@router.delete(
+    path="/{user_id}/roles/{role_id}",
+    summary="Delete user role",
+    description="Delete user role. Admin only.",
+    responses=ADMIN_READ,
+)
+async def delete_user_role(
+    user: AdminUserDep,
+    user_role_service: UserRoleServiceDep,
+    user_id: int,
+    role_id: int,
+) -> None:
+    return await user_role_service.delete_user_role(
+        user_id=user_id,
+        role_id=role_id,
+    )
