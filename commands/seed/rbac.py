@@ -8,18 +8,34 @@ from domain.rbac.models.role import Role
 from domain.rbac.models.role_permission import RolePermission
 
 INITIAL_ROLES: list[Role] = [
-    Role(name="admin", description="Administrator with full access."),
-    Role(name="user", description="Regular user with limited access."),
+    Role(
+        name="admin",
+        description="Administrator with full access.",
+    ),
+    Role(
+        name="user",
+        description="Regular user with limited access.",
+    ),
 ]
 
 
 INITIAL_PERMISSIONS: list[Permission] = [
-    Permission(code="user:read", description="Permission to read user information."),
-    Permission(code="user:create", description="Permission to create user."),
     Permission(
-        code="user:update", description="Permission to modify user information."
+        code="user:read",
+        description="Permission to read user information.",
     ),
-    Permission(code="user:delete", description="Permission to delete user."),
+    Permission(
+        code="user:create",
+        description="Permission to create user.",
+    ),
+    Permission(
+        code="user:update",
+        description="Permission to modify user information.",
+    ),
+    Permission(
+        code="user:delete",
+        description="Permission to delete user.",
+    ),
 ]
 
 
