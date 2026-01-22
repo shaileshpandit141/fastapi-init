@@ -103,7 +103,7 @@ async def list_user_roles(
     summary="Create user role",
     description="Create user role. Admin only.",
     response_model=UserRoleRead,
-    responses=ADMIN_READ,
+    responses=ADMIN_WRITE,
 )
 async def create_user_role(
     user: AdminUserDep,
@@ -121,7 +121,7 @@ async def create_user_role(
     summary="Update user role",
     description="Update user role. Admin only.",
     response_model=UserRoleRead,
-    responses=ADMIN_READ,
+    responses=ADMIN_WRITE,
 )
 async def update_user_role(
     user: AdminUserDep,
@@ -138,7 +138,8 @@ async def update_user_role(
     path="/{user_id}/roles/{role_id}",
     summary="Delete user role",
     description="Delete user role. Admin only.",
-    responses=ADMIN_READ,
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses=DELETE_RECORD,
 )
 async def delete_user_role(
     user: AdminUserDep,
