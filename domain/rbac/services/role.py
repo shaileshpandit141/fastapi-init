@@ -31,7 +31,7 @@ class RoleService:
 
         return role
 
-    async def list_role(self, limit: int = 20, offset: int = 0) -> Sequence[Role]:
+    async def list_roles(self, limit: int = 20, offset: int = 0) -> Sequence[Role]:
         roles = await self.repo.list(limit=limit, offset=offset)
         return roles
 

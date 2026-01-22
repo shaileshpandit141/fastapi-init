@@ -97,7 +97,6 @@ AUTH_WRITE: OpenAPIResponses = {
 ADMIN_READ: OpenAPIResponses = {
     **AUTH_ERRORS,
     **PERMISSION_ERRORS,
-    **WRITE_ERRORS,
     **VALIDATION_ERRORS,
     **SYSTEM_ERRORS,
 }
