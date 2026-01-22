@@ -1,8 +1,9 @@
 from typing import Any, Iterable, Sequence, cast
 
-from base.repository import BaseRepository
 from sqlalchemy.orm import Load, selectinload
 from sqlmodel import SQLModel
+
+from ..base.repository import BaseRepository
 
 
 def build_selectinload(model: type[SQLModel], relation_path: str) -> Load:

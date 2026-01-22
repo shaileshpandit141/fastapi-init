@@ -1,7 +1,8 @@
 from typing import Any, Sequence
 
-from base.repository import BaseRepository
 from sqlmodel import SQLModel, func, select
+
+from ..base.repository import BaseRepository
 
 
 class PaginationMixin[Model: SQLModel](BaseRepository[Model]):

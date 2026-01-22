@@ -1,8 +1,9 @@
 from typing import Any
 
-from base.repository import BaseRepository
 from pydantic import BaseModel
 from sqlmodel import SQLModel
+
+from ..base.repository import BaseRepository
 
 
 class UpdateRepositoryMixin[Model: SQLModel, UpdateModel: SQLModel | BaseModel](

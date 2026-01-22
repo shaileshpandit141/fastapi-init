@@ -1,8 +1,8 @@
 from typing import Any, Iterable
 
-from base.repository import BaseRepository
 from sqlmodel import SQLModel, delete, select
 
+from ..base.repository import BaseRepository
 from ..exceptions import EntityNotFoundException
 
 

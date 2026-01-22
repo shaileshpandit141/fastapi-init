@@ -1,10 +1,10 @@
 from typing import Any, Sequence
 
-from base.repository import BaseRepository
 from pydantic import BaseModel
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import SQLModel
 
+from ..base.repository import BaseRepository
 from ..exceptions import EntityConflictException
 
 
