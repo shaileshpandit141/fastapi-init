@@ -6,7 +6,7 @@ from core.response.swagger import ADMIN_READ, ADMIN_WRITE, DELETE_RECORD
 from domain.rbac.depends.require_access import AdminUserDep
 from domain.rbac.depends.user_role import UserRoleServiceDep
 from domain.rbac.models.user_role import UserRole
-from domain.rbac.schemas.user_role import UserRoleCreate, UserRoleRead
+from domain.rbac.schemas.user_role import UserRoleCreate, UserRoleRead, UserRoleUpdate
 from domain.user.depends.user import UserServiceDep
 from domain.user.models.user import User
 from domain.user.schemas.user import UserCreate, UserRead, UserUpdate
@@ -110,5 +110,23 @@ async def create_user_role(
     user_role_in: UserRoleCreate,
 ) -> UserRole:
     return await user_role_service.create_user_role(
+        user_id=id, user_role_in=user_role_in
+    )
+
+
+@router.patch(
+    path="/{id}/roles/",
+    summary="Update user role",
+    description="Update user role. Admin only.",
+    response_model=UserRoleRead,
+    responses=ADMIN_READ,
+)
+async def update_user_role(
+    user: AdminUserDep,
+    user_role_service: UserRoleServiceDep,
+    id: int,
+    user_role_in: UserRoleUpdate,
+) -> UserRole:
+    return await user_role_service.update_user_role(
         user_id=id, user_role_in=user_role_in
     )

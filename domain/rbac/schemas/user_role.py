@@ -16,5 +16,4 @@ class UserRoleCreate(SQLModel):
 
 
 class UserRoleUpdate(NonEmptyUpdateModel):
-    user_id: int | None = None
     role_id: int | None = None
