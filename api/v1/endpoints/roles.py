@@ -3,10 +3,10 @@ from typing import Sequence
 from fastapi import APIRouter
 
 from core.response.swagger import ADMIN_READ, ADMIN_WRITE
-from domain.rbac.depends.require_access import AdminUserDep
-from domain.rbac.depends.role import RoleServiceDep
-from domain.rbac.models.role import Role
-from domain.rbac.schemas.role import RoleCreate, RoleRead
+from domain.authorization.depends import AdminUserDep
+from domain.role.depends import RoleServiceDep
+from domain.role.models import Role
+from domain.role.schemas import RoleCreate, RoleRead
 
 router = APIRouter(prefix="/roles", tags=["Role Endpoints"])
 

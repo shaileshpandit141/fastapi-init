@@ -3,9 +3,8 @@ from typing import cast
 from click import command, echo
 
 from core.db.sessions.session import session
-from domain.rbac.models.permission import Permission
-from domain.rbac.models.role import Role
-from domain.rbac.models.role_permission import RolePermission
+from domain.permission.models import Permission
+from domain.role.models import Role, RolePermission
 
 INITIAL_ROLES: list[Role] = [
     Role(

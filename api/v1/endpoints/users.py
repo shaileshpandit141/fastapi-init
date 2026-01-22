@@ -3,13 +3,17 @@ from typing import Sequence
 from fastapi import APIRouter, status
 
 from core.response.swagger import ADMIN_READ, ADMIN_WRITE, DELETE_RECORD
-from domain.rbac.depends.require_access import AdminUserDep
-from domain.rbac.depends.user_role import UserRoleServiceDep
-from domain.rbac.models.user_role import UserRole
-from domain.rbac.schemas.user_role import UserRoleCreate, UserRoleRead, UserRoleUpdate
-from domain.user.depends.user import UserServiceDep
-from domain.user.models.user import User
-from domain.user.schemas.user import UserCreate, UserRead, UserUpdate
+from domain.authorization.depends import AdminUserDep
+from domain.user.depends import UserRoleServiceDep, UserServiceDep
+from domain.user.models import User, UserRole
+from domain.user.schemas import (
+    UserCreate,
+    UserRead,
+    UserRoleCreate,
+    UserRoleRead,
+    UserRoleUpdate,
+    UserUpdate,
+)
 
 router = APIRouter(prefix="/users", tags=["User Endpoints"])
 
