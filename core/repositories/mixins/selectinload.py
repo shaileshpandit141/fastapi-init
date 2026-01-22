@@ -57,7 +57,7 @@ def build_selectinload(model: type[SQLModel], relation_path: str) -> Load:
     return cast(Load, loader)
 
 
-class SelectionloadRepositoryMixin[Model: SQLModel](BaseRepository[Model]):
+class SelectinloadRepositoryMixin[Model: SQLModel](BaseRepository[Model]):
     """
     Repository mixin providing `selectinload`-based eager loading support.
 

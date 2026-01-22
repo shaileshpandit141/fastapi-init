@@ -4,7 +4,7 @@ from sqlmodel import SQLModel
 from .mixins.delete import DeleteRepositoryMixin
 from .mixins.pagination import PaginationMixin
 from .mixins.read import ReadRepositoryMixin
-from .mixins.selectinload import SelectionloadRepositoryMixin
+from .mixins.selectinload import SelectinloadRepositoryMixin
 from .mixins.update import UpdateRepositoryMixin
 from .mixins.write import WriteRepositoryMixin
 
@@ -17,7 +17,7 @@ class Repository[
     DeleteRepositoryMixin[Model],
     PaginationMixin[Model],
     ReadRepositoryMixin[Model],
-    SelectionloadRepositoryMixin[Model],
+    SelectinloadRepositoryMixin[Model],
     UpdateRepositoryMixin[Model, UpdateModel],
     WriteRepositoryMixin[Model, CreateModel],
 ):
