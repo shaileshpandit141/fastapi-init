@@ -1,4 +1,4 @@
-from core.repository.base import AsyncRepository
+from core.repositories.repository import Repository
 
 from ..models.user import User
 from ..schemas.user import UserCreate, UserUpdate
@@ -6,5 +6,5 @@ from ..schemas.user import UserCreate, UserUpdate
 # === User Repository ===
 
 
-class UserRepository(AsyncRepository[User, UserCreate, UserUpdate]):
+class UserRepository(Repository[User, UserCreate, UserUpdate]):
     pass
