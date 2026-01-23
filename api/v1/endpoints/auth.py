@@ -13,7 +13,7 @@ from domain.authentication.schemas import (
     JwtTokenRefresh,
     JwtTokenRevoked,
 )
-from domain.user.depends import UserServiceDep
+from domain.user.depends import UserServices
 from domain.user.models import User
 from domain.user.schemas import UserCreate, UserRead
 
@@ -27,7 +27,7 @@ router = APIRouter(prefix="/auth", tags=["Auth Endpoints"])
     response_model=UserRead,
     responses=PUBLIC_WRITE,
 )
-async def create_user(user_in: UserCreate, user_service: UserServiceDep) -> User:
+async def create_user(user_in: UserCreate, user_service: UserServices.User) -> User:
     return await user_service.create_user(user_in)
 
 
