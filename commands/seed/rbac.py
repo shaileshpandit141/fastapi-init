@@ -20,6 +20,10 @@ INITIAL_ROLES: list[Role] = [
 
 INITIAL_PERMISSIONS: list[Permission] = [
     Permission(
+        code="user:*",
+        description="Permission to read user information.",
+    ),
+    Permission(
         code="user:read",
         description="Permission to read user information.",
     ),
@@ -34,6 +38,22 @@ INITIAL_PERMISSIONS: list[Permission] = [
     Permission(
         code="user:delete",
         description="Permission to delete user.",
+    ),
+    Permission(
+        code="user:role:*",
+        description="Permission to list user roles.",
+    ),
+    Permission(
+        code="user:role:assign",
+        description="Permission to assign roles to users.",
+    ),
+    Permission(
+        code="user:role:revoke",
+        description="Permission to revoke roles from users.",
+    ),
+    Permission(
+        code="user:role:list",
+        description="Permission to list user roles.",
     ),
 ]
 
