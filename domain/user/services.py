@@ -2,81 +2,14 @@
 
 from typing import Sequence
 
-from redis.asyncio.client import Redis
-from sqlalchemy.orm import selectinload
-from sqlmodel import select
-
 from core.db.imports import AsyncSession
-from core.exceptions import (
-    AccessDeniedException,
-    AlreadyExistsException,
-    NotFoundException,
-    UnauthorizedException,
-)
+from core.exceptions import AlreadyExistsException, NotFoundException
 from core.repository.exceptions import EntityConflictException
-from core.security.jwt.exceptions import JwtException
-from core.security.jwt.manager import JwtTokenManager
 from core.security.password.hasher import PasswordHasher
-from domain.role.models import Role, RolePermission
 
 from .models import User, UserRole, UserStatus
 from .repositories import UserRepository, UserRoleRepository
 from .schemas import UserCreate, UserRoleCreate, UserRoleUpdate, UserUpdate
-
-# === Current User Service ===
-
-
-class CurrentUserService:
-    def __init__(self, token: str, redis: Redis, session: AsyncSession) -> None:
-        self.token = token
-        self.redis = redis
-        self.session = session
-
-    async def get_current_user(self) -> User:
-        jwt_token_manager = JwtTokenManager(self.redis)
-        # cache = CurrentUserCache(self.redis)
-
-        try:
-            claims = await jwt_token_manager.verify_access_token(self.token)
-        except JwtException:
-            raise UnauthorizedException(detail="Invalid or expired access token.")
-
-        # cache_user = await cache.get(id=claims["id"])  # type: ignore # noqa: F841
-
-        # print("==========================")
-        # print("Cache User: ", cache_user)
-
-        # if cache_user:
-        #     return cache_user
-
-        stmt = (
-            select(User)
-            .where(User.id == claims["id"])
-            .options(
-                selectinload(User.roles)
-                .selectinload(UserRole.role)
-                .selectinload(Role.permissions)
-                .selectinload(RolePermission.permission)
-            )
-        )
-
-        user = (await self.session.exec(stmt)).one_or_none()
-
-        if user is None:
-            raise UnauthorizedException(detail="Invalid access token.")
-
-        # await cache.set(id=user.id, instance=user)
-
-        return user
-
-    async def get_active_user(self) -> User:
-        user = await self.get_current_user()
-
-        if user.status != UserStatus.ACTIVE:
-            raise AccessDeniedException(detail="Inactive user.")
-
-        return user
-
 
 # === User Service ===
 

@@ -3,8 +3,7 @@ from typing import Sequence
 from fastapi import APIRouter, status
 
 from core.response.swagger import ADMIN_READ, ADMIN_WRITE, DELETE_RECORD
-from domain.authorization.depends import AdminUserDep
-from domain.user.depends import UserRoleServiceDep, UserServiceDep
+from domain.user.depends import AdminDep, UserRoleServiceDep, UserServiceDep
 from domain.user.models import User, UserRole
 from domain.user.schemas import (
     UserCreate,
@@ -29,7 +28,7 @@ router = APIRouter(prefix="/users", tags=["User Endpoints"])
     responses=ADMIN_WRITE,
 )
 async def create_user(
-    user: AdminUserDep, user_service: UserServiceDep, user_in: UserCreate
+    user: AdminDep, user_service: UserServiceDep, user_in: UserCreate
 ) -> User:
     return await user_service.create_user(user_in=user_in)
 
@@ -42,7 +41,7 @@ async def create_user(
     responses=ADMIN_READ,
 )
 async def list_user(
-    user: AdminUserDep, user_service: UserServiceDep, limit: int = 20, offset: int = 0
+    user: AdminDep, user_service: UserServiceDep, limit: int = 20, offset: int = 0
 ) -> Sequence[User]:
     return await user_service.list_user(limit=limit, offset=offset)
 
@@ -54,9 +53,7 @@ async def list_user(
     response_model=UserRead,
     responses=ADMIN_READ,
 )
-async def read_user(
-    user: AdminUserDep, user_service: UserServiceDep, user_id: int
-) -> User:
+async def read_user(user: AdminDep, user_service: UserServiceDep, user_id: int) -> User:
     return await user_service.get_user(user_id=user_id)
 
 
@@ -68,7 +65,7 @@ async def read_user(
     responses=ADMIN_READ,
 )
 async def update_user(
-    user: AdminUserDep, user_service: UserServiceDep, user_id: int, user_in: UserUpdate
+    user: AdminDep, user_service: UserServiceDep, user_id: int, user_in: UserUpdate
 ) -> User:
     return await user_service.update_user(user_id, user_in)
 
@@ -81,7 +78,7 @@ async def update_user(
     responses=DELETE_RECORD,
 )
 async def delete_user(
-    user: AdminUserDep, user_service: UserServiceDep, user_id: int
+    user: AdminDep, user_service: UserServiceDep, user_id: int
 ) -> None:
     return await user_service.delete_user(user_id)
 
@@ -97,7 +94,7 @@ async def delete_user(
     responses=ADMIN_READ,
 )
 async def list_user_roles(
-    user: AdminUserDep, user_role_service: UserRoleServiceDep, user_id: int
+    user: AdminDep, user_role_service: UserRoleServiceDep, user_id: int
 ) -> Sequence[UserRole]:
     return await user_role_service.list_user_roles(user_id=user_id)
 
@@ -110,7 +107,7 @@ async def list_user_roles(
     responses=ADMIN_WRITE,
 )
 async def create_user_role(
-    user: AdminUserDep,
+    user: AdminDep,
     user_role_service: UserRoleServiceDep,
     user_id: int,
     user_role_in: UserRoleCreate,
@@ -128,7 +125,7 @@ async def create_user_role(
     responses=ADMIN_WRITE,
 )
 async def update_user_role(
-    user: AdminUserDep,
+    user: AdminDep,
     user_role_service: UserRoleServiceDep,
     user_id: int,
     user_role_in: UserRoleUpdate,
@@ -146,7 +143,7 @@ async def update_user_role(
     responses=DELETE_RECORD,
 )
 async def delete_user_role(
-    user: AdminUserDep,
+    user: AdminDep,
     user_role_service: UserRoleServiceDep,
     user_id: int,
     role_id: int,

@@ -3,22 +3,10 @@ from typing import Annotated
 from fastapi import Depends
 
 from core.db.depends.async_session import AsyncSessionDep
-from domain.authentication.depends import OAuth2PasswordBearerDep
-from infrastructure.cache.depends.redis import RedisDep
+from domain.authorization.depends import authorize
+from domain.user.models import User
 
-from .services import CurrentUserService, UserRoleService, UserService
-
-# === Current User Service Dep ===
-
-
-async def get_current_user_service(
-    token: OAuth2PasswordBearerDep, redis: RedisDep, session: AsyncSessionDep
-) -> CurrentUserService:
-    return CurrentUserService(token=token, redis=redis, session=session)
-
-
-CurrentUserServiceDep = Annotated[CurrentUserService, Depends(get_current_user_service)]
-
+from .services import UserRoleService, UserService
 
 # === User Service Dep ===
 
@@ -38,3 +26,36 @@ async def get_user_role_service(session: AsyncSessionDep) -> UserRoleService:
 
 
 UserRoleServiceDep = Annotated[UserRoleService, Depends(get_user_role_service)]
+
+# === Role-based deps ===
+
+CurrentUserDep = Annotated[User, Depends(authorize())]
+
+UserDep = Annotated[User, Depends(authorize(roles=["user"]))]
+AdminDep = Annotated[User, Depends(authorize(roles=["admin"]))]
+
+
+# === Permission-based deps ===
+
+CreateUserDep = Annotated[User, Depends(authorize(permissions=["user:create"]))]
+ReadUserDep = Annotated[User, Depends(authorize(permissions=["user:read"]))]
+UpdateUserDep = Annotated[User, Depends(authorize(permissions=["user:update"]))]
+DeleteUserDep = Annotated[User, Depends(authorize(permissions=["user:delete"]))]
+
+
+# === Hybrid role + permission deps ===
+
+AdminManageUsersDep = Annotated[
+    User,
+    Depends(
+        authorize(
+            roles=["admin"],
+            permissions=[
+                "user:read",
+                "user:create",
+                "user:update",
+                "user:delete",
+            ],
+        )
+    ),
+]

@@ -1,8 +1,8 @@
 from typing import Iterable
 
 from core.exceptions import AccessDeniedException
+from domain.authentication.services import CurrentUserService
 from domain.user.models import User
-from domain.user.services import CurrentUserService
 
 # === User Authorization Service ===
 

@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from core.response.schemas import DetailResponse
 from core.response.swagger import AUTH_READ, PUBLIC_WRITE
 from domain.authentication.depends import (
+    CurrentUserServiceDep,
     JwtTokenServiceDep,
     OAuth2PasswordRequestFormDep,
 )
@@ -12,7 +13,7 @@ from domain.authentication.schemas import (
     JwtTokenRefresh,
     JwtTokenRevoked,
 )
-from domain.user.depends import CurrentUserServiceDep, UserServiceDep
+from domain.user.depends import UserServiceDep
 from domain.user.models import User
 from domain.user.schemas import UserCreate, UserRead
 
