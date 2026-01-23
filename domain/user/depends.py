@@ -8,54 +8,92 @@ from domain.user.models import User
 
 from .services import UserRoleService, UserService
 
-# === User Service Dep ===
+# === Service dependencies ===
 
 
 async def get_user_service(session: AsyncSessionDep) -> UserService:
     return UserService(session=session)
 
 
-UserServiceDep = Annotated[UserService, Depends(get_user_service)]
-
-
-# === User Role Service Dep ===
-
-
 async def get_user_role_service(session: AsyncSessionDep) -> UserRoleService:
     return UserRoleService(session=session)
 
 
-UserRoleServiceDep = Annotated[UserRoleService, Depends(get_user_role_service)]
+class UserServices:
+    """
+    Access to user-related domain services
+    """
 
-# === Role-based deps ===
-
-CurrentUserDep = Annotated[User, Depends(authorize())]
-
-UserDep = Annotated[User, Depends(authorize(roles=["user"]))]
-AdminDep = Annotated[User, Depends(authorize(roles=["admin"]))]
-
-
-# === Permission-based deps ===
-
-CreateUserDep = Annotated[User, Depends(authorize(permissions=["user:create"]))]
-ReadUserDep = Annotated[User, Depends(authorize(permissions=["user:read"]))]
-UpdateUserDep = Annotated[User, Depends(authorize(permissions=["user:update"]))]
-DeleteUserDep = Annotated[User, Depends(authorize(permissions=["user:delete"]))]
+    User = Annotated[UserService, Depends(get_user_service)]
+    Roles = Annotated[UserRoleService, Depends(get_user_role_service)]
 
 
-# === Hybrid role + permission deps ===
+# === Current user ===
 
-AdminManageUsersDep = Annotated[
-    User,
-    Depends(
-        authorize(
-            roles=["admin"],
-            permissions=[
-                "user:read",
-                "user:create",
-                "user:update",
-                "user:delete",
-            ],
-        )
-    ),
-]
+
+class CurrentUser:
+    """
+    Currently authenticated user
+    """
+
+    Authenticated = Annotated[User, Depends(authorize())]
+
+
+# === Role-based access ===
+
+
+class UserRoleAccess:
+    """
+    Role-based access control
+    """
+
+    User = Annotated[User, Depends(authorize(roles=["user"]))]
+    Admin = Annotated[User, Depends(authorize(roles=["admin"]))]
+
+
+# === Permission-based access (User model) ===
+
+
+class UserPermissions:
+    """
+    Fine-grained permissions for User CRUD
+    """
+
+    Create = Annotated[User, Depends(authorize(permissions=["user:create"]))]
+    Read = Annotated[User, Depends(authorize(permissions=["user:read"]))]
+    Update = Annotated[User, Depends(authorize(permissions=["user:update"]))]
+    Delete = Annotated[User, Depends(authorize(permissions=["user:delete"]))]
+
+
+# === User ↔ Role relationship permissions ===
+
+
+class UserRoleAssignments:
+    """
+    Permissions for assigning and revoking roles from users
+    """
+
+    Assign = Annotated[User, Depends(authorize(permissions=["user:role:assign"]))]
+    Revoke = Annotated[User, Depends(authorize(permissions=["user:role:revoke"]))]
+    List = Annotated[User, Depends(authorize(permissions=["user:role:list"]))]
+
+
+# === Hybrid (role + permission) access ===
+
+
+class UserAccess:
+    """
+    Full access to User domain
+    """
+
+    Admin = Annotated[User, Depends(authorize(roles=["admin"], permissions=["user:*"]))]
+
+
+class UserRoleAssignmentAccess:
+    """
+    Full access to User ↔ Role assignments
+    """
+
+    Admin = Annotated[
+        User, Depends(authorize(roles=["admin"], permissions=["user:role:*"]))
+    ]
