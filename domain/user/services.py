@@ -2,7 +2,8 @@
 
 from typing import Sequence
 
-from core.db.imports import AsyncSession
+from sqlmodel.ext.asyncio.session import AsyncSession
+
 from core.exceptions import AlreadyExistsException, NotFoundException
 from core.repository.exceptions import EntityConflictException
 from core.security.password.hasher import PasswordHasher

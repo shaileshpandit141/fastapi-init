@@ -2,7 +2,7 @@ from typing import cast
 
 from click import command, echo
 
-from core.db.sessions.session import session
+from core.db.sessions import session
 from domain.permission.models import Permission
 from domain.role.models import Role, RolePermission
 

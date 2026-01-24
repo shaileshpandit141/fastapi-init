@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from sqlmodel import Field, Relationship, SQLModel  # type: ignore
 
-from core.db.models.base import BaseIntIDModel
+from core.db.models import BaseIntIDModel
 
 if TYPE_CHECKING:
     from domain.permission.models import Permission

@@ -5,8 +5,7 @@ from fastapi import Response, status
 from redis.asyncio.client import Redis
 from sqlalchemy.exc import OperationalError
 from sqlmodel import select
-
-from core.db.imports import AsyncSession
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from .constants import HEALTH_CACHE_KEY, HEALTHY_TTL_SECONDS, UNHEALTHY_TTL_SECONDS
 from .schemas import HealthyRead, UnhealthyRead

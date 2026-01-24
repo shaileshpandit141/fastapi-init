@@ -3,7 +3,7 @@ from typing import cast
 from click import command, echo, option
 from sqlmodel import select
 
-from core.db.sessions.session import session
+from core.db.sessions import session
 from core.security.password.hasher import PasswordHasher
 from domain.role.models import Role
 from domain.user.models import User, UserRole

@@ -3,7 +3,6 @@ from fastapi import APIRouter
 from core.response.schemas import DetailResponse
 from core.response.swagger import AUTH_READ, PUBLIC_WRITE
 from domain.authentication.depends import (
-    CurrentUserServiceDep,
     JwtTokenServiceDep,
     OAuth2PasswordRequestFormDep,
 )
@@ -13,7 +12,7 @@ from domain.authentication.schemas import (
     JwtTokenRefresh,
     JwtTokenRevoked,
 )
-from domain.user.depends import UserServices
+from domain.user.depends import CurrentUserDep, UserServiceDep
 from domain.user.models import User
 from domain.user.schemas import UserCreate, UserRead
 
@@ -27,7 +26,7 @@ router = APIRouter(prefix="/auth", tags=["Auth Endpoints"])
     response_model=UserRead,
     responses=PUBLIC_WRITE,
 )
-async def create_user(user_in: UserCreate, user_service: UserServices.User) -> User:
+async def create_user(user_in: UserCreate, user_service: UserServiceDep) -> User:
     return await user_service.create_user(user_in)
 
 
@@ -79,5 +78,5 @@ async def revoke_token(
     response_model=UserRead,
     responses=AUTH_READ,
 )
-async def read_me(current_user_service: CurrentUserServiceDep) -> User:
-    return await current_user_service.get_active_user()
+async def read_me(user: CurrentUserDep) -> User:
+    return user

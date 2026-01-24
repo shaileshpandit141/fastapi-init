@@ -2,8 +2,8 @@ from typing import Annotated
 
 from fastapi import Depends, Response
 
-from core.db.depends.async_session import AsyncSessionDep
-from infrastructure.cache.depends.redis import RedisDep
+from core.db.depends import AsyncSessionDep
+from infrastructure.cache.redis.depends import RedisDep
 
 from .services import HealthCheckService
 

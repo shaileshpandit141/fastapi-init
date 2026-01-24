@@ -5,8 +5,8 @@ from typing import Any, Awaitable, Callable, Mapping
 from redis.asyncio.client import Redis
 from sqlalchemy.orm import selectinload
 from sqlmodel import select
+from sqlmodel.ext.asyncio.session import AsyncSession
 
-from core.db.imports import AsyncSession
 from core.exceptions import AccessDeniedException, BadRequestException
 from core.exceptions.http_exception import UnauthorizedException
 from core.response.schemas import DetailResponse

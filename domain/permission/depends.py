@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from core.db.depends.async_session import AsyncSessionDep
+from core.db.depends import AsyncSessionDep
 from domain.authorization.depends import authorize
 from domain.user.models import User
 

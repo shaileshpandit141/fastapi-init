@@ -7,8 +7,8 @@ from redis.asyncio import from_url  # type: ignore
 
 from core.settings import settings
 
-from .db.engines.async_engine import async_engine
-from .db.startup.init_db import init_db
+from .db.engines import async_engine
+from .db.init_db import init_db
 
 logger = getLogger(__name__)
 

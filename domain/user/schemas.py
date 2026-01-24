@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import EmailStr, Field
 from sqlmodel import SQLModel
 
-from core.db.models.base import BaseIntIDModel, NonEmptyUpdateModel
+from core.db.models import BaseIntIDModel, NonEmptyUpdateModel
 
 from .models import UserBase, UserRoleBase
 

@@ -1,9 +1,15 @@
-from typing import Annotated, AsyncGenerator
+from typing import Annotated, AsyncGenerator, Generator
 
 from fastapi import Depends
+from sqlmodel import Session
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from ..sessions.async_session import async_session
+from .sessions import async_session, session
+
+
+def get_session() -> Generator[Session, None]:
+    with session() as sessionx:
+        yield sessionx
 
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
@@ -11,4 +17,5 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
         yield session
 
 
+SessionDep = Annotated[Session, Depends(get_session)]
 AsyncSessionDep = Annotated[AsyncSession, Depends(get_async_session)]

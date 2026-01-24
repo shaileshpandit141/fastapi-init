@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from pydantic import EmailStr
 from sqlmodel import Field, Relationship, SQLModel  # type: ignore
 
-from core.db.models.base import BaseIntIDModel, BaseTimestampModel
+from core.db.models import BaseIntIDModel, BaseTimestampModel
 
 if TYPE_CHECKING:
     from domain.role.models import Role

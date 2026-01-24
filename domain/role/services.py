@@ -1,6 +1,7 @@
 from typing import Sequence
 
-from core.db.imports import AsyncSession
+from sqlmodel.ext.asyncio.session import AsyncSession
+
 from core.exceptions import AlreadyExistsException, NotFoundException
 from core.repositories.exceptions import EntityConflictException
 

@@ -1,6 +1,6 @@
 from sqlmodel import Field  # type: ignore
 
-from core.db.models.base import BaseIntIDModel, NonEmptyUpdateModel
+from core.db.models import BaseIntIDModel, NonEmptyUpdateModel
 
 from .models import PermissionBase
 

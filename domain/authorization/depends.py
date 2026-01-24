@@ -1,4 +1,4 @@
-from typing import Annotated, Awaitable, Callable, Iterable
+from typing import Awaitable, Callable, Iterable
 
 from fastapi import Depends
 
@@ -16,10 +16,6 @@ async def get_authorization_service(
     return AuthorizationService(current_user_service)
 
 
-AuthorizationServiceDep = Annotated[
-    AuthorizationService, Depends(get_authorization_service)
-]
-
 # === authorize service Dep ===
 
 
@@ -28,7 +24,9 @@ def authorize(
 ) -> Callable[..., Awaitable[User]]:
 
     async def _checker(
-        authorization_service: AuthorizationServiceDep,
+        authorization_service: AuthorizationService = Depends(
+            get_authorization_service
+        ),
     ) -> User:
         return await authorization_service.authorize(
             roles=roles, permissions=permissions
