@@ -19,7 +19,7 @@ router = APIRouter(prefix="/permissions", tags=["Permission Endpoints"])
     responses=ADMIN_WRITE,
 )
 async def create_permission(
-    user: PermissionPolicy.Admin,
+    user: PermissionPolicy.Create,
     service: PermissionServiceDep,
     permission_in: PermissionCreate,
 ) -> Permission:
@@ -34,7 +34,7 @@ async def create_permission(
     responses=ADMIN_READ,
 )
 async def list_permissions(
-    user: PermissionPolicy.Admin,
+    user: PermissionPolicy.List,
     service: PermissionServiceDep,
     limit: int = 20,
     offset: int = 0,
@@ -50,7 +50,7 @@ async def list_permissions(
     responses=ADMIN_READ,
 )
 async def get_permission(
-    user: PermissionPolicy.Admin,
+    user: PermissionPolicy.Read,
     service: PermissionServiceDep,
     permission_id: int,
 ) -> Permission:
@@ -65,7 +65,7 @@ async def get_permission(
     responses=ADMIN_WRITE,
 )
 async def update_permission(
-    user: PermissionPolicy.Admin,
+    user: PermissionPolicy.Update,
     service: PermissionServiceDep,
     permission_id: int,
     permission_in: PermissionUpdate,
@@ -83,7 +83,7 @@ async def update_permission(
     responses=DELETE_RECORD,
 )
 async def delete_permission(
-    user: PermissionPolicy.Admin,
+    user: PermissionPolicy.Delete,
     service: PermissionServiceDep,
     permission_id: int,
 ) -> None:

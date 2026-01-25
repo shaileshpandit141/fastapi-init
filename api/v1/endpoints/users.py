@@ -28,7 +28,7 @@ router = APIRouter(prefix="/users", tags=["User Endpoints"])
     responses=ADMIN_WRITE,
 )
 async def create_user(
-    user: UserPolicy.Admin, service: UserServiceDep, user_in: UserCreate
+    user: UserPolicy.Create, service: UserServiceDep, user_in: UserCreate
 ) -> User:
     return await service.create_user(user_in=user_in)
 
@@ -41,7 +41,7 @@ async def create_user(
     responses=ADMIN_READ,
 )
 async def list_user(
-    user: UserPolicy.Admin,
+    user: UserPolicy.List,
     service: UserServiceDep,
     limit: int = 20,
     offset: int = 0,
@@ -57,7 +57,7 @@ async def list_user(
     responses=ADMIN_READ,
 )
 async def read_user(
-    user: UserPolicy.Admin, service: UserServiceDep, user_id: int
+    user: UserPolicy.Read, service: UserServiceDep, user_id: int
 ) -> User:
     return await service.get_user(user_id=user_id)
 
@@ -70,7 +70,7 @@ async def read_user(
     responses=ADMIN_READ,
 )
 async def update_user(
-    user: UserPolicy.Admin,
+    user: UserPolicy.Update,
     service: UserServiceDep,
     user_id: int,
     user_in: UserUpdate,
@@ -86,7 +86,7 @@ async def update_user(
     responses=DELETE_RECORD,
 )
 async def delete_user(
-    user: UserPolicy.Admin, service: UserServiceDep, user_id: int
+    user: UserPolicy.Delete, service: UserServiceDep, user_id: int
 ) -> None:
     return await service.delete_user(user_id)
 
@@ -102,7 +102,7 @@ async def delete_user(
     responses=ADMIN_WRITE,
 )
 async def assign_user_role(
-    user: UserRolePolicy.Admin,
+    user: UserRolePolicy.Assign,
     service: UserRoleServiceDep,
     user_id: int,
     user_role_in: UserRoleCreate,
@@ -121,7 +121,7 @@ async def assign_user_role(
     responses=ADMIN_READ,
 )
 async def list_user_roles(
-    user: UserRolePolicy.Admin,
+    user: UserRolePolicy.List,
     service: UserRoleServiceDep,
     user_id: int,
     limit: int = 20,
@@ -138,7 +138,7 @@ async def list_user_roles(
     responses=DELETE_RECORD,
 )
 async def revoke_user_role(
-    user: UserRolePolicy.Admin,
+    user: UserRolePolicy.Revoke,
     service: UserRoleServiceDep,
     user_id: int,
     role_id: int,

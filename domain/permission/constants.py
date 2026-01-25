@@ -4,6 +4,7 @@ from core.enums import DescribedEnum
 class UserPerm(DescribedEnum):
     FULL = ("user:*", "full access to users")
     CREATE = ("user:create", "create user")
+    LIST = ("user:list", "list users")
     READ = ("user:read", "read user")
     UPDATE = ("user:update", "update user")
     DELETE = ("user:delete", "delete user")
@@ -19,6 +20,7 @@ class UserRolePerm(DescribedEnum):
 class RolePerm(DescribedEnum):
     FULL = ("role:*", "full access to roles")
     CREATE = ("role:create", "create role")
+    LIST = ("role:list", "list roles")
     READ = ("role:read", "read role")
     UPDATE = ("role:update", "update role")
     DELETE = ("role:delete", "delete role")
@@ -27,6 +29,7 @@ class RolePerm(DescribedEnum):
 class PermissionPerm(DescribedEnum):
     FULL = ("permission:*", "full access to permissions")
     CREATE = ("permission:create", "create permission")
+    LIST = ("permission:list", "list permissions")
     READ = ("permission:read", "read permission")
     UPDATE = ("permission:update", "update permission")
     DELETE = ("permission:delete", "delete permission")

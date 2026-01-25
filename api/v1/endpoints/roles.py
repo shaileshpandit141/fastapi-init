@@ -28,7 +28,7 @@ router = APIRouter(prefix="/roles", tags=["Role Endpoints"])
     responses=ADMIN_WRITE,
 )
 async def create_role(
-    user: RolePolicy.Admin, service: RoleServiceDep, role_in: RoleCreate
+    user: RolePolicy.Create, service: RoleServiceDep, role_in: RoleCreate
 ) -> Role:
     return await service.create_role(role_in=role_in)
 
@@ -41,7 +41,7 @@ async def create_role(
     responses=ADMIN_READ,
 )
 async def list_roles(
-    user: RolePolicy.Admin,
+    user: RolePolicy.List,
     service: RoleServiceDep,
     limit: int = 20,
     offset: int = 0,
@@ -57,7 +57,7 @@ async def list_roles(
     responses=ADMIN_READ,
 )
 async def get_role(
-    user: RolePolicy.Admin,
+    user: RolePolicy.Read,
     service: RoleServiceDep,
     role_id: int,
 ) -> Role:
@@ -72,7 +72,7 @@ async def get_role(
     responses=ADMIN_WRITE,
 )
 async def update_role(
-    user: RolePolicy.Admin,
+    user: RolePolicy.Update,
     service: RoleServiceDep,
     role_id: int,
     role_in: RoleUpdate,
@@ -88,7 +88,7 @@ async def update_role(
     responses=DELETE_RECORD,
 )
 async def delete_role(
-    user: RolePolicy.Admin,
+    user: RolePolicy.Update,
     service: RoleServiceDep,
     role_id: int,
 ) -> None:
@@ -106,7 +106,7 @@ async def delete_role(
     responses=ADMIN_WRITE,
 )
 async def assign_role_permission(
-    user: RolePermissionPolicy.Admin,
+    user: RolePermissionPolicy.Assign,
     service: RolePermissionServiceDep,
     role_id: int,
     role_permission_in: RolePermissionCreate,
@@ -125,7 +125,7 @@ async def assign_role_permission(
     responses=ADMIN_READ,
 )
 async def list_role_permissions(
-    user: RolePermissionPolicy.Admin,
+    user: RolePermissionPolicy.List,
     service: RolePermissionServiceDep,
     role_id: int,
     limit: int = 20,
@@ -144,7 +144,7 @@ async def list_role_permissions(
     responses=DELETE_RECORD,
 )
 async def revoke_role_permission(
-    user: RolePermissionPolicy.Admin,
+    user: RolePermissionPolicy.Revoke,
     service: RolePermissionServiceDep,
     role_id: int,
     permission_id: int,

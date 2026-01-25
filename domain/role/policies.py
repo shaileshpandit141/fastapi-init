@@ -4,7 +4,6 @@ from fastapi import Depends
 
 from domain.authorization.depends import authorize
 from domain.permission.constants import RolePerm, RolePermissionPerm
-from domain.role.constants import RoleType
 from domain.user.models import User
 
 
@@ -12,19 +11,10 @@ class RolePolicy:
     """Authorization policies for Role domain"""
 
     Create = Annotated[User, Depends(authorize(permissions=[RolePerm.CREATE]))]
+    List = Annotated[User, Depends(authorize(permissions=[RolePerm.LIST]))]
     Read = Annotated[User, Depends(authorize(permissions=[RolePerm.READ]))]
     Update = Annotated[User, Depends(authorize(permissions=[RolePerm.UPDATE]))]
     Delete = Annotated[User, Depends(authorize(permissions=[RolePerm.DELETE]))]
-
-    Admin = Annotated[
-        User,
-        Depends(
-            authorize(
-                roles=[RoleType.ADMIN],
-                permissions=[RolePerm.FULL],
-            )
-        ),
-    ]
 
 
 class RolePermissionPolicy:
@@ -41,14 +31,4 @@ class RolePermissionPolicy:
     List = Annotated[
         User,
         Depends(authorize(permissions=[RolePermissionPerm.LIST])),
-    ]
-
-    Admin = Annotated[
-        User,
-        Depends(
-            authorize(
-                roles=[RoleType.ADMIN],
-                permissions=[RolePermissionPerm.FULL],
-            )
-        ),
     ]
