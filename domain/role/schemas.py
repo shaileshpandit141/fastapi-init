@@ -1,3 +1,4 @@
+from pydantic import BaseModel
 from sqlmodel import Field  # type: ignore
 
 from core.db.models import BaseIntIDModel, NonEmptyUpdateModel
@@ -27,8 +28,8 @@ class RolePermissionRead(RolePermissionBase):
     pass
 
 
-class RolePermissionCreate(RolePermissionBase):
-    pass
+class RolePermissionCreate(BaseModel):
+    permission_id: int
 
 
 class RolePermissionUpdate(NonEmptyUpdateModel):

@@ -56,11 +56,11 @@ class RolePermissionService:
         self.repo = RolePermissionRepository(model=RolePermission, session=session)
 
     async def create_role_permission(
-        self, role_permission_in: RolePermissionCreate
+        self, role_id: int, role_permission_in: RolePermissionCreate
     ) -> RolePermission:
         try:
             role_permission = await self.repo.create(
-                data=role_permission_in,
+                data=role_permission_in, values={"role_id": role_id}
             )
         except EntityConflictException:
             raise AlreadyExistsException(detail="Role or Permission already exists.")
@@ -96,6 +96,13 @@ class RolePermissionService:
 
         return role_permission
 
-    async def delete_role_permission(self, role_id: int) -> None:
+    async def delete_role_permission(self, role_id: int, permission_id: int) -> None:
         role_permission = await self.get_role_permission(role_id=role_id)
         await self.repo.delete(obj=role_permission)
+
+        role_perm = await self.repo.get_by(role_id=role_id, permission_id=permission_id)
+
+        if not role_perm:
+            raise NotFoundException(detail="Role Permission does not exists")
+
+        await self.repo.delete(obj=role_perm)

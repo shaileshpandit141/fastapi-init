@@ -124,8 +124,10 @@ async def list_user_roles(
     user: UserRolePolicy.Admin,
     service: UserRoleServiceDep,
     user_id: int,
+    limit: int = 20,
+    offset: int = 0,
 ) -> Sequence[UserRole]:
-    return await service.list_user_roles(user_id=user_id)
+    return await service.list_user_roles(user_id=user_id, limit=limit, offset=offset)
 
 
 @router.delete(

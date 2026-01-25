@@ -3,10 +3,16 @@ from typing import Sequence
 from fastapi import APIRouter, status
 
 from core.response.swagger import ADMIN_READ, ADMIN_WRITE, DELETE_RECORD
-from domain.role.depends import RoleServiceDep
-from domain.role.models import Role
-from domain.role.policies import RolePolicy
-from domain.role.schemas import RoleCreate, RoleRead, RoleUpdate
+from domain.role.depends import RolePermissionServiceDep, RoleServiceDep
+from domain.role.models import Role, RolePermission
+from domain.role.policies import RolePermissionPolicy, RolePolicy
+from domain.role.schemas import (
+    RoleCreate,
+    RolePermissionCreate,
+    RolePermissionRead,
+    RoleRead,
+    RoleUpdate,
+)
 
 router = APIRouter(prefix="/roles", tags=["Role Endpoints"])
 
@@ -87,3 +93,63 @@ async def delete_role(
     role_id: int,
 ) -> None:
     await service.delete_role(role_id=role_id)
+
+
+# === Permission Assignment endpoints ===
+
+
+@router.post(
+    path="/{role_id}/permissions/",
+    summary="Assign permission to a role",
+    description="Assign permission to a role. Admin only.",
+    response_model=RolePermissionRead,
+    responses=ADMIN_WRITE,
+)
+async def assign_role_permission(
+    user: RolePermissionPolicy.Admin,
+    service: RolePermissionServiceDep,
+    role_id: int,
+    role_permission_in: RolePermissionCreate,
+) -> RolePermission:
+    return await service.create_role_permission(
+        role_id=role_id,
+        role_permission_in=role_permission_in,
+    )
+
+
+@router.get(
+    path="/{role_id}/permissions/",
+    summary="List role permissions",
+    description="List all permisssions assigned to a role. Admin only.",
+    response_model=list[RolePermissionRead],
+    responses=ADMIN_READ,
+)
+async def list_role_permissions(
+    user: RolePermissionPolicy.Admin,
+    service: RolePermissionServiceDep,
+    role_id: int,
+    limit: int = 20,
+    offset: int = 0,
+) -> Sequence[RolePermission]:
+    return await service.list_role_permission(
+        role_id=role_id, limit=limit, offset=offset
+    )
+
+
+@router.delete(
+    path="/{role_id}/permissions/{permission_id}",
+    summary="Delete a role permission",
+    description="Delete a role permission. Admin only.",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses=DELETE_RECORD,
+)
+async def revoke_role_permission(
+    user: RolePermissionPolicy.Admin,
+    service: RolePermissionServiceDep,
+    role_id: int,
+    permission_id: int,
+) -> None:
+    await service.delete_role_permission(
+        role_id=role_id,
+        permission_id=permission_id,
+    )
