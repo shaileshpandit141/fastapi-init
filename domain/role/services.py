@@ -43,8 +43,8 @@ class RoleService:
 
         return role
 
-    async def delete_role(self, role_in: int) -> None:
-        role = await self.get_role(role_id=role_in)
+    async def delete_role(self, role_id: int) -> None:
+        role = await self.get_role(role_id=role_id)
         await self.repo.delete(obj=role)
 
 
