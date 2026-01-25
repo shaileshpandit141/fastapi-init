@@ -5,7 +5,7 @@ from fastapi import APIRouter, status
 from core.response.swagger import ADMIN_READ, ADMIN_WRITE, DELETE_RECORD
 from domain.user.depends import UserRoleServiceDep, UserServiceDep
 from domain.user.models import User, UserRole
-from domain.user.policies import UserAccessPolicy, UserRoleAccessPolicy
+from domain.user.policies import UserPolicy, UserRolePolicy
 from domain.user.schemas import (
     UserCreate,
     UserRead,
@@ -29,7 +29,7 @@ router = APIRouter(prefix="/users", tags=["User Endpoints"])
     responses=ADMIN_WRITE,
 )
 async def create_user(
-    user: UserAccessPolicy.Admin, service: UserServiceDep, user_in: UserCreate
+    user: UserPolicy.Admin, service: UserServiceDep, user_in: UserCreate
 ) -> User:
     return await service.create_user(user_in=user_in)
 
@@ -42,7 +42,7 @@ async def create_user(
     responses=ADMIN_READ,
 )
 async def list_user(
-    user: UserAccessPolicy.Admin,
+    user: UserPolicy.Admin,
     service: UserServiceDep,
     limit: int = 20,
     offset: int = 0,
@@ -58,7 +58,7 @@ async def list_user(
     responses=ADMIN_READ,
 )
 async def read_user(
-    user: UserAccessPolicy.Admin, service: UserServiceDep, user_id: int
+    user: UserPolicy.Admin, service: UserServiceDep, user_id: int
 ) -> User:
     return await service.get_user(user_id=user_id)
 
@@ -71,7 +71,7 @@ async def read_user(
     responses=ADMIN_READ,
 )
 async def update_user(
-    user: UserAccessPolicy.Admin,
+    user: UserPolicy.Admin,
     service: UserServiceDep,
     user_id: int,
     user_in: UserUpdate,
@@ -87,7 +87,7 @@ async def update_user(
     responses=DELETE_RECORD,
 )
 async def delete_user(
-    user: UserAccessPolicy.Admin, service: UserServiceDep, user_id: int
+    user: UserPolicy.Admin, service: UserServiceDep, user_id: int
 ) -> None:
     return await service.delete_user(user_id)
 
@@ -103,7 +103,7 @@ async def delete_user(
     responses=ADMIN_READ,
 )
 async def list_user_roles(
-    user: UserRoleAccessPolicy.Admin,
+    user: UserRolePolicy.Admin,
     service: UserRoleServiceDep,
     user_id: int,
 ) -> Sequence[UserRole]:
@@ -118,7 +118,7 @@ async def list_user_roles(
     responses=ADMIN_WRITE,
 )
 async def create_user_role(
-    user: UserRoleAccessPolicy.Admin,
+    user: UserRolePolicy.Admin,
     service: UserRoleServiceDep,
     user_id: int,
     user_role_in: UserRoleCreate,
@@ -137,7 +137,7 @@ async def create_user_role(
     responses=ADMIN_WRITE,
 )
 async def update_user_role(
-    user: UserRoleAccessPolicy.Admin,
+    user: UserRolePolicy.Admin,
     service: UserRoleServiceDep,
     user_id: int,
     user_role_in: UserRoleUpdate,
@@ -156,7 +156,7 @@ async def update_user_role(
     responses=DELETE_RECORD,
 )
 async def delete_user_role(
-    user: UserRoleAccessPolicy.Admin,
+    user: UserRolePolicy.Admin,
     service: UserRoleServiceDep,
     user_id: int,
     role_id: int,

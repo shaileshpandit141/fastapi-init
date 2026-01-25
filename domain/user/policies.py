@@ -3,43 +3,43 @@ from typing import Annotated
 from fastapi import Depends
 
 from domain.authorization.depends import authorize
-from domain.permission.constants import Perm
-from domain.role.constants import Role
+from domain.permission.constants import UserPerm, UserRolePerm
+from domain.role.constants import RoleType
 from domain.user.models import User
 
 
-class UserAccessPolicy:
+class UserPolicy:
     """Authorization policies for User domain"""
 
-    Create = Annotated[User, Depends(authorize(permissions=[Perm.User.CREATE]))]
-    Read = Annotated[User, Depends(authorize(permissions=[Perm.User.READ]))]
-    Update = Annotated[User, Depends(authorize(permissions=[Perm.User.UPDATE]))]
-    Delete = Annotated[User, Depends(authorize(permissions=[Perm.User.DELETE]))]
+    Create = Annotated[User, Depends(authorize(permissions=[UserPerm.CREATE]))]
+    Read = Annotated[User, Depends(authorize(permissions=[UserPerm.READ]))]
+    Update = Annotated[User, Depends(authorize(permissions=[UserPerm.UPDATE]))]
+    Delete = Annotated[User, Depends(authorize(permissions=[UserPerm.DELETE]))]
 
     Admin = Annotated[
         User,
         Depends(
             authorize(
-                roles=[Role.ADMIN],
-                permissions=[Perm.User.FULL],
+                roles=[RoleType.ADMIN],
+                permissions=[UserPerm.FULL],
             )
         ),
     ]
 
 
-class UserRoleAccessPolicy:
+class UserRolePolicy:
     """Authorization policies for User-Role assignments"""
 
-    Assign = Annotated[User, Depends(authorize(permissions=[Perm.UserRole.ASSIGN]))]
-    Revoke = Annotated[User, Depends(authorize(permissions=[Perm.UserRole.REVOKE]))]
-    List = Annotated[User, Depends(authorize(permissions=[Perm.UserRole.LIST]))]
+    Assign = Annotated[User, Depends(authorize(permissions=[UserRolePerm.ASSIGN]))]
+    Revoke = Annotated[User, Depends(authorize(permissions=[UserRolePerm.REVOKE]))]
+    List = Annotated[User, Depends(authorize(permissions=[UserRolePerm.LIST]))]
 
     Admin = Annotated[
         User,
         Depends(
             authorize(
-                roles=[Role.ADMIN],
-                permissions=[Perm.UserRole.FULL],
+                roles=[RoleType.ADMIN],
+                permissions=[UserRolePerm.FULL],
             )
         ),
     ]

@@ -1,8 +1,8 @@
 from redis.asyncio import Redis
 
-from infrastructure.cache.abstractions.redis import BaseRedisCache
+from infrastructure.cache.redis.base import BaseRedisCache
 
-from .constants import CACHE_NAMESPACE, CACHE_TTL
+from .constants import UserCache
 from .models import User
 
 
@@ -11,6 +11,6 @@ class CurrentUserCache(BaseRedisCache[User]):
         super().__init__(
             model=User,
             redis=redis,
-            namespace=CACHE_NAMESPACE,
-            ttl=CACHE_TTL,
+            namespace=UserCache.NAMESPACE.value,
+            ttl=UserCache.TTL.value,
         )
