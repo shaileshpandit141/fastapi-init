@@ -53,7 +53,7 @@ class ReadRepositoryMixin[Model: SQLModel](BaseRepository[Model]):
         an exception from SQLModel.
         """
         stmt = self.base_query().filter_by(**filters)
-        return (await self.session.exec(stmt)).one_or_none()
+        return (await self.session.exec(stmt)).first()
 
     async def list(
         self,
