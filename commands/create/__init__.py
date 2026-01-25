@@ -1,12 +1,12 @@
 import click
 
-from .admin_user import admin_user
+from .superuser import superuser
 
 
 @click.group()
 def create() -> None:
-    """Create something in db."""
+    """Create some new data. (e.g: superuser, admin)"""
     pass
 
 
-create.add_command(admin_user)
+create.add_command(superuser)

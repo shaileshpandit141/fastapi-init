@@ -28,7 +28,6 @@ def permissions() -> None:
 
             db.commit()
             echo("Permissions seeded successfully.")
-
         except Exception as exc:
             db.rollback()
             echo(f"Permission seeding failed: {exc}")

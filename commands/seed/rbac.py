@@ -1,6 +1,6 @@
 from click import command, echo, get_current_context
 
-from .assign_roles_to_admin import assign_roles_to_admin
+from .assign_permissions import assign_permissions
 from .permissions import permissions
 from .roles import roles
 
@@ -14,8 +14,8 @@ def rbac() -> None:
     # Get current context and invoke commands
     ctx = get_current_context()
 
-    ctx.invoke(roles)
     ctx.invoke(permissions)
-    ctx.invoke(assign_roles_to_admin)
+    ctx.invoke(roles)
+    ctx.invoke(assign_permissions)
 
     echo("RBAC bootstrap completed successfully.")

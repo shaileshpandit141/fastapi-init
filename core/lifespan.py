@@ -8,7 +8,7 @@ from redis.asyncio import from_url  # type: ignore
 from core.settings import settings
 
 from .db.engines import async_engine
-from .db.init_db import init_db
+from .db.init_db import init_async_db
 
 logger = getLogger(__name__)
 
@@ -24,7 +24,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         )
         logger.info("Redis Connected successfully.")
 
-        await init_db()
+        await init_async_db()
         logger.info("Database initialized successfully.")
 
         yield

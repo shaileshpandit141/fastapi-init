@@ -1,8 +1,12 @@
 from sqlmodel import SQLModel
 
-from .engines import async_engine
+from .engines import async_engine, engine
 
 
-async def init_db() -> None:
+def init_db() -> None:
+    SQLModel.metadata.create_all(engine)
+
+
+async def init_async_db() -> None:
     async with async_engine.begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)
