@@ -1,8 +1,16 @@
 from typing import Iterable
 
+from core.enums import DescribedEnum
 from core.exceptions import AccessDeniedException
 from domain.authentication.services import CurrentUserService
 from domain.user.models import User
+
+
+def normalize(values: Iterable[str | DescribedEnum]) -> set[str]:
+    if isinstance(values, (str, DescribedEnum)):
+        values = [values]
+
+    return {v.value if isinstance(v, DescribedEnum) else v for v in values}
 
 
 def permission_matches(granted: str, required: str) -> bool:
@@ -23,13 +31,13 @@ class AuthorizationService:
     async def authorize(
         self,
         *,
-        roles: Iterable[str] | None = None,
-        permissions: Iterable[str] | None = None,
+        roles: Iterable[str | DescribedEnum] | None = None,
+        permissions: Iterable[str | DescribedEnum] | None = None,
     ) -> User:
         user = await self._current_user.get_active_user()
 
-        roles = set(roles or [])
-        permissions = set(permissions or [])
+        roles = normalize(roles or [])
+        permissions = normalize(permissions or [])
 
         # ---- Role check ----
         if roles:

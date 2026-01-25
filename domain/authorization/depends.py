@@ -2,6 +2,7 @@ from typing import Awaitable, Callable, Iterable
 
 from fastapi import Depends
 
+from core.enums import DescribedEnum
 from domain.authentication.depends import CurrentUserServiceDep
 from domain.user.models import User
 
@@ -20,7 +21,9 @@ async def get_authorization_service(
 
 
 def authorize(
-    *, roles: Iterable[str] | None = None, permissions: Iterable[str] | None = None
+    *,
+    roles: Iterable[str | DescribedEnum] | None = None,
+    permissions: Iterable[str | DescribedEnum] | None = None,
 ) -> Callable[..., Awaitable[User]]:
 
     async def _checker(
