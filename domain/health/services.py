@@ -7,7 +7,7 @@ from sqlalchemy.exc import OperationalError
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from .constants import HEALTH_CACHE_KEY, HEALTHY_TTL_SECONDS, UNHEALTHY_TTL_SECONDS
+from .constants import HealthCache
 from .schemas import HealthyRead, UnhealthyRead
 
 logger = getLogger(__name__)
@@ -22,7 +22,7 @@ class HealthCheckService:
         self.response = response
 
     async def health_check(self) -> HealthyRead | UnhealthyRead:
-        cached_raw = await self.redis.get(HEALTH_CACHE_KEY)
+        cached_raw = await self.redis.get(HealthCache.KEY.value)
         if cached_raw:
             cached_health = json.loads(cached_raw)
             logger.debug("Returning cached health status: %s", cached_health)
@@ -46,9 +46,13 @@ class HealthCheckService:
             health_status = "unhealthy"
 
         # Cache the result
-        ttl = HEALTHY_TTL_SECONDS if health_status == "ok" else UNHEALTHY_TTL_SECONDS
+        ttl = (
+            HealthCache.HEALTHY_TTL.value
+            if health_status == "ok"
+            else HealthCache.UNHEALTHY_TTL.value
+        )
         health_data = {"status": health_status}
-        await self.redis.set(HEALTH_CACHE_KEY, json.dumps(health_data), ex=ttl)
+        await self.redis.set(HealthCache.KEY.value, json.dumps(health_data), ex=ttl)
 
         logger.debug("Returning new health status: %s", health_data)
 

@@ -1,3 +1,7 @@
-HEALTH_CACHE_KEY = "health_status"
-HEALTHY_TTL_SECONDS = 30
-UNHEALTHY_TTL_SECONDS = 5
+from enum import Enum
+
+
+class HealthCache(Enum):
+    KEY = "health_status"
+    HEALTHY_TTL = 30  # seconds
+    UNHEALTHY_TTL = 5  # seconds
