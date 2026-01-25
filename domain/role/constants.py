@@ -1,6 +1,6 @@
-from enum import StrEnum
+from core.enums import DescribedEnum
 
 
-class RoleType(StrEnum):
-    ADMIN = "admin"
-    USER = "user"
+class RoleType(DescribedEnum):
+    ADMIN = ("admin", "administrator with full access.")
+    USER = ("user", "regular user with limited access.")
