@@ -16,5 +16,4 @@ class PermissionCreate(PermissionBase):
 
 
 class PermissionUpdate(NonEmptyUpdateModel):
-    code: str | None = Field(default=None, max_length=100)
     description: str | None = Field(default=None, max_length=255)
