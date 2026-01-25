@@ -3,8 +3,9 @@ from typing import Sequence
 from fastapi import APIRouter
 
 from core.response.swagger import ADMIN_READ, ADMIN_WRITE
-from domain.role.depends import RoleAccess, RoleServices
+from domain.role.depends import RoleServiceDep
 from domain.role.models import Role
+from domain.role.policies import RolePolicy
 from domain.role.schemas import RoleCreate, RoleRead
 
 router = APIRouter(prefix="/roles", tags=["Role Endpoints"])
@@ -21,12 +22,12 @@ router = APIRouter(prefix="/roles", tags=["Role Endpoints"])
     responses=ADMIN_READ,
 )
 async def list_role(
-    user: RoleAccess.Admin,
-    role_service: RoleServices.Role,
+    user: RolePolicy.Admin,
+    service: RoleServiceDep,
     limit: int = 20,
     offset: int = 0,
 ) -> Sequence[Role]:
-    return await role_service.list_roles(limit=limit, offset=offset)
+    return await service.list_roles(limit=limit, offset=offset)
 
 
 @router.post(
@@ -37,6 +38,6 @@ async def list_role(
     responses=ADMIN_WRITE,
 )
 async def create_role(
-    user: RoleAccess.Admin, role_service: RoleServices.Role, role_in: RoleCreate
+    user: RolePolicy.Admin, service: RoleServiceDep, role_in: RoleCreate
 ) -> Role:
-    return await role_service.create_role(role_in=role_in)
+    return await service.create_role(role_in=role_in)
