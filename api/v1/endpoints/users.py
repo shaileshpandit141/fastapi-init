@@ -11,7 +11,6 @@ from domain.user.schemas import (
     UserRead,
     UserRoleCreate,
     UserRoleRead,
-    UserRoleUpdate,
     UserUpdate,
 )
 
@@ -92,7 +91,26 @@ async def delete_user(
     return await service.delete_user(user_id)
 
 
-# === RBAC specific endpoints ===
+# === Role Assignment endpoints ===
+
+
+@router.post(
+    path="/{user_id}/roles/",
+    summary="Create user role",
+    description="Create user role. Admin only.",
+    response_model=UserRoleRead,
+    responses=ADMIN_WRITE,
+)
+async def assign_user_role(
+    user: UserRolePolicy.Admin,
+    service: UserRoleServiceDep,
+    user_id: int,
+    user_role_in: UserRoleCreate,
+) -> UserRole:
+    return await service.create_user_role(
+        user_id=user_id,
+        user_role_in=user_role_in,
+    )
 
 
 @router.get(
@@ -110,44 +128,6 @@ async def list_user_roles(
     return await service.list_user_roles(user_id=user_id)
 
 
-@router.post(
-    path="/{user_id}/roles/",
-    summary="Create user role",
-    description="Create user role. Admin only.",
-    response_model=UserRoleRead,
-    responses=ADMIN_WRITE,
-)
-async def create_user_role(
-    user: UserRolePolicy.Admin,
-    service: UserRoleServiceDep,
-    user_id: int,
-    user_role_in: UserRoleCreate,
-) -> UserRole:
-    return await service.create_user_role(
-        user_id=user_id,
-        user_role_in=user_role_in,
-    )
-
-
-@router.patch(
-    path="/{user_id}/roles/",
-    summary="Update user role",
-    description="Update user role. Admin only.",
-    response_model=UserRoleRead,
-    responses=ADMIN_WRITE,
-)
-async def update_user_role(
-    user: UserRolePolicy.Admin,
-    service: UserRoleServiceDep,
-    user_id: int,
-    user_role_in: UserRoleUpdate,
-) -> UserRole:
-    return await service.update_user_role(
-        user_id=user_id,
-        user_role_in=user_role_in,
-    )
-
-
 @router.delete(
     path="/{user_id}/roles/{role_id}",
     summary="Delete user role",
@@ -155,7 +135,7 @@ async def update_user_role(
     status_code=status.HTTP_204_NO_CONTENT,
     responses=DELETE_RECORD,
 )
-async def delete_user_role(
+async def revoke_user_role(
     user: UserRolePolicy.Admin,
     service: UserRoleServiceDep,
     user_id: int,

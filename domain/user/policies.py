@@ -31,8 +31,8 @@ class UserRolePolicy:
     """Authorization policies for User-Role assignments"""
 
     Assign = Annotated[User, Depends(authorize(permissions=[UserRolePerm.ASSIGN]))]
-    Revoke = Annotated[User, Depends(authorize(permissions=[UserRolePerm.REVOKE]))]
     List = Annotated[User, Depends(authorize(permissions=[UserRolePerm.LIST]))]
+    Revoke = Annotated[User, Depends(authorize(permissions=[UserRolePerm.REVOKE]))]
 
     Admin = Annotated[
         User,
