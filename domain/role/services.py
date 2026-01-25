@@ -97,8 +97,6 @@ class RolePermissionService:
         return role_permission
 
     async def delete_role_permission(self, role_id: int, permission_id: int) -> None:
-        role_permission = await self.get_role_permission(role_id=role_id)
-        await self.repo.delete(obj=role_permission)
 
         role_perm = await self.repo.get_by(role_id=role_id, permission_id=permission_id)
 
