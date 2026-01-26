@@ -2,7 +2,7 @@ from typing import Sequence
 
 from fastapi import APIRouter, status
 
-from core.response.swagger import ADMIN_READ, ADMIN_WRITE, DELETE_RECORD
+from core.swagger import Access, Action, openapi_docs
 from domain.role.depends import RolePermissionServiceDep, RoleServiceDep
 from domain.role.models import Role, RolePermission
 from domain.role.policies import RolePermissionPolicy, RolePolicy
@@ -22,10 +22,12 @@ router = APIRouter(prefix="/roles", tags=["Role Endpoints"])
 
 @router.post(
     path="/",
-    summary="Create Role",
-    description="Create a new role. Only accessible by admin users.",
     response_model=RoleRead,
-    responses=ADMIN_WRITE,
+    **openapi_docs(
+        action=Action.CREATE,
+        resource="role",
+        access=Access.AUTHENTICATED,
+    ),
 )
 async def create_role(
     user: RolePolicy.Create, service: RoleServiceDep, role_in: RoleCreate
@@ -35,10 +37,12 @@ async def create_role(
 
 @router.get(
     path="/",
-    summary="List Roles",
-    description="List all roles with pagination. Only accessible by admin users.",
     response_model=list[RoleRead],
-    responses=ADMIN_READ,
+    **openapi_docs(
+        action=Action.LIST,
+        resource="roles",
+        access=Access.AUTHENTICATED,
+    ),
 )
 async def list_roles(
     user: RolePolicy.List,
@@ -51,12 +55,14 @@ async def list_roles(
 
 @router.get(
     path="/{role_id}",
-    summary="Get Role",
-    description="Retrieve a specific role by its ID. Only accessible by admin users.",
     response_model=RoleRead,
-    responses=ADMIN_READ,
+    **openapi_docs(
+        action=Action.RETRIEVE,
+        resource="role",
+        access=Access.AUTHENTICATED,
+    ),
 )
-async def get_role(
+async def read_role(
     user: RolePolicy.Read,
     service: RoleServiceDep,
     role_id: int,
@@ -66,10 +72,12 @@ async def get_role(
 
 @router.patch(
     path="/{role_id}",
-    summary="Update a Role",
-    description="Update a specific role by its ID. Only accessible by admin users.",
     response_model=RoleRead,
-    responses=ADMIN_WRITE,
+    **openapi_docs(
+        action=Action.UPDATE,
+        resource="role",
+        access=Access.AUTHENTICATED,
+    ),
 )
 async def update_role(
     user: RolePolicy.Update,
@@ -82,10 +90,12 @@ async def update_role(
 
 @router.patch(
     path="/{role_id}",
-    summary="Delete a Role",
-    description="Delete a specific role by its ID. Only accessible by admin users.",
     status_code=status.HTTP_204_NO_CONTENT,
-    responses=DELETE_RECORD,
+    **openapi_docs(
+        action=Action.DELETE,
+        resource="role",
+        access=Access.AUTHENTICATED,
+    ),
 )
 async def delete_role(
     user: RolePolicy.Update,
@@ -100,10 +110,12 @@ async def delete_role(
 
 @router.post(
     path="/{role_id}/permissions/",
-    summary="Assign permission to a role",
-    description="Assign permission to a role. Admin only.",
     response_model=RolePermissionRead,
-    responses=ADMIN_WRITE,
+    **openapi_docs(
+        action=Action.CREATE,
+        resource="role-permission",
+        access=Access.AUTHENTICATED,
+    ),
 )
 async def assign_role_permission(
     user: RolePermissionPolicy.Assign,
@@ -119,10 +131,12 @@ async def assign_role_permission(
 
 @router.get(
     path="/{role_id}/permissions/",
-    summary="List role permissions",
-    description="List all permisssions assigned to a role. Admin only.",
     response_model=list[RolePermissionRead],
-    responses=ADMIN_READ,
+    **openapi_docs(
+        action=Action.LIST,
+        resource="role-permissions",
+        access=Access.AUTHENTICATED,
+    ),
 )
 async def list_role_permissions(
     user: RolePermissionPolicy.List,
@@ -138,10 +152,12 @@ async def list_role_permissions(
 
 @router.delete(
     path="/{role_id}/permissions/{permission_id}",
-    summary="Delete a role permission",
-    description="Delete a role permission. Admin only.",
     status_code=status.HTTP_204_NO_CONTENT,
-    responses=DELETE_RECORD,
+    **openapi_docs(
+        action=Action.DELETE,
+        resource="role-permission",
+        access=Access.AUTHENTICATED,
+    ),
 )
 async def revoke_role_permission(
     user: RolePermissionPolicy.Revoke,

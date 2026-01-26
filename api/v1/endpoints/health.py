@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from core.response.swagger import OpenAPIResponses
+from core.swagger.types import OpenAPIResponses
 from domain.health.depends import HealthCheckServiceDep
 from domain.health.schemas import HealthyRead, UnhealthyRead
 

@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from core.response.schemas import DetailResponse
-from core.response.swagger import AUTH_READ, PUBLIC_WRITE
+from core.swagger import AUTH_READ, PUBLIC_WRITE
 from domain.authentication.depends import (
     JwtTokenServiceDep,
     OAuth2PasswordRequestFormDep,

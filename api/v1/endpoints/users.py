@@ -2,7 +2,7 @@ from typing import Sequence
 
 from fastapi import APIRouter, status
 
-from core.response.swagger import ADMIN_READ, ADMIN_WRITE, DELETE_RECORD
+from core.swagger import Access, Action, openapi_docs
 from domain.user.depends import UserRoleServiceDep, UserServiceDep
 from domain.user.models import User, UserRole
 from domain.user.policies import UserPolicy, UserRolePolicy
@@ -22,10 +22,12 @@ router = APIRouter(prefix="/users", tags=["User Endpoints"])
 
 @router.post(
     path="/",
-    summary="Create a new user",
-    description="Create a new user. Admin only.",
     response_model=UserRead,
-    responses=ADMIN_WRITE,
+    **openapi_docs(
+        action=Action.CREATE,
+        resource="user",
+        access=Access.AUTHENTICATED,
+    ),
 )
 async def create_user(
     user: UserPolicy.Create, service: UserServiceDep, user_in: UserCreate
@@ -35,10 +37,12 @@ async def create_user(
 
 @router.get(
     path="/",
-    summary="Retrieve list of users",
-    description="Retrieve list of users. Admin only.",
     response_model=list[UserRead],
-    responses=ADMIN_READ,
+    **openapi_docs(
+        action=Action.LIST,
+        resource="users",
+        access=Access.AUTHENTICATED,
+    ),
 )
 async def list_user(
     user: UserPolicy.List,
@@ -51,10 +55,12 @@ async def list_user(
 
 @router.get(
     path="/{user_id}",
-    summary="Retrieve a user",
-    description="Retrieve a user by ID. Admin only.",
     response_model=UserRead,
-    responses=ADMIN_READ,
+    **openapi_docs(
+        action=Action.RETRIEVE,
+        resource="user",
+        access=Access.AUTHENTICATED,
+    ),
 )
 async def read_user(
     user: UserPolicy.Read, service: UserServiceDep, user_id: int
@@ -64,10 +70,12 @@ async def read_user(
 
 @router.patch(
     path="/{user_id}",
-    summary="Update a user",
-    description="Update user information. Admin only.",
     response_model=UserRead,
-    responses=ADMIN_READ,
+    **openapi_docs(
+        action=Action.UPDATE,
+        resource="user",
+        access=Access.AUTHENTICATED,
+    ),
 )
 async def update_user(
     user: UserPolicy.Update,
@@ -80,10 +88,12 @@ async def update_user(
 
 @router.delete(
     path="/{user_id}",
-    summary="Delete a user",
-    description="Delete a user. Admin only.",
     status_code=status.HTTP_204_NO_CONTENT,
-    responses=DELETE_RECORD,
+    **openapi_docs(
+        action=Action.DELETE,
+        resource="user",
+        access=Access.AUTHENTICATED,
+    ),
 )
 async def delete_user(
     user: UserPolicy.Delete, service: UserServiceDep, user_id: int
@@ -96,10 +106,12 @@ async def delete_user(
 
 @router.post(
     path="/{user_id}/roles/",
-    summary="Create user role",
-    description="Create user role. Admin only.",
     response_model=UserRoleRead,
-    responses=ADMIN_WRITE,
+    **openapi_docs(
+        action=Action.CREATE,
+        resource="user-role",
+        access=Access.AUTHENTICATED,
+    ),
 )
 async def assign_user_role(
     user: UserRolePolicy.Assign,
@@ -115,10 +127,12 @@ async def assign_user_role(
 
 @router.get(
     path="/{user_id}/roles/",
-    summary="List user roles",
-    description="List all roles assigned to a user. Admin only.",
     response_model=list[UserRoleRead],
-    responses=ADMIN_READ,
+    **openapi_docs(
+        action=Action.LIST,
+        resource="user-roles",
+        access=Access.AUTHENTICATED,
+    ),
 )
 async def list_user_roles(
     user: UserRolePolicy.List,
@@ -132,10 +146,12 @@ async def list_user_roles(
 
 @router.delete(
     path="/{user_id}/roles/{role_id}",
-    summary="Delete user role",
-    description="Delete user role. Admin only.",
     status_code=status.HTTP_204_NO_CONTENT,
-    responses=DELETE_RECORD,
+    **openapi_docs(
+        action=Action.DELETE,
+        resource="user-role",
+        access=Access.AUTHENTICATED,
+    ),
 )
 async def revoke_user_role(
     user: UserRolePolicy.Revoke,

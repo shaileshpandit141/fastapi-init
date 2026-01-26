@@ -2,7 +2,7 @@ from typing import Sequence
 
 from fastapi import APIRouter, status
 
-from core.response.swagger import ADMIN_READ, ADMIN_WRITE, DELETE_RECORD
+from core.swagger import Access, Action, openapi_docs
 from domain.permission.depends import PermissionServiceDep
 from domain.permission.models import Permission
 from domain.permission.policies import PermissionPolicy
@@ -12,11 +12,13 @@ router = APIRouter(prefix="/permissions", tags=["Permission Endpoints"])
 
 
 @router.post(
-    "/",
-    summary="Create a permission",
-    description="Create a permission. only create by admin",
+    path="/",
     response_model=PermissionRead,
-    responses=ADMIN_WRITE,
+    **openapi_docs(
+        action=Action.CREATE,
+        resource="permission",
+        access=Access.AUTHENTICATED,
+    ),
 )
 async def create_permission(
     user: PermissionPolicy.Create,
@@ -27,11 +29,13 @@ async def create_permission(
 
 
 @router.get(
-    "/",
-    summary="List permissions",
-    description="List permissions. only access by admin",
+    path="/",
     response_model=list[PermissionRead],
-    responses=ADMIN_READ,
+    **openapi_docs(
+        action=Action.LIST,
+        resource="permissions",
+        access=Access.AUTHENTICATED,
+    ),
 )
 async def list_permissions(
     user: PermissionPolicy.List,
@@ -43,13 +47,15 @@ async def list_permissions(
 
 
 @router.get(
-    "/{permission_id}",
-    summary="Get a permissions",
-    description="Get a permissions. only access by admin",
+    path="/{permission_id}",
     response_model=PermissionRead,
-    responses=ADMIN_READ,
+    **openapi_docs(
+        action=Action.RETRIEVE,
+        resource="permission",
+        access=Access.AUTHENTICATED,
+    ),
 )
-async def get_permission(
+async def read_permission(
     user: PermissionPolicy.Read,
     service: PermissionServiceDep,
     permission_id: int,
@@ -58,11 +64,13 @@ async def get_permission(
 
 
 @router.patch(
-    "/{permission_id}",
-    summary="Update a permissions",
-    description="Update a permissions. only access by admin",
+    path="/{permission_id}",
     response_model=PermissionRead,
-    responses=ADMIN_WRITE,
+    **openapi_docs(
+        action=Action.UPDATE,
+        resource="permission",
+        access=Access.AUTHENTICATED,
+    ),
 )
 async def update_permission(
     user: PermissionPolicy.Update,
@@ -76,11 +84,13 @@ async def update_permission(
 
 
 @router.delete(
-    "/{permission_id}",
-    summary="Delete a permissions",
-    description="Delete a permissions. only access by admin",
+    path="/{permission_id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    responses=DELETE_RECORD,
+    **openapi_docs(
+        action=Action.DELETE,
+        resource="permission",
+        access=Access.AUTHENTICATED,
+    ),
 )
 async def delete_permission(
     user: PermissionPolicy.Delete,
