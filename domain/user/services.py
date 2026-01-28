@@ -28,7 +28,10 @@ class UserService:
         try:
             user = await self.repo.create(
                 data=user_in,
-                values={"password_hash": password_hash, "status": UserStatus.ACTIVE},
+                values={
+                    "password_hash": password_hash,
+                    "status": UserStatus.INACTIVE,
+                },
             )
         except EntityConflictException:
             raise AlreadyExistsException(detail="Email already exists.")

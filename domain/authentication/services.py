@@ -14,8 +14,8 @@ from core.security.jwt import JwtTokenManager
 from core.security.jwt.exceptions import JwtException
 from core.security.password import PasswordHasher
 from domain.role.models import Role, RolePermission
-from domain.user.models import User, UserRole
 from domain.user.constants import UserStatus
+from domain.user.models import User, UserRole
 
 from .schemas import JwtTokenCreate, JwtTokenRead, JwtTokenRefresh, JwtTokenRevoked
 
@@ -74,6 +74,11 @@ class CurrentUserService:
         if user.status != UserStatus.ACTIVE:
             raise AccessDeniedException(detail="Inactive user.")
 
+        if not user.is_email_verified:
+            raise AccessDeniedException(
+                detail="Please verify your email to continue.",
+            )
+
         return user
 
 
@@ -95,7 +100,12 @@ class JwtTokenService:
             raise BadRequestException(detail="User not found.")
 
         if user.status == UserStatus.INACTIVE:
-            raise AccessDeniedException(detail="User is inactive.")
+            raise AccessDeniedException(detail="Inactive user.")
+
+        if not user.is_email_verified:
+            raise AccessDeniedException(
+                detail="Please verify your email to continue.",
+            )
 
         if not self._password_hasher.verify_password(
             plain_password=form_in.password, hashed_password=user.password_hash

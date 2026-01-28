@@ -31,6 +31,9 @@ def superuser(email: str, password: str) -> None:
                 password_hash=hasher.hash_password(password),
             )  # type: ignore
 
+            # Make superuser is verified
+            user.mark_email_verified()
+
             db.add(user)
             db.commit()
             db.refresh(user)
