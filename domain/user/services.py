@@ -166,7 +166,10 @@ class EmailVerificationService:
                 content=EmailContent(
                     html_template="verify_email.html",
                 ),
-                context={"otp": otp},
+                context={
+                    "subject": "Verify your email",
+                    "otp": otp,
+                },
             )
         )
 
