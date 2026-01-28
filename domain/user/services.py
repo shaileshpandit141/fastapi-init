@@ -8,7 +8,8 @@ from core.exceptions import AlreadyExistsException, NotFoundException
 from core.repository.exceptions import EntityConflictException
 from core.security.password.hasher import PasswordHasher
 
-from .models import User, UserRole, UserStatus
+from .constants import UserStatus
+from .models import User, UserRole
 from .repositories import UserRepository, UserRoleRepository
 from .schemas import UserCreate, UserRoleCreate, UserRoleUpdate, UserUpdate
 

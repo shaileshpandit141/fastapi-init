@@ -1,6 +1,5 @@
 # pyright: reportAssignmentType=false
 
-from enum import Enum
 from typing import TYPE_CHECKING
 
 from pydantic import EmailStr
@@ -8,16 +7,10 @@ from sqlmodel import Field, Relationship, SQLModel  # type: ignore
 
 from core.db.models import BaseIntIDModel, BaseTimestampModel
 
+from .constants import UserStatus
+
 if TYPE_CHECKING:
     from domain.role.models import Role
-
-# === User Enums ===
-
-
-class UserStatus(str, Enum):
-    ACTIVE = "active"
-    INACTIVE = "inactive"
-
 
 # === User SQLModels ===
 

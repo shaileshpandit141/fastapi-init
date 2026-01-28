@@ -14,7 +14,8 @@ from core.security.jwt import JwtTokenManager
 from core.security.jwt.exceptions import JwtException
 from core.security.password import PasswordHasher
 from domain.role.models import Role, RolePermission
-from domain.user.models import User, UserRole, UserStatus
+from domain.user.models import User, UserRole
+from domain.user.constants import UserStatus
 
 from .schemas import JwtTokenCreate, JwtTokenRead, JwtTokenRefresh, JwtTokenRevoked
 
