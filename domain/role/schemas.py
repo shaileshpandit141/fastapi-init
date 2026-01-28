@@ -1,14 +1,15 @@
 from pydantic import BaseModel
 from sqlmodel import Field  # type: ignore
 
-from core.db.models import BaseIntIDModel, NonEmptyUpdateModel
+from core.db.mixins import IntIDMixin
+from core.db.schemas import AtLeastOneFieldModel
 
 from .models import RoleBase, RolePermissionBase
 
 # === Role Schemas ===
 
 
-class RoleRead(RoleBase, BaseIntIDModel):
+class RoleRead(RoleBase, IntIDMixin):
     pass
 
 
@@ -16,7 +17,7 @@ class RoleCreate(RoleBase):
     pass
 
 
-class RoleUpdate(NonEmptyUpdateModel):
+class RoleUpdate(AtLeastOneFieldModel):
     name: str | None = Field(default=None, max_length=50)
     description: str | None = Field(default=None, max_length=255)
 
@@ -32,6 +33,6 @@ class RolePermissionCreate(BaseModel):
     permission_id: int
 
 
-class RolePermissionUpdate(NonEmptyUpdateModel):
+class RolePermissionUpdate(AtLeastOneFieldModel):
     role_id: int | None = None
     permission_id: int | None = None

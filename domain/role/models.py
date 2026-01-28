@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from sqlmodel import Field, Relationship, SQLModel  # type: ignore
 
-from core.db.models import BaseIntIDModel
+from core.db.mixins import IntIDMixin
 
 if TYPE_CHECKING:
     from domain.permission.models import Permission
@@ -13,12 +13,12 @@ if TYPE_CHECKING:
 # === Role SQLModels ===
 
 
-class RoleBase(SQLModel):
+class RoleBase(SQLModel, table=False):
     name: str = Field(max_length=50, unique=True, index=True, nullable=False)
     description: str | None = Field(default=None, max_length=255)
 
 
-class Role(BaseIntIDModel, RoleBase, table=True):
+class Role(IntIDMixin, RoleBase, table=True):
     __tablename__ = "roles"
 
     users: list["UserRole"] = Relationship(back_populates="role")
@@ -28,7 +28,7 @@ class Role(BaseIntIDModel, RoleBase, table=True):
 # === Role Permission SQLModels ===
 
 
-class RolePermissionBase(SQLModel):
+class RolePermissionBase(SQLModel, table=False):
     role_id: int = Field(foreign_key="roles.id", primary_key=True, index=True)
     permission_id: int = Field(
         foreign_key="permissions.id", primary_key=True, index=True

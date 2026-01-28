@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from pydantic import EmailStr
 from sqlmodel import Field, Relationship, SQLModel  # type: ignore
 
-from core.db.models import BaseIntIDModel, BaseTimestampModel
+from core.db.mixins import IntIDMixin, TimestampMixin
 from core.utils.time import time
 
 from .constants import UserStatus
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 # === User SQLModels ===
 
 
-class UserBase(SQLModel):
+class UserBase(SQLModel, table=False):
     email: EmailStr = Field(
         max_length=255,
         index=True,
@@ -27,22 +27,17 @@ class UserBase(SQLModel):
     status: UserStatus = Field(default=UserStatus.ACTIVE, nullable=False)
 
 
-class EmailVerificationMixin(SQLModel):
+class UserEmailVerification(SQLModel, table=False):
     is_email_verified: bool = Field(default=False, nullable=False)
     email_verified_at: datetime | None = Field(default=None)
 
     def mark_email_verified(self) -> None:
-        self.is_email_verified = True
-        self.email_verified_at = time.utc_now()
+        if not self.is_email_verified:
+            self.is_email_verified = True
+            self.email_verified_at = time.utc_now()
 
 
-class User(
-    BaseIntIDModel,
-    UserBase,
-    EmailVerificationMixin,
-    BaseTimestampModel,
-    table=True,
-):
+class User(IntIDMixin, UserBase, UserEmailVerification, TimestampMixin, table=True):
     __tablename__ = "users"
 
     password_hash: str = Field(max_length=255, nullable=False)
@@ -52,14 +47,11 @@ class User(
         sa_relationship_kwargs={"cascade": "all, delete-orphan"},
     )
 
-    def can_login(self) -> bool:
-        return self.status == UserStatus.ACTIVE and self.is_email_verified
-
 
 # === Uer Role SQLModels ===
 
 
-class UserRoleBase(SQLModel):
+class UserRoleBase(SQLModel, table=False):
     user_id: int = Field(foreign_key="users.id", primary_key=True)
     role_id: int = Field(foreign_key="roles.id", primary_key=True)
 

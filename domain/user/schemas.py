@@ -3,14 +3,15 @@ from datetime import datetime
 from pydantic import EmailStr, Field
 from sqlmodel import SQLModel
 
-from core.db.models import BaseIntIDModel, NonEmptyUpdateModel
+from core.db.mixins import IntIDMixin
+from core.db.schemas import AtLeastOneFieldModel
 
 from .models import UserBase, UserRoleBase
 
 # === User Schemas ===
 
 
-class UserRead(UserBase, BaseIntIDModel):
+class UserRead(UserBase, IntIDMixin):
     updated_at: datetime
 
 
@@ -19,7 +20,7 @@ class UserCreate(SQLModel):
     password: str
 
 
-class UserUpdate(NonEmptyUpdateModel):
+class UserUpdate(AtLeastOneFieldModel):
     email: EmailStr | None = Field(default=None, max_length=255)
 
 
@@ -34,5 +35,5 @@ class UserRoleCreate(SQLModel):
     role_id: int
 
 
-class UserRoleUpdate(NonEmptyUpdateModel):
+class UserRoleUpdate(AtLeastOneFieldModel):
     role_id: int | None = None
