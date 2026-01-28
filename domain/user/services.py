@@ -132,13 +132,7 @@ class UserRoleService:
 
 
 class EmailVerificationService:
-    def __init__(
-        self,
-        *,
-        session: AsyncSession,
-        redis: Redis,
-    ) -> None:
-        self.repo = UserRepository(model=User, session=session)
+    def __init__(self, *, session: AsyncSession, redis: Redis) -> None:
         self.session = session
         self.cache = EmailVerificationOTPCache(redis=redis)
 
@@ -173,11 +167,7 @@ class EmailVerificationService:
             )
         )
 
-    async def verify_email_otp(
-        self,
-        *,
-        data: EmailVerificationOTP,
-    ) -> None:
+    async def verify_email_otp(self, *, user: User, data: EmailVerificationOTP) -> None:
         cached = await self.cache.get(key=data.email)
 
         if cached is None:
@@ -185,11 +175,6 @@ class EmailVerificationService:
 
         if data.otp != cached.otp:
             raise BadRequestException(detail="Invalid OTP")
-
-        user = await self.repo.get_by(email=data.email)
-
-        if user is None:
-            raise BadRequestException(detail="User not found")
 
         user.mark_email_verified()
 
