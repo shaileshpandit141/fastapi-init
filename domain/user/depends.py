@@ -29,6 +29,6 @@ async def get_email_verification_service(
 UserServiceDep = Annotated[UserService, Depends(get_user_service)]
 UserRoleServiceDep = Annotated[UserRoleService, Depends(get_user_role_service)]
 EmailVerificationServiceDep = Annotated[
-    UserRoleService, Depends(get_email_verification_service)
+    EmailVerificationService, Depends(get_email_verification_service)
 ]
 CurrentUserDep = Annotated[User, Depends(authorize())]

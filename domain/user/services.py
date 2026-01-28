@@ -46,7 +46,7 @@ class UserService:
                 data=user_in,
                 values={
                     "password_hash": password_hash,
-                    "status": UserStatus.INACTIVE,
+                    "status": UserStatus.ACTIVE,
                 },
             )
         except EntityConflictException:
@@ -56,6 +56,14 @@ class UserService:
 
     async def get_user(self, user_id: int) -> User:
         user = await self.repo.get(id=user_id)
+
+        if not user:
+            raise NotFoundException(detail="User not found.")
+
+        return user
+
+    async def get_by_email(self, email: str) -> User:
+        user = await self.repo.get_by(email=email)
 
         if not user:
             raise NotFoundException(detail="User not found.")

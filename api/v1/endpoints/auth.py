@@ -12,26 +12,47 @@ from domain.authentication.schemas import (
     JwtTokenRefresh,
     JwtTokenRevoked,
 )
-from domain.user.depends import CurrentUserDep, UserServiceDep
+from domain.user.depends import (
+    CurrentUserDep,
+    EmailVerificationServiceDep,
+    UserServiceDep,
+)
 from domain.user.models import User
-from domain.user.schemas import UserCreate, UserRead
+from domain.user.schemas import (
+    EmailVerificationOTP,
+    SendEmailVerificationOTP,
+    UserCreate,
+    UserRead,
+)
 
 router = APIRouter(prefix="/auth", tags=["Auth Endpoints"])
 
 
 @router.post(
     path="/register",
+    response_model=DetailResponse,
+    responses=PUBLIC_WRITE,
     summary="Register a new user",
     description="Register a new user with email and password.",
-    response_model=UserRead,
-    responses=PUBLIC_WRITE,
 )
-async def create_user(user_in: UserCreate, service: UserServiceDep) -> User:
-    return await service.create_user(user_in)
+async def register_user(
+    user_in: UserCreate,
+    service: UserServiceDep,
+    email_service: EmailVerificationServiceDep,
+) -> DetailResponse:
+    user = await service.create_user(user_in)
+    await email_service.send_verification_otp(
+        data=SendEmailVerificationOTP(email=user.email)
+    )
+    return DetailResponse(
+        detail="A verification OTP has been sent to your email address."
+    )
 
 
 @router.post(
     path="/resend-email-otp",
+    response_model=DetailResponse,
+    responses=PUBLIC_WRITE,
     summary="Resend email verification OTP",
     description=(
         "Resends a one-time password (OTP) to the user's registered email "
@@ -39,18 +60,41 @@ async def create_user(user_in: UserCreate, service: UserServiceDep) -> User:
         "This endpoint does not reveal whether the email exists."
     ),
 )
-async def resend_email_verification_otp() -> None: ...
+async def resend_email_verification_otp(
+    service: EmailVerificationServiceDep,
+    data: SendEmailVerificationOTP,
+) -> DetailResponse:
+    await service.send_verification_otp(
+        data=SendEmailVerificationOTP(email=data.email),
+    )
+    return DetailResponse(
+        detail="A verification OTP has been sent to your email address."
+    )
 
 
 @router.post(
     path="/verify-email-otp",
+    response_model=DetailResponse,
+    responses=PUBLIC_WRITE,
     summary="Verify email using OTP",
     description=(
         "Verifies the user's email address using a one-time password (OTP). "
         "The OTP must be valid and not expired."
     ),
 )
-async def verify_email_otp() -> None: ...
+async def verify_email_otp(
+    service: UserServiceDep,
+    email_service: EmailVerificationServiceDep,
+    data: EmailVerificationOTP,
+) -> DetailResponse:
+    user = await service.get_by_email(email=data.email)
+    await email_service.verify_email_otp(
+        user=user,
+        data=data,
+    )
+    return DetailResponse(
+        detail="Your email has been successfully verified.",
+    )
 
 
 @router.post(

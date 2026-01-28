@@ -1,10 +1,11 @@
 from logging import getLogger
 from typing import Awaitable, Callable
 
-from constants import DEFAULT_CACHE_TTL
 from pydantic import BaseModel
 from redis.asyncio import Redis
 from sqlmodel import SQLModel
+
+from .constants import DEFAULT_CACHE_TTL
 
 logger = getLogger(__name__)
 
