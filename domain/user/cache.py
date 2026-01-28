@@ -2,8 +2,9 @@ from redis.asyncio import Redis
 
 from infrastructure.cache.redis.base import BaseRedisCache
 
-from .constants import UserCache
+from .constants import CurrentUserCacheConfig, EmailVerificationOTPCacheConfig
 from .models import User
+from .schemas import EmailVerificationOTP
 
 
 class CurrentUserCache(BaseRedisCache[User]):
@@ -11,6 +12,16 @@ class CurrentUserCache(BaseRedisCache[User]):
         super().__init__(
             model=User,
             redis=redis,
-            namespace=UserCache.NAMESPACE.value,
-            ttl=UserCache.TTL.value,
+            namespace=CurrentUserCacheConfig.NAMESPACE.value,
+            ttl=CurrentUserCacheConfig.TTL.value,
+        )
+
+
+class EmailVerificationOTPCache(BaseRedisCache[EmailVerificationOTP]):
+    def __init__(self, redis: Redis) -> None:
+        super().__init__(
+            model=EmailVerificationOTP,
+            redis=redis,
+            namespace=EmailVerificationOTPCacheConfig.NAMESPACE.value,
+            ttl=EmailVerificationOTPCacheConfig.TTL.value,
         )

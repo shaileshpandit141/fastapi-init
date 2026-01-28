@@ -2,16 +2,32 @@
 
 from typing import Sequence
 
+from redis.asyncio import Redis
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from core.exceptions import AlreadyExistsException, NotFoundException
+from core.email.base import EmailContent, EmailMessage
+from core.exceptions import (
+    AlreadyExistsException,
+    BadRequestException,
+    NotFoundException,
+)
 from core.repositories.exceptions import EntityConflictException
+from core.security.otp.generator import OtpGenerator
 from core.security.password.hasher import PasswordHasher
+from tasks.email import EmailTask
 
+from .cache import EmailVerificationOTPCache
 from .constants import UserStatus
 from .models import User, UserRole
 from .repositories import UserRepository, UserRoleRepository
-from .schemas import UserCreate, UserRoleCreate, UserRoleUpdate, UserUpdate
+from .schemas import (
+    EmailVerificationOTP,
+    SendEmailVerificationOTP,
+    UserCreate,
+    UserRoleCreate,
+    UserRoleUpdate,
+    UserUpdate,
+)
 
 # === User Service ===
 
@@ -110,3 +126,71 @@ class UserRoleService:
             raise NotFoundException(detail="Role does not exists")
 
         await self.repo.delete(obj=role)
+
+
+# === Email Verification service ===
+
+
+class EmailVerificationService:
+    def __init__(
+        self,
+        *,
+        session: AsyncSession,
+        redis: Redis,
+    ) -> None:
+        self.repo = UserRepository(model=User, session=session)
+        self.session = session
+        self.cache = EmailVerificationOTPCache(redis=redis)
+
+    async def send_verification_otp(self, *, data: SendEmailVerificationOTP) -> None:
+        email = data.email.lower().strip()
+        cached = await self.cache.get(key=email)
+
+        if cached is not None:
+            otp = cached.otp
+        else:
+            otp = OtpGenerator.generate(length=6)
+
+            await self.cache.set(
+                key=email,
+                instance=EmailVerificationOTP(
+                    email=email,
+                    otp=otp,
+                ),
+            )
+
+        EmailTask.send_email(
+            EmailMessage(
+                subject="Verify your email",
+                to=email,
+                content=EmailContent(
+                    html_template="verify_email.html",
+                ),
+                context={"otp": otp},
+            )
+        )
+
+    async def verify_email_otp(
+        self,
+        *,
+        data: EmailVerificationOTP,
+    ) -> None:
+        cached = await self.cache.get(key=data.email)
+
+        if cached is None:
+            raise BadRequestException(detail="OTP expired or invalid")
+
+        if data.otp != cached.otp:
+            raise BadRequestException(detail="Invalid OTP")
+
+        user = await self.repo.get_by(email=data.email)
+
+        if user is None:
+            raise BadRequestException(detail="User not found")
+
+        user.mark_email_verified()
+
+        self.session.add(user)
+        await self.session.commit()
+
+        await self.cache.invalidate(key=data.email)

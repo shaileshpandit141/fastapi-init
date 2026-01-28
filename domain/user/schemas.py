@@ -37,3 +37,15 @@ class UserRoleCreate(SQLModel):
 
 class UserRoleUpdate(AtLeastOneFieldModel):
     role_id: int | None = None
+
+
+# === User Email Verification Otp Schemas ===
+
+
+class EmailVerificationOTP(SQLModel):
+    email: EmailStr
+    otp: str
+
+
+class SendEmailVerificationOTP(SQLModel):
+    email: EmailStr

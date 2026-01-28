@@ -56,7 +56,7 @@ class BaseRedisCache[Model: BaseModel | SQLModel]:
         self.namespace = namespace
         self.ttl = ttl
 
-    def _key(self, id: int | str) -> str:
+    def _key(self, identifier: int | str) -> str:
         """
         Build a fully-qualified Redis cache key.
 
@@ -73,9 +73,9 @@ class BaseRedisCache[Model: BaseModel | SQLModel]:
         Returns:
             A Redis-compatible string key.
         """
-        return f"cache:{self.namespace}:{id}"
+        return f"cache:{self.namespace}:{identifier}"
 
-    async def get(self, *, id: int | str) -> Model | None:
+    async def get(self, *, key: int | str) -> Model | None:
         """
         Retrieve an object from the cache.
 
@@ -85,14 +85,14 @@ class BaseRedisCache[Model: BaseModel | SQLModel]:
         - Silently fails and returns `None` if data is invalid or corrupted
 
         Args:
-            id:
+            key:
                 Unique identifier of the cached object.
 
         Returns:
             The deserialized model instance if found and valid,
             otherwise `None`.
         """
-        raw = await self.redis.get(self._key(id))
+        raw = await self.redis.get(self._key(key))
 
         if raw is None:
             return None
@@ -105,7 +105,7 @@ class BaseRedisCache[Model: BaseModel | SQLModel]:
             logger.debug("Cache data validation error: ", exc_info=exc)
             return None
 
-    async def set(self, *, id: int | str, instance: Model) -> None:
+    async def set(self, *, key: int | str, instance: Model) -> None:
         """
         Store an object in Redis with expiration.
 
@@ -113,13 +113,13 @@ class BaseRedisCache[Model: BaseModel | SQLModel]:
         to ensure automatic expiration.
 
         Args:
-            id:
+            key:
                 Unique identifier of the cached object.
             instance:
                 Model instance to be cached.
         """
         await self.redis.setex(
-            self._key(id),
+            self._key(key),
             self.ttl,
             instance.model_dump_json(),
         )
@@ -127,7 +127,7 @@ class BaseRedisCache[Model: BaseModel | SQLModel]:
     async def get_or_set(
         self,
         *,
-        id: int | str,
+        key: int | str,
         factory: Callable[[], Awaitable[Model]],
     ) -> Model:
         """
@@ -140,7 +140,7 @@ class BaseRedisCache[Model: BaseModel | SQLModel]:
         - Return the value
 
         Args:
-            id:
+            key:
                 Unique identifier of the cached object.
             factory:
                 Async callable that returns the model instance
@@ -149,15 +149,15 @@ class BaseRedisCache[Model: BaseModel | SQLModel]:
         Returns:
             The cached or freshly created model instance.
         """
-        cached = await self.get(id=id)
+        cached = await self.get(key=key)
         if cached is not None:
             return cached
 
         instance = await factory()
-        await self.set(id=id, instance=instance)
+        await self.set(key=key, instance=instance)
         return instance
 
-    async def invalidate(self, *, id: int | str) -> None:
+    async def invalidate(self, *, key: int | str) -> None:
         """
         Remove a single object from the cache.
 
@@ -165,12 +165,12 @@ class BaseRedisCache[Model: BaseModel | SQLModel]:
         in the primary data store.
 
         Args:
-            id:
+            key:
                 Unique identifier of the cached object.
         """
-        await self.redis.delete(self._key(id))
+        await self.redis.delete(self._key(key))
 
-    async def invalidate_many(self, *, ids: list[int | str]) -> None:
+    async def invalidate_many(self, *, keys: list[int | str]) -> None:
         """
         Remove multiple objects from the cache in a single Redis call.
 
@@ -178,13 +178,13 @@ class BaseRedisCache[Model: BaseModel | SQLModel]:
         when the list of IDs is empty.
 
         Args:
-            ids:
+            keys:
                 List of object identifiers to invalidate.
         """
-        if ids:
-            await self.redis.delete(*(self._key(obj_id) for obj_id in ids))
+        if keys:
+            await self.redis.delete(*(self._key(key) for key in keys))
 
-    async def exists(self, *, id: int | str) -> bool:
+    async def exists(self, *, key: int | str) -> bool:
         """
         Check whether a cache entry exists.
 
@@ -193,10 +193,10 @@ class BaseRedisCache[Model: BaseModel | SQLModel]:
             for key existence in Redis.
 
         Args:
-            id:
+            key:
                 Unique identifier of the cached object.
 
         Returns:
             `True` if the key exists in Redis, otherwise `False`.
         """
-        return bool(await self.redis.exists(self._key(id)))
+        return bool(await self.redis.exists(self._key(key)))
