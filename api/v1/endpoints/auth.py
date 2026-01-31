@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Request, Response
 
 from core.response.schemas import DetailResponse
 from core.swagger import AUTH_READ, PUBLIC_WRITE
@@ -24,6 +24,7 @@ from domain.user.schemas import (
     UserCreate,
     UserRead,
 )
+from infrastructure.rate_limit.limiter import limit
 
 router = APIRouter(prefix="/auth", tags=["Auth Endpoints"])
 
@@ -60,7 +61,10 @@ async def register_user(
         "This endpoint does not reveal whether the email exists."
     ),
 )
+@limit("5/minute")
 async def resend_email_verification_otp(
+    request: Request,
+    response: Response,
     service: EmailVerificationServiceDep,
     data: SendEmailVerificationOTP,
 ) -> DetailResponse:

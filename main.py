@@ -10,7 +10,7 @@ from core.lifespan import lifespan
 from core.logging import LOGGING_CONFIG
 from core.middleware import include_middlewares
 from core.settings import settings
-from infrastructure.limiter import limiter
+from infrastructure.rate_limit.limiter import limiter
 
 # === A Root function to redirect user to /docs endpoint ===
 
