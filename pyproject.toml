@@ -25,12 +25,14 @@ dependencies = [
   "uvicorn[standard]>=0.40.0",
 ]
 
-# Optional dependencies
-[project.optional-dependencies]
+# Dev dependencies
+
+[dependency-groups]
 dev = [
   "httpx>=0.28.1",
   "pytest>=9.0.2",
   "pytest-asyncio>=1.3.0",
+  "pytest-cov>=7.0.0",
   "black>=25.12.0",
   "isort>=7.0.0",
 ]
@@ -48,7 +50,7 @@ reportUntypedFunctionDecorator = false
 # Pytest configuration
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-v"
+addopts = "-v --cov"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
