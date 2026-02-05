@@ -2,8 +2,8 @@ from typing import Sequence
 
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from core.exceptions import AlreadyExistsException, NotFoundException
-from core.repositories.exceptions import EntityConflictException
+from core.exceptions import AlreadyExistsError, NotFoundError
+from core.repositories.exceptions import EntityConflictError
 
 from .models import Permission
 from .repositories import PermissionRepository
@@ -19,8 +19,8 @@ class PermissionService:
     async def create_permission(self, permission_in: PermissionCreate) -> Permission:
         try:
             permission = await self.repo.create(data=permission_in)
-        except EntityConflictException:
-            raise AlreadyExistsException(detail="Permission already exists.")
+        except EntityConflictError:
+            raise AlreadyExistsError(detail="Permission already exists.")
 
         return permission
 
@@ -28,7 +28,7 @@ class PermissionService:
         permission = await self.repo.get(id=permission_id)
 
         if not permission:
-            raise NotFoundException(detail="Permission not found.")
+            raise NotFoundError(detail="Permission not found.")
 
         return permission
 

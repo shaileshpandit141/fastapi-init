@@ -3,7 +3,7 @@ from typing import Any, Iterable
 from sqlmodel import SQLModel, delete, select
 
 from ..base.repository import BaseRepository
-from ..exceptions import EntityNotFoundException
+from ..exceptions import EntityNotFoundError
 
 
 class DeleteRepositoryMixin[Model: SQLModel](BaseRepository[Model]):
@@ -46,14 +46,14 @@ class DeleteRepositoryMixin[Model: SQLModel](BaseRepository[Model]):
 
         Raises
         ------
-        EntityNotFoundException
+        EntityNotFoundError
             If no matching entity exists.
         """
         stmt = select(self.model).filter_by(**filters)
         obj = (await self.session.exec(stmt)).one_or_none()
 
         if not obj:
-            raise EntityNotFoundException(detail="Resource does not exist")
+            raise EntityNotFoundError(detail="Resource does not exist")
 
         await self.delete(obj=obj)
 

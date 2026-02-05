@@ -1,18 +1,19 @@
-from .app_exception import AppException, AppHTTPException
+from .app_exception import AppError
 from .http_exception import (
-    AccessDeniedException,
-    AlreadyExistsException,
-    BadRequestException,
-    NotFoundException,
-    UnauthorizedException,
+    AccessDeniedError,
+    AlreadyExistsError,
+    BadRequestError,
+    HTTPError,
+    NotFoundError,
+    UnauthorizedError,
 )
 
 __all__ = [
-    "AlreadyExistsException",
-    "AppException",
-    "BadRequestException",
-    "AccessDeniedException",
-    "NotFoundException",
-    "AppHTTPException",
-    "UnauthorizedException",
+    "AlreadyExistsError",
+    "AppError",
+    "BadRequestError",
+    "AccessDeniedError",
+    "NotFoundError",
+    "HTTPError",
+    "UnauthorizedError",
 ]

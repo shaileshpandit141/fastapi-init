@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlmodel import SQLModel
 
 from ..base.repository import BaseRepository
-from ..exceptions import EntityConflictException
+from ..exceptions import EntityConflictError
 
 
 class WriteRepositoryMixin[Model: SQLModel, CreateModel: SQLModel | BaseModel](
@@ -58,7 +58,7 @@ class WriteRepositoryMixin[Model: SQLModel, CreateModel: SQLModel | BaseModel](
 
         Raises
         ------
-        EntityConflictException
+        EntityConflictError
             If a database integrity constraint is violated (e.g. unique key).
         """
         try:
@@ -72,7 +72,7 @@ class WriteRepositoryMixin[Model: SQLModel, CreateModel: SQLModel | BaseModel](
             return obj
         except IntegrityError:
             await self.session.rollback()
-            raise EntityConflictException(detail="Resource already exists")
+            raise EntityConflictError(detail="Resource already exists")
 
     async def bulk_create(
         self,

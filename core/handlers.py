@@ -19,16 +19,14 @@ from starlette.status import (
     HTTP_503_SERVICE_UNAVAILABLE,
 )
 
-from core.exceptions import AppHTTPException
+from core.exceptions import HTTPError
 
 logger = getLogger(__name__)
 
 # === App exceptions (highest priority) ===
 
 
-async def app_exception_handler(
-    request: Request, exc: AppHTTPException
-) -> JSONResponse:
+async def app_exception_handler(request: Request, exc: HTTPError) -> JSONResponse:
     logger.debug(msg="App http exception error", exc_info=exc)
     return JSONResponse(
         status_code=exc.status_code,
@@ -137,7 +135,7 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
 
 
 exception_handler_list: list[tuple[Any, Any]] = [
-    (AppHTTPException, app_exception_handler),
+    (HTTPError, app_exception_handler),
     (RateLimitExceeded, rate_limit_exceeded),
     (JWTError, jwt_exception_handler),
     (PermissionError, permission_denie_handler),

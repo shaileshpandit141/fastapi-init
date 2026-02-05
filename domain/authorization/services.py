@@ -1,7 +1,7 @@
 from typing import Iterable
 
 from core.enums import DescribedEnum
-from core.exceptions import AccessDeniedException
+from core.exceptions import AccessDeniedError
 from domain.authentication.services import CurrentUserService
 from domain.user.models import User
 
@@ -43,7 +43,7 @@ class AuthorizationService:
         if roles:
             user_roles = {ur.role.name for ur in user.roles}
             if not user_roles.intersection(roles):
-                raise AccessDeniedException(detail="Access denied")
+                raise AccessDeniedError(detail="Access denied")
 
         # ---- Permission check (with wildcard support) ----
         if permissions:
@@ -56,6 +56,6 @@ class AuthorizationService:
                     permission_matches(granted, required)
                     for granted in user_permissions
                 ):
-                    raise AccessDeniedException(detail="Access denied")
+                    raise AccessDeniedError(detail="Access denied")
 
         return user

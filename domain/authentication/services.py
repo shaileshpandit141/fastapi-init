@@ -7,11 +7,11 @@ from sqlalchemy.orm import selectinload
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from core.exceptions import AccessDeniedException, BadRequestException
-from core.exceptions.http_exception import UnauthorizedException
+from core.exceptions import AccessDeniedError, BadRequestError
+from core.exceptions.http_exception import UnauthorizedError
 from core.response.schemas import DetailResponse
 from core.security.jwt import JwtTokenManager
-from core.security.jwt.exceptions import JwtException
+from core.security.jwt.exceptions import JwtError
 from core.security.password import PasswordHasher
 from domain.role.models import Role, RolePermission
 from domain.user.constants import UserStatus
@@ -37,8 +37,8 @@ class CurrentUserService:
 
         try:
             claims = await jwt_token_manager.verify_access_token(self.token)
-        except JwtException:
-            raise UnauthorizedException(detail="Invalid or expired access token.")
+        except JwtError:
+            raise UnauthorizedError(detail="Invalid or expired access token.")
 
         # cache_user = await cache.get(id=claims["id"])  # type: ignore # noqa: F841
 
@@ -62,7 +62,7 @@ class CurrentUserService:
         user = (await self.session.exec(stmt)).one_or_none()
 
         if user is None:
-            raise UnauthorizedException(detail="Invalid access token.")
+            raise UnauthorizedError(detail="Invalid access token.")
 
         # await cache.set(id=user.id, instance=user)
 
@@ -72,10 +72,10 @@ class CurrentUserService:
         user = await self.get_current_user()
 
         if user.status != UserStatus.ACTIVE:
-            raise AccessDeniedException(detail="Inactive user.")
+            raise AccessDeniedError(detail="Inactive user.")
 
         if not user.is_email_verified:
-            raise AccessDeniedException(
+            raise AccessDeniedError(
                 detail="Please verify your email to continue.",
             )
 
@@ -97,20 +97,20 @@ class JwtTokenService:
         user = (await self._session.exec(stmt)).one_or_none()
 
         if not user:
-            raise BadRequestException(detail="User not found.")
+            raise BadRequestError(detail="User not found.")
 
         if user.status == UserStatus.INACTIVE:
-            raise AccessDeniedException(detail="Inactive user.")
+            raise AccessDeniedError(detail="Inactive user.")
 
         if not user.is_email_verified:
-            raise AccessDeniedException(
+            raise AccessDeniedError(
                 detail="Please verify your email to continue.",
             )
 
         if not self._password_hasher.verify_password(
             plain_password=form_in.password, hashed_password=user.password_hash
         ):
-            raise BadRequestException(detail="Incorrect email password.")
+            raise BadRequestError(detail="Incorrect email password.")
 
         return JwtTokenRead(
             access_token=self._jwt_token_manager.create_access_token(
@@ -127,8 +127,8 @@ class JwtTokenService:
             claims = await self._jwt_token_manager.verify_refresh_token(
                 token=token_in.refresh_token
             )
-        except JwtException:
-            raise BadRequestException(detail="Invalid or expire refresh token.")
+        except JwtError:
+            raise BadRequestError(detail="Invalid or expire refresh token.")
 
         return JwtTokenRead(
             access_token=self._jwt_token_manager.create_access_token(
@@ -145,7 +145,7 @@ class JwtTokenService:
                 await self._jwt_token_manager.revoke_token(
                     jti=claims["jti"], exp=claims["exp"]
                 )
-            except JwtException:
+            except JwtError:
                 pass
 
         await _revoke_if_valid(

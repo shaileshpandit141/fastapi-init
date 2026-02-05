@@ -6,13 +6,9 @@ from redis.asyncio import Redis
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from core.email.base import EmailContent, EmailMessage
-from core.exceptions import (
-    AlreadyExistsException,
-    BadRequestException,
-    NotFoundException,
-)
-from core.repositories.exceptions import EntityConflictException
-from core.security.otp.generator import OtpGenerator
+from core.exceptions import AlreadyExistsError, BadRequestError, NotFoundError
+from core.repositories.exceptions import EntityConflictError
+from core.security.otp.generator import OTPGenerator
 from core.security.password.hasher import PasswordHasher
 from tasks.email import EmailTask
 
@@ -49,8 +45,8 @@ class UserService:
                     "status": UserStatus.ACTIVE,
                 },
             )
-        except EntityConflictException:
-            raise AlreadyExistsException(detail="Email already exists.")
+        except EntityConflictError:
+            raise AlreadyExistsError(detail="Email already exists.")
 
         return user
 
@@ -58,7 +54,7 @@ class UserService:
         user = await self.repo.get(id=user_id)
 
         if not user:
-            raise NotFoundException(detail="User not found.")
+            raise NotFoundError(detail="User not found.")
 
         return user
 
@@ -66,7 +62,7 @@ class UserService:
         user = await self.repo.get_by(email=email)
 
         if not user:
-            raise NotFoundException(detail="User not found.")
+            raise NotFoundError(detail="User not found.")
 
         return user
 
@@ -97,8 +93,8 @@ class UserRoleService:
             user_role = await self.repo.create(
                 data=user_role_in, values={"user_id": user_id}
             )
-        except EntityConflictException:
-            raise AlreadyExistsException(detail="User role already exists.")
+        except EntityConflictError:
+            raise AlreadyExistsError(detail="User role already exists.")
 
         return user_role
 
@@ -106,7 +102,7 @@ class UserRoleService:
         role = await self.repo.get_by(user_id=user_id)
 
         if not role:
-            raise NotFoundException(detail="User role not found.")
+            raise NotFoundError(detail="User role not found.")
 
         return role
 
@@ -131,7 +127,7 @@ class UserRoleService:
         role = await self.repo.get_by(user_id=user_id, role_id=role_id)
 
         if not role:
-            raise NotFoundException(detail="Role does not exists")
+            raise NotFoundError(detail="Role does not exists")
 
         await self.repo.delete(obj=role)
 
@@ -151,7 +147,7 @@ class EmailVerificationService:
         if cached is not None:
             otp = cached.otp
         else:
-            otp = OtpGenerator.generate(length=6)
+            otp = OTPGenerator.generate(length=6)
 
             await self.cache.set(
                 key=email,
@@ -179,10 +175,10 @@ class EmailVerificationService:
         cached = await self.cache.get(key=data.email)
 
         if cached is None:
-            raise BadRequestException(detail="OTP expired or invalid")
+            raise BadRequestError(detail="OTP expired or invalid")
 
         if data.otp != cached.otp:
-            raise BadRequestException(detail="Invalid OTP")
+            raise BadRequestError(detail="Invalid OTP")
 
         user.mark_email_verified()
 

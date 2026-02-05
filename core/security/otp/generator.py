@@ -1,7 +1,7 @@
 from secrets import randbelow
 
 
-class OtpGenerator:
+class OTPGenerator:
     @staticmethod
     def generate(length: int = 6) -> str:
         if length < 1:

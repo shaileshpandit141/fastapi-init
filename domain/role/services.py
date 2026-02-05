@@ -2,8 +2,8 @@ from typing import Sequence
 
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from core.exceptions import AlreadyExistsException, NotFoundException
-from core.repositories.exceptions import EntityConflictException
+from core.exceptions import AlreadyExistsError, NotFoundError
+from core.repositories.exceptions import EntityConflictError
 
 from .models import Role, RolePermission
 from .repositories import RolePermissionRepository, RoleRepository
@@ -19,8 +19,8 @@ class RoleService:
     async def create_role(self, role_in: RoleCreate) -> Role:
         try:
             role = await self.repo.create(data=role_in)
-        except EntityConflictException:
-            raise AlreadyExistsException(detail="Role already exists.")
+        except EntityConflictError:
+            raise AlreadyExistsError(detail="Role already exists.")
 
         return role
 
@@ -28,7 +28,7 @@ class RoleService:
         role = await self.repo.get(id=role_id)
 
         if not role:
-            raise NotFoundException(detail="Role not found.")
+            raise NotFoundError(detail="Role not found.")
 
         return role
 
@@ -62,8 +62,8 @@ class RolePermissionService:
             role_permission = await self.repo.create(
                 data=role_permission_in, values={"role_id": role_id}
             )
-        except EntityConflictException:
-            raise AlreadyExistsException(detail="Role or Permission already exists.")
+        except EntityConflictError:
+            raise AlreadyExistsError(detail="Role or Permission already exists.")
 
         return role_permission
 
@@ -72,7 +72,7 @@ class RolePermissionService:
         role_permission = await self.repo.get_by(role_id=role_id)
 
         if not role_permission:
-            raise NotFoundException(detail="Role permission not found.")
+            raise NotFoundError(detail="Role permission not found.")
 
         return role_permission
 
@@ -101,6 +101,6 @@ class RolePermissionService:
         role_perm = await self.repo.get_by(role_id=role_id, permission_id=permission_id)
 
         if not role_perm:
-            raise NotFoundException(detail="Role Permission does not exists")
+            raise NotFoundError(detail="Role Permission does not exists")
 
         await self.repo.delete(obj=role_perm)

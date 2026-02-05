@@ -1,13 +1,13 @@
-from core.exceptions import AppException
+from core.exceptions import AppError
 
 
-class RepositoryException(AppException):
+class RepositoryError(AppError):
     """Base exception for repository-related errors."""
 
     pass
 
 
-class EntityNotFoundException(RepositoryException):
+class EntityNotFoundError(RepositoryError):
     """
     Raised when a requested entity cannot be found
     in the database.
@@ -16,7 +16,7 @@ class EntityNotFoundException(RepositoryException):
     pass
 
 
-class EntityConflictException(RepositoryException):
+class EntityConflictError(RepositoryError):
     """
     Raised when attempting to create or update
     an entity that violates a uniqueness constraint.

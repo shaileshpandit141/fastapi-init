@@ -1,42 +1,68 @@
 from core.response.schemas import ErrorDetailDict
 
-from .app_exception import AppHTTPException
+from .app_exception import AppError
 
-# === Bad request exception ===
+# =============================================================================
+# Root http error
+# =============================================================================
 
 
-class BadRequestException(AppHTTPException):
+class HTTPError(AppError):
+    def __init__(
+        self,
+        *,
+        detail: str | list[ErrorDetailDict],
+        status_code: int,
+    ) -> None:
+        super().__init__(detail=detail)
+        self.status_code = status_code
+
+
+# =============================================================================
+# Bad request error
+# =============================================================================
+
+
+class BadRequestError(HTTPError):
     def __init__(self, *, detail: str | list[ErrorDetailDict]) -> None:
         super().__init__(detail=detail, status_code=400)
 
 
-# === Unauthorized exception ===
+# =============================================================================
+# Unauthorized error
+# =============================================================================
 
 
-class UnauthorizedException(AppHTTPException):
+class UnauthorizedError(HTTPError):
     def __init__(self, *, detail: str | list[ErrorDetailDict]) -> None:
         super().__init__(detail=detail, status_code=401)
 
 
-# === Access denied exception ===
+# =============================================================================
+# Access denied error
+# =============================================================================
 
 
-class AccessDeniedException(AppHTTPException):
+class AccessDeniedError(HTTPError):
     def __init__(self, *, detail: str | list[ErrorDetailDict]) -> None:
         super().__init__(detail=detail, status_code=403)
 
 
-# === Not found exception ===
+# =============================================================================
+# Not found error
+# =============================================================================
 
 
-class NotFoundException(AppHTTPException):
+class NotFoundError(HTTPError):
     def __init__(self, *, detail: str | list[ErrorDetailDict]) -> None:
         super().__init__(detail=detail, status_code=404)
 
 
-# === Resource already exist exception ===
+# =============================================================================
+# Resource already exist error
+# =============================================================================
 
 
-class AlreadyExistsException(AppHTTPException):
+class AlreadyExistsError(HTTPError):
     def __init__(self, *, detail: str | list[ErrorDetailDict]) -> None:
         super().__init__(detail=detail, status_code=409)
