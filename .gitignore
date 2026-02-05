@@ -9,5 +9,8 @@ db.sqlite
 build/
 dist/
 wheels/
-tests/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
 not+commited.ipynb
