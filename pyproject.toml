@@ -49,12 +49,53 @@ reportUntypedFunctionDecorator = false
 
 # Pytest configuration
 [tool.pytest.ini_options]
-minversion = "6.0"
-addopts = "-v --cov"
+minversion = "7.0"
 testpaths = ["tests"]
-python_files = ["test_*.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
+
+addopts = """
+-ra
+-q
+--strict-markers
+--strict-config
+--disable-warnings
+--maxfail=1
+--cov
+--cov-report=term-missing:skip-covered
+--cov-report=xml
+--cov-report=html
+"""
+
+# Define pytest markers
+markers = [
+  "unit: fast isolated tests",
+  "integration: database / redis / external services",
+  "e2e: full application tests",
+]
+
+# Configure coverage roles
+[tool.coverage.run]
+branch = true
+parallel = true
+relative_files = true
+
+# Include files for coverage
+source = ["api", "domain", "core", "infrastructure", "tasks"]
+
+# Exclude files for coverage
+omit = [
+  "api/**/router.py",
+  "alembic/*",
+  "main.py",
+  "celery_app.py",
+  "cli.py",
+  "commands/*",
+  "scripts/*",
+  "**/__pycache__/*",
+  "**/*.pyc",
+  "templates/*",
+  "core/swagger/*",
+  "**/__init__.py",
+]
 
 # Black tool Configuration
 [tool.black]
