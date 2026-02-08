@@ -15,4 +15,5 @@ class NotificationCreate(NotificationBase):
 
 
 class NotificationUpdate(AtLeastOneFieldModel):
-    pass
+    is_read: bool = False
+    is_deleted: bool = False

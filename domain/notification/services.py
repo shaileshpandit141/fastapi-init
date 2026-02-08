@@ -8,7 +8,7 @@ from core.repositories.exceptions import EntityConflictError
 
 from .models import Notification
 from .repositories import NotificationRepository
-from .schemas import NotificationCreate
+from .schemas import NotificationCreate, NotificationUpdate
 
 # =============================================================================
 # Notification Service
@@ -30,10 +30,13 @@ class NotificationService:
         return notification
 
     async def list(
-        self, user_id: int, limit: int = 10, offset: int = 0
+        self, notification_id: UUID, user_id: int, limit: int = 10, offset: int = 0
     ) -> Sequence[Notification]:
         notifications = await self.repo.find_by(
-            conditions=[Notification.user_id == user_id]
+            conditions=[
+                Notification.id == notification_id,
+                Notification.user_id == user_id,
+            ]
         )
 
         return notifications
@@ -47,12 +50,21 @@ class NotificationService:
         return notification
 
     async def mark_as_read(self, notification_id: UUID, user_id: int) -> Notification:
-        raise NotImplementedError
+        notification = await self.get(notification_id, user_id)
+        notification = await self.repo.update(
+            obj=notification, data=NotificationUpdate(is_read=True)
+        )
+
+        return notification
 
     async def mark_all_as_read(
         self, notification_id: UUID, user_id: int
     ) -> Sequence[Notification]:
-        raise NotImplementedError
+        notifications = await self.list(notification_id, user_id)
+        notifications = await self.repo.bulk_set(
+            objs=notifications, data={"is_read": True}
+        )
+        return notifications
 
     async def delete_read(self, notification_id: UUID, user_id: int) -> Notification:
         raise NotImplementedError
