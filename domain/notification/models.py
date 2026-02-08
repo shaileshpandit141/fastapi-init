@@ -32,6 +32,26 @@ class NotificationBase(SQLModel, table=False):
     is_read: bool = Field(default=False, index=True)
     is_deleted: bool = Field(default=False, index=True)
 
+    def mark_as_read(self) -> None:
+        """Mark notification as read."""
+        if not self.is_deleted:
+            self.is_read = True
+
+    def mark_as_unread(self) -> None:
+        """Mark notification as unread."""
+        if not self.is_deleted:
+            self.is_read = False
+
+    def soft_delete(self) -> None:
+        """Soft delete notification."""
+        self.is_deleted = True
+        self.is_read = True
+
+    def restore(self) -> None:
+        """Restore a soft-deleted notification."""
+        self.is_deleted = False
+        self.is_read = False
+
 
 # =============================================================================
 # Notification SQLModel
