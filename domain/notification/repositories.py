@@ -8,7 +8,7 @@ from .schemas import NotificationCreate, NotificationUpdate
 # =============================================================================
 
 
-class PermissionRepository(
+class NotificationRepository(
     Repository[Notification, NotificationCreate, NotificationUpdate]
 ):
     pass
