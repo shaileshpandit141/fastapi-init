@@ -32,7 +32,11 @@ class NotificationService:
     async def list(
         self, user_id: int, limit: int = 10, offset: int = 0
     ) -> Sequence[Notification]:
-        raise NotImplementedError
+        permissions = await self.repo.find_by(
+            conditions=[Notification.user_id == user_id]
+        )
+
+        return permissions
 
     async def get(self, notification_id: UUID) -> Notification:
         raise NotImplementedError
