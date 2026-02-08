@@ -1,7 +1,6 @@
 # pyright: reportAssignmentType=false
 
 from datetime import datetime
-from uuid import UUID
 
 from sqlalchemy import Column, DateTime, Enum, String, func
 from sqlmodel import Field, SQLModel  # type: ignore
@@ -42,7 +41,7 @@ class NotificationBase(SQLModel, table=False):
 class Notification(UUIDv7Mixin, NotificationBase, table=True):
     __tablename__ = "notifications"
 
-    user_id: UUID = Field(foreign_key="users.id", index=True, nullable=False)
+    user_id: int = Field(foreign_key="users.id", index=True, nullable=False)
     created_at: datetime = Field(
         default_factory=time.utc_now,
         sa_column=Column(
