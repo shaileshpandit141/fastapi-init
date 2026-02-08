@@ -16,6 +16,7 @@ from core.security.password import PasswordHasher
 from domain.role.models import Role, RolePermission
 from domain.user.constants import UserStatus
 from domain.user.models import User, UserRole
+from domain.user.user_status import USER_STATE_MAP
 
 from .schemas import JwtTokenCreate, JwtTokenRead, JwtTokenRefresh, JwtTokenRevoked
 
@@ -71,14 +72,12 @@ class CurrentUserService:
     async def get_active_user(self) -> User:
         user = await self.get_current_user()
 
-        if user.status != UserStatus.ACTIVE:
-            raise AccessDeniedError(detail="Inactive user.")
+        try:
+            state = USER_STATE_MAP[user.status]
+        except KeyError:
+            raise AccessDeniedError("Invalid account status.")
 
-        if not user.is_email_verified:
-            raise AccessDeniedError(
-                detail="Please verify your email to continue.",
-            )
-
+        state.ensure_access(user)
         return user
 
 

@@ -42,7 +42,7 @@ class UserService:
                 data=user_in,
                 values={
                     "password_hash": password_hash,
-                    "status": UserStatus.ACTIVE,
+                    "status": UserStatus.PENDING,
                 },
             )
         except EntityConflictError:
@@ -181,6 +181,7 @@ class EmailVerificationService:
             raise BadRequestError(detail="Invalid OTP")
 
         user.mark_email_verified()
+        user.activate()
 
         self.session.add(user)
         await self.session.commit()

@@ -19,12 +19,21 @@ if TYPE_CHECKING:
 
 class UserBase(SQLModel, table=False):
     email: EmailStr = Field(
-        max_length=255,
-        index=True,
-        nullable=False,
-        sa_column_kwargs={"unique": True},
+        max_length=255, index=True, nullable=False, sa_column_kwargs={"unique": True}
     )
-    status: UserStatus = Field(default=UserStatus.ACTIVE, nullable=False)
+    status: UserStatus = Field(default=UserStatus.PENDING, nullable=False)
+
+    def activate(self) -> None:
+        self.status = UserStatus.ACTIVE
+
+    def suspend(self) -> None:
+        self.status = UserStatus.SUSPENDED
+
+    def ban(self) -> None:
+        self.status = UserStatus.BANNED
+
+    def deactivate(self) -> None:
+        self.status = UserStatus.INACTIVE
 
 
 class UserEmailVerification(SQLModel, table=False):
@@ -32,9 +41,11 @@ class UserEmailVerification(SQLModel, table=False):
     email_verified_at: datetime | None = Field(default=None)
 
     def mark_email_verified(self) -> None:
-        if not self.is_email_verified:
-            self.is_email_verified = True
-            self.email_verified_at = time.utc_now()
+        if self.is_email_verified:
+            return
+
+        self.is_email_verified = True
+        self.email_verified_at = time.utc_now()
 
 
 class User(IntIDMixin, UserBase, UserEmailVerification, TimestampMixin, table=True):

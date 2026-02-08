@@ -8,12 +8,7 @@ from .app_exception import AppError
 
 
 class HTTPError(AppError):
-    def __init__(
-        self,
-        *,
-        detail: str | list[ErrorDetailDict],
-        status_code: int,
-    ) -> None:
+    def __init__(self, detail: str | list[ErrorDetailDict], status_code: int) -> None:
         super().__init__(detail=detail)
         self.status_code = status_code
 
@@ -24,7 +19,7 @@ class HTTPError(AppError):
 
 
 class BadRequestError(HTTPError):
-    def __init__(self, *, detail: str | list[ErrorDetailDict]) -> None:
+    def __init__(self, detail: str | list[ErrorDetailDict]) -> None:
         super().__init__(detail=detail, status_code=400)
 
 
@@ -34,7 +29,7 @@ class BadRequestError(HTTPError):
 
 
 class UnauthorizedError(HTTPError):
-    def __init__(self, *, detail: str | list[ErrorDetailDict]) -> None:
+    def __init__(self, detail: str | list[ErrorDetailDict]) -> None:
         super().__init__(detail=detail, status_code=401)
 
 
@@ -44,7 +39,7 @@ class UnauthorizedError(HTTPError):
 
 
 class AccessDeniedError(HTTPError):
-    def __init__(self, *, detail: str | list[ErrorDetailDict]) -> None:
+    def __init__(self, detail: str | list[ErrorDetailDict]) -> None:
         super().__init__(detail=detail, status_code=403)
 
 
@@ -54,7 +49,7 @@ class AccessDeniedError(HTTPError):
 
 
 class NotFoundError(HTTPError):
-    def __init__(self, *, detail: str | list[ErrorDetailDict]) -> None:
+    def __init__(self, detail: str | list[ErrorDetailDict]) -> None:
         super().__init__(detail=detail, status_code=404)
 
 
@@ -64,5 +59,5 @@ class NotFoundError(HTTPError):
 
 
 class AlreadyExistsError(HTTPError):
-    def __init__(self, *, detail: str | list[ErrorDetailDict]) -> None:
+    def __init__(self, detail: str | list[ErrorDetailDict]) -> None:
         super().__init__(detail=detail, status_code=409)

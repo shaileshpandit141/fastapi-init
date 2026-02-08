@@ -33,6 +33,7 @@ def superuser(email: str, password: str) -> None:
 
             # Make superuser is verified
             user.mark_email_verified()
+            user.activate()
 
             db.add(user)
             db.commit()
