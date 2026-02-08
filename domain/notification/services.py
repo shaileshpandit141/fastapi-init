@@ -38,12 +38,10 @@ class NotificationService:
                 Notification.user_id == user_id,
             ]
         )
-
         return notifications
 
     async def get(self, notification_id: UUID, user_id: int) -> Notification:
         notification = await self.repo.get_by(id=notification_id, user_id=user_id)
-
         if not notification:
             raise NotFoundError(detail="Notification not found.")
 
@@ -54,7 +52,6 @@ class NotificationService:
         notification = await self.repo.update(
             obj=notification, data=NotificationUpdate(is_read=True)
         )
-
         return notification
 
     async def mark_all_as_read(
@@ -66,5 +63,6 @@ class NotificationService:
         )
         return notifications
 
-    async def delete_read(self, notification_id: UUID, user_id: int) -> Notification:
-        raise NotImplementedError
+    async def delete(self, notification_id: UUID, user_id: int) -> None:
+        notification = await self.get(notification_id, user_id)
+        await self.repo.delete(obj=notification)
