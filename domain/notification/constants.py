@@ -1,5 +1,7 @@
 from enum import StrEnum
 
+from core.enums import DescribedEnum
+
 # =============================================================================
 # Notification Category
 # =============================================================================
@@ -53,3 +55,16 @@ SOCIAL_EVENTS = {
     NotificationEvent.LIKE,
     NotificationEvent.MENTION,
 }
+
+# =============================================================================
+# Notification Permissions
+# =============================================================================
+
+
+class NotificationPerm(DescribedEnum):
+    FULL = ("notification:*", "full access to notifications")
+    CREATE = ("notification:create", "create notification")
+    LIST = ("notification:list", "list notifications")
+    READ = ("notification:read", "read notification")
+    UPDATE = ("notification:update", "update notification")
+    DELETE = ("notification:delete", "delete notification")
