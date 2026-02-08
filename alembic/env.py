@@ -38,6 +38,7 @@ def run_migrations_offline() -> None:
         url=DATABASE_URL,
         target_metadata=target_metadata,
         literal_binds=True,
+        render_as_batch=True,
         dialect_opts={"paramstyle": "named"},
     )
 
