@@ -8,13 +8,13 @@ from domain.role.schemas import RoleUpdate
 @pytest.mark.asyncio
 @pytest.mark.integration
 async def test_update_command(async_session: AsyncSession) -> None:
-    user = Role(name="developer")
-    async_session.add(user)
+    role = Role(name="developer")
+    async_session.add(role)
     await async_session.commit()
 
     description = "handle developer related action"
     update_data = RoleUpdate(description=description)
-    command = Update([user], update_data)
+    command = Update([role], update_data)
     updated_objs = await command.execute(async_session)
 
     await async_session.commit()
