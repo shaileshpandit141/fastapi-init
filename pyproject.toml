@@ -51,7 +51,6 @@ reportUntypedFunctionDecorator = false
 [tool.pytest.ini_options]
 minversion = "7.0"
 testpaths = ["tests"]
-
 addopts = """
 -ra
 -q
@@ -59,10 +58,14 @@ addopts = """
 --strict-config
 --disable-warnings
 --maxfail=1
---cov
---cov-report=term-missing:skip-covered
---cov-report=xml
---cov-report=html
+--cov=api
+--cov=domain
+--cov=core
+--cov=infrastructure
+--cov=tasks
+--cov-report=term-missing
+--cov-report=xml:coverage.xml
+--cov-report=html:htmlcov
 """
 
 # Define pytest markers
@@ -77,11 +80,6 @@ markers = [
 branch = true
 parallel = true
 relative_files = true
-
-# Include files for coverage
-source = ["api", "domain", "core", "infrastructure", "tasks"]
-
-# Exclude files for coverage
 omit = [
   "api/**/router.py",
   "alembic/*",
