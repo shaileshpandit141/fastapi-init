@@ -2,14 +2,14 @@ from sqlalchemy.engine import ScalarResult
 from sqlmodel import SQLModel
 from sqlmodel.sql.expression import SelectOfScalar
 
-from .base import AsyncSession, BaseRepoAction
+from ..queries import AsyncSession, RepoQuery
 
 # =============================================================================
-# Exexute Any Scalar Query Action
+# Exexute Any Scalar Query
 # =============================================================================
 
 
-class ScalarQuery[T: SQLModel](BaseRepoAction[ScalarResult[T]]):
+class ScalarQuery[T: SQLModel](RepoQuery[ScalarResult[T]]):
     def __init__(self, stmt: SelectOfScalar[T]) -> None:
         self.stmt = stmt
 

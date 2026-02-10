@@ -1,6 +1,12 @@
 from core.exceptions import AppError
 
 
+class UnitOfWorkError(AppError):
+    """Raised when a UnitOfWork transaction fails."""
+
+    pass
+
+
 class RepositoryError(AppError):
     """Base exception for repository-related errors."""
 
