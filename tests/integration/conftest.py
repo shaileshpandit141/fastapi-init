@@ -1,4 +1,4 @@
-from typing import AsyncGenerator, cast
+from typing import AsyncGenerator
 
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
@@ -37,10 +37,14 @@ async def async_engine() -> AsyncGenerator[AsyncEngine, None]:
 async def async_session(
     async_engine: AsyncEngine,
 ) -> AsyncGenerator[AsyncSession, None]:
-    async_session = async_sessionmaker(async_engine, expire_on_commit=False)
+    async_session = async_sessionmaker(
+        bind=async_engine,
+        class_=AsyncSession,
+        expire_on_commit=False,
+    )
 
     async with async_session() as session:
         try:
-            yield cast(AsyncSession, session)
+            yield session
         finally:
             await session.rollback()
