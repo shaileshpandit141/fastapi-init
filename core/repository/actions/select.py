@@ -12,10 +12,10 @@ class SelectMany[T: SQLModel](BaseAction[Sequence[T]]):
         self,
         model: type[T],
         where: Sequence[Any] | None = None,
-        limit: int | None = None,
-        offset: int | None = None,
         order_by: Sequence[Any] | None = None,
         options: Sequence[Any] | None = None,
+        limit: int | None = None,
+        offset: int | None = None,
     ) -> None:
         self.model = model
         self.where = where

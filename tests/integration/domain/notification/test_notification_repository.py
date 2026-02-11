@@ -8,7 +8,7 @@ from domain.notification.schemas import NotificationCreate
 
 @pytest.mark.asyncio
 @pytest.mark.integration
-async def test_create_notifications_repository(
+async def test_add_notifications(
     async_session: AsyncSession,
 ) -> None:
     repo = NotificationRepository(async_session)
