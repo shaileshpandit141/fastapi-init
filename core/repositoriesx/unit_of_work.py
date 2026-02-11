@@ -7,7 +7,7 @@ from ..repositoriesx import Repository
 from .exceptions import UnitOfWorkError
 
 
-class UnitOfWork[T: SQLModel]:
+class UnitOfWork[T]:
     def __init__(self, repo: Repository[T]) -> None:
         self._logger = getLogger(self.__class__.__name__)
         self.repo = repo
