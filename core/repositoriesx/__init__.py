@@ -1,6 +1,5 @@
 from logging import getLogger
 
-from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from .commands import RepoCommand
@@ -11,7 +10,7 @@ from .queries import RepoQuery
 # =============================================================================
 
 
-class Repository[T: SQLModel]:
+class Repository[T]:
     __slots__ = ("_logger", "session")
 
     def __init__(self, session: AsyncSession) -> None:
