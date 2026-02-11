@@ -6,7 +6,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from ..base import BaseAction
 
 # =============================================================================
-# Delete One Records
+# Delete One Record
 # =============================================================================
 
 

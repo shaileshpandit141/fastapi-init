@@ -7,7 +7,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from ..base import BaseAction
 
 # =============================================================================
-# Insert One Records
+# Insert One Record
 # =============================================================================
 
 
