@@ -1,6 +1,6 @@
 import pytest
 
-from core.repository.actions.delete import AsyncSession, DeleteAction
+from core.repository.actions.delete import AsyncSession, DeleteMany
 from domain.role.models import Role
 
 
@@ -11,7 +11,7 @@ async def test_delete_action(async_session: AsyncSession) -> None:
     async_session.add(role)
     await async_session.commit()
 
-    action = DeleteAction([role])
+    action = DeleteMany([role])
     deleted_count = await action.execute(async_session)
     await async_session.commit()
 

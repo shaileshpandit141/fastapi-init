@@ -7,7 +7,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from ..base import BaseAction
 
 
-class SelectAction[T: SQLModel](BaseAction[Sequence[T]]):
+class SelectMany[T: SQLModel](BaseAction[Sequence[T]]):
     def __init__(
         self,
         model: type[T],

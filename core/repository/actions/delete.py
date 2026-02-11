@@ -6,7 +6,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from ..base import BaseAction
 
 
-class DeleteAction[T: SQLModel](BaseAction[int]):
+class DeleteMany[T: SQLModel](BaseAction[int]):
     def __init__(self, objs: Sequence[T]) -> None:
         self.objs = objs
 

@@ -1,6 +1,6 @@
 import pytest
 
-from core.repository.actions.update import AsyncSession, UpdateAction
+from core.repository.actions.update import AsyncSession, UpdateMany
 from domain.role.models import Role
 from domain.role.schemas import RoleUpdate
 
@@ -15,7 +15,7 @@ async def test_update_action(async_session: AsyncSession) -> None:
     description = "handle developer related action"
     update_data = RoleUpdate(description=description)
 
-    action = UpdateAction([role], update_data)
+    action = UpdateMany([role], update_data)
     updated_objs = await action.execute(async_session)
 
     await async_session.commit()

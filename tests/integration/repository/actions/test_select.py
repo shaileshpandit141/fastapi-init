@@ -1,6 +1,6 @@
 import pytest
 
-from core.repository.actions.select import AsyncSession, SelectAction
+from core.repository.actions.select import AsyncSession, SelectMany
 from domain.role.models import Role
 
 
@@ -12,7 +12,7 @@ async def test_select_action(async_session: AsyncSession) -> None:
     async_session.add_all(roles)
     await async_session.commit()
 
-    action = SelectAction(Role, where=[Role.name == "staff"])
+    action = SelectMany(Role, where=[Role.name == "staff"])
     result = await action.execute(async_session)
 
     # Assertions

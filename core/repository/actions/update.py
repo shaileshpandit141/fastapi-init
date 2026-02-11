@@ -8,7 +8,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from ..base import BaseAction
 
 
-class UpdateAction[T: SQLModel](BaseAction[Sequence[T]]):
+class UpdateMany[T: SQLModel](BaseAction[Sequence[T]]):
     def __init__(self, objs: Sequence[T], data: BaseModel) -> None:
         self.objs = objs
         self.data = data
