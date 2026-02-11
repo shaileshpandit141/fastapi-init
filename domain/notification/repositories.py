@@ -7,16 +7,13 @@ from core.repository.repository import Repository
 from .models import Notification
 from .schemas import NotificationCreate, NotificationUpdate
 
-# from domain.user.models import User
-
-
 # =============================================================================
 # Notification Repository
 # =============================================================================
 
 
 class NotificationRepository(Repository):
-    async def create_notifications(
+    async def add(
         self, user_id: int, data: Sequence[NotificationCreate]
     ) -> Sequence[Notification]:
         return await self.execute(

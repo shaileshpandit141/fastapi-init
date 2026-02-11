@@ -12,7 +12,7 @@ async def test_create_notifications_repository(
     async_session: AsyncSession,
 ) -> None:
     repo = NotificationRepository(async_session)
-    results = await repo.create_notifications(
+    results = await repo.add(
         user_id=1,
         data=[
             NotificationCreate(
