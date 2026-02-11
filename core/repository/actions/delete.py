@@ -1,15 +1,12 @@
 from typing import Sequence
 
 from sqlmodel import SQLModel
+from sqlmodel.ext.asyncio.session import AsyncSession
 
-from ..commands import AsyncSession, RepoCommand
-
-# =============================================================================
-# Delete Record Command
-# =============================================================================
+from ..base import BaseAction
 
 
-class Delete[T: SQLModel](RepoCommand[int]):
+class DeleteAction[T: SQLModel](BaseAction[int]):
     def __init__(self, objs: Sequence[T]) -> None:
         self.objs = objs
 

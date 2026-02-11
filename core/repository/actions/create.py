@@ -2,15 +2,12 @@ from typing import Any, Mapping, Sequence
 
 from pydantic import BaseModel
 from sqlmodel import SQLModel
+from sqlmodel.ext.asyncio.session import AsyncSession
 
-from ..commands import AsyncSession, RepoCommand
-
-# =============================================================================
-# Create Record Command
-# =============================================================================
+from ..base import BaseAction
 
 
-class Create[T: SQLModel](RepoCommand[Sequence[T]]):
+class CreateAction[T: SQLModel](BaseAction[Sequence[T]]):
     def __init__(
         self,
         model: type[T],

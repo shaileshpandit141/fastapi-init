@@ -1,11 +1,13 @@
+# select.py
 from typing import Any, Sequence
 
 from sqlmodel import SQLModel, select
+from sqlmodel.ext.asyncio.session import AsyncSession
 
-from ..queries import AsyncSession, RepoQuery
+from ..base import BaseAction
 
 
-class SelectQuery[T: SQLModel](RepoQuery[Sequence[T]]):
+class SelectAction[T: SQLModel](BaseAction[Sequence[T]]):
     def __init__(
         self,
         model: type[T],
@@ -24,18 +26,19 @@ class SelectQuery[T: SQLModel](RepoQuery[Sequence[T]]):
 
     async def execute(self, session: AsyncSession) -> Sequence[T]:
         stmt = select(self.model)
+
         if self.where:
             for cond in self.where:
                 stmt = stmt.where(cond)
 
         if self.order_by:
-            for order_by in self.order_by:
-                stmt = stmt.order_by(order_by)
+            for ob in self.order_by:
+                stmt = stmt.order_by(ob)
 
-        if self.limit:
+        if self.limit is not None:
             stmt = stmt.limit(self.limit)
 
-        if self.offset:
+        if self.offset is not None:
             stmt = stmt.offset(self.offset)
 
         if self.options:

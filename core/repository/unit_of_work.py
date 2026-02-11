@@ -1,14 +1,12 @@
 from logging import getLogger
 from typing import Any, Self
 
-from sqlmodel import SQLModel
-
-from ..repositoriesx import Repository
 from .exceptions import UnitOfWorkError
+from .repository import Repository
 
 
-class UnitOfWork[T]:
-    def __init__(self, repo: Repository[T]) -> None:
+class UnitOfWork:
+    def __init__(self, repo: Repository) -> None:
         self._logger = getLogger(self.__class__.__name__)
         self.repo = repo
 
@@ -25,4 +23,4 @@ class UnitOfWork[T]:
                 await self.repo.session.commit()
         except Exception as exc:
             self._logger.warning("UnitOfWork transaction failed", exc_info=exc)
-            raise UnitOfWorkError("UnitOfWork transaction failed")
+            raise UnitOfWorkError("UnitOfWork transaction failed") from exc

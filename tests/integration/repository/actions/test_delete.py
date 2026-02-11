@@ -1,18 +1,18 @@
 import pytest
 
-from core.repositoriesx.commands.delete import AsyncSession, Delete
+from core.repository.actions.delete import AsyncSession, DeleteAction
 from domain.role.models import Role
 
 
 @pytest.mark.asyncio
 @pytest.mark.integration
-async def test_delete_command(async_session: AsyncSession) -> None:
+async def test_delete_action(async_session: AsyncSession) -> None:
     role = Role(name="manager")
     async_session.add(role)
     await async_session.commit()
 
-    command = Delete([role])
-    deleted_count = await command.execute(async_session)
+    action = DeleteAction([role])
+    deleted_count = await action.execute(async_session)
     await async_session.commit()
 
     # Assertions
