@@ -32,3 +32,16 @@ async def test_add_notifications(
     # Assertions
     assert len(results) > 0
     assert results[0].user_id == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_list_notifications(
+    async_session: AsyncSession,
+) -> None:
+    repo = NotificationRepository(async_session)
+    results = await repo.list(user_id=1, limit=1, offset=0)
+
+    # Assertions
+    assert len(results) <= 1
+    assert results[0].user_id == 1
