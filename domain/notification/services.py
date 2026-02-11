@@ -7,7 +7,7 @@ from core.exceptions.http_exception import AlreadyExistsError, NotFoundError
 from core.repositories.exceptions import EntityConflictError
 
 from .models import Notification
-from .repositories import NotificationRepository
+from .repositories import NotificationRepositoryEx
 from .schemas import NotificationCreate, NotificationUpdate
 
 # =============================================================================
@@ -17,7 +17,7 @@ from .schemas import NotificationCreate, NotificationUpdate
 
 class NotificationService:
     def __init__(self, session: AsyncSession) -> None:
-        self.repo = NotificationRepository(model=Notification, session=session)
+        self.repo = NotificationRepositoryEx(model=Notification, session=session)
 
     async def create(self, data: NotificationCreate, user_id: int) -> Notification:
         try:
