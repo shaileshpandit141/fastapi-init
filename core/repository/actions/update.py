@@ -13,7 +13,7 @@ from ..base import BaseAction
 
 
 class UpdateOne[T: SQLModel](BaseAction[T]):
-    def __init__(self, obj: T, data: BaseModel | SQLModel) -> None:
+    def __init__(self, *, obj: T, data: BaseModel | SQLModel) -> None:
         self.obj = obj
         self.data = data
 
@@ -33,7 +33,7 @@ class UpdateOne[T: SQLModel](BaseAction[T]):
 
 
 class UpdateMany[T: SQLModel](BaseAction[Sequence[T]]):
-    def __init__(self, objs: Sequence[T], data: BaseModel | SQLModel) -> None:
+    def __init__(self, *, objs: Sequence[T], data: BaseModel | SQLModel) -> None:
         self.objs = objs
         self.data = data
 

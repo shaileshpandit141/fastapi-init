@@ -15,7 +15,7 @@ async def test_update_action(async_session: AsyncSession) -> None:
     description = "handle developer related action"
     update_data = RoleUpdate(description=description)
 
-    action = UpdateMany([role], update_data)
+    action = UpdateMany(objs=[role], data=update_data)
     updated_objs = await action.execute(async_session)
 
     await async_session.commit()

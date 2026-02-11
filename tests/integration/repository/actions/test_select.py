@@ -12,7 +12,7 @@ async def test_select_action(async_session: AsyncSession) -> None:
     async_session.add_all(roles)
     await async_session.commit()
 
-    action = SelectMany(Role, where=[Role.name == "staff"])
+    action = SelectMany(model=Role, where=[Role.name == "staff"])
     result = await action.execute(async_session)
 
     # Assertions

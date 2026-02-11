@@ -14,6 +14,7 @@ from ..base import BaseAction
 class InsertOne[T: SQLModel](BaseAction[T]):
     def __init__(
         self,
+        *,
         model: type[T],
         data: SQLModel | BaseModel,
         extra: Mapping[str, Any] | None = None,
@@ -36,6 +37,7 @@ class InsertOne[T: SQLModel](BaseAction[T]):
 class InsertMany[T: SQLModel](BaseAction[Sequence[T]]):
     def __init__(
         self,
+        *,
         model: type[T],
         data: Sequence[SQLModel | BaseModel],
         extra: Mapping[str, Any] | None = None,

@@ -7,7 +7,7 @@ from domain.role.models import Role
 @pytest.mark.asyncio
 @pytest.mark.integration
 async def test_create_action(async_session: AsyncSession) -> None:
-    action = InsertMany(Role, [Role(name="admin")])
+    action = InsertMany(model=Role, data=[Role(name="admin")])
     result = await action.execute(async_session)
     await async_session.commit()
 

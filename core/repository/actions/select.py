@@ -14,6 +14,7 @@ from ..base import BaseAction
 class SelectOne[T: SQLModel](BaseAction[T | None]):
     def __init__(
         self,
+        *,
         model: type[T],
         where: Sequence[Any] | None = None,
         order_by: Sequence[Any] | None = None,
@@ -50,6 +51,7 @@ class SelectOne[T: SQLModel](BaseAction[T | None]):
 class SelectMany[T: SQLModel](BaseAction[Sequence[T]]):
     def __init__(
         self,
+        *,
         model: type[T],
         where: Sequence[Any] | None = None,
         order_by: Sequence[Any] | None = None,

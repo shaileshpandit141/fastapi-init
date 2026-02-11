@@ -13,7 +13,10 @@ async def test_unit_of_work_commit(async_session: AsyncSession) -> None:
 
     async with UnitOfWork(repo) as uow:
         result = await uow.repo.execute(
-            InsertMany(Role, [Role(name="boot")]),
+            InsertMany(
+                model=Role,
+                data=[Role(name="boot")],
+            ),
         )
 
     # Committed automatically

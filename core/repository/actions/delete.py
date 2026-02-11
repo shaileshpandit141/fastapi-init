@@ -11,7 +11,7 @@ from ..base import BaseAction
 
 
 class DeleteOne[T: SQLModel](BaseAction[int]):
-    def __init__(self, obj: T) -> None:
+    def __init__(self, *, obj: T) -> None:
         self.obj = obj
 
     async def execute(self, session: AsyncSession) -> int:
@@ -25,7 +25,7 @@ class DeleteOne[T: SQLModel](BaseAction[int]):
 
 
 class DeleteMany[T: SQLModel](BaseAction[int]):
-    def __init__(self, objs: Sequence[T]) -> None:
+    def __init__(self, *, objs: Sequence[T]) -> None:
         self.objs = objs
 
     async def execute(self, session: AsyncSession) -> int:

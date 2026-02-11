@@ -11,7 +11,7 @@ async def test_delete_action(async_session: AsyncSession) -> None:
     async_session.add(role)
     await async_session.commit()
 
-    action = DeleteMany([role])
+    action = DeleteMany(objs=[role])
     deleted_count = await action.execute(async_session)
     await async_session.commit()
 
