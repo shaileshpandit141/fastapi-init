@@ -63,3 +63,25 @@ async def test_get_notification_by_user_id(async_session: AsyncSession) -> None:
 
     # Assertion
     assert result.event == NotificationEvent.SYSTEM  # type: ignore
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_mark_notification_as_read(async_session: AsyncSession) -> None:
+    repo = NotificationRepository(async_session)
+    notification = await repo.get_by_user_id(1)
+    updated_notification = await repo.make_as_read(notification)  # type: ignore
+
+    # Assertion
+    assert updated_notification.is_read is True
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_mark_notification_as_unread(async_session: AsyncSession) -> None:
+    repo = NotificationRepository(async_session)
+    notification = await repo.get_by_user_id(1)
+    updated_notification = await repo.make_as_unread(notification)  # type: ignore
+
+    # Assertion
+    assert updated_notification.is_read is not True
