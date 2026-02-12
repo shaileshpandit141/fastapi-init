@@ -53,3 +53,13 @@ async def test_get_notification_by_id(async_session: AsyncSession) -> None:
 
     # Assertion
     assert result is None
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_get_notification_by__user_id(async_session: AsyncSession) -> None:
+    repo = NotificationRepository(async_session)
+    result = await repo.get_by_user_id(user_id=1)
+
+    # Assertion
+    assert result.event == NotificationEvent.SYSTEM  # type: ignore
