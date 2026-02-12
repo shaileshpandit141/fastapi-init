@@ -5,6 +5,7 @@ from sqlmodel import desc
 
 from core.repositories.repository import Repository as Repo
 from core.repository.actions.insert import InsertMany
+from core.repository.actions.save import Save
 from core.repository.actions.select import SelectMany, SelectOne
 from core.repository.repository import Repository
 
@@ -56,6 +57,14 @@ class NotificationRepository(Repository):
                 where=[Notification.user_id == user_id],
             )
         )
+
+    async def make_as_read(self, obj: Notification) -> Notification:
+        obj.mark_as_read()
+        return await self.execute(Save(obj))
+
+    async def make_as_unread(self, obj: Notification) -> Notification:
+        obj.mark_as_unread()
+        return await self.execute(Save(obj))
 
 
 class NotificationRepositoryEx(
