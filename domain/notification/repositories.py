@@ -49,6 +49,14 @@ class NotificationRepository(Repository):
             )
         )
 
+    async def get_by_user_id(self, user_id: int) -> Notification | None:
+        return await self.execute(
+            SelectOne(
+                model=Notification,
+                where=[Notification.user_id == user_id],
+            )
+        )
+
 
 class NotificationRepositoryEx(
     Repo[Notification, NotificationCreate, NotificationUpdate]

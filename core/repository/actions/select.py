@@ -39,7 +39,7 @@ class SelectOne[T: SQLModel](BaseAction[T | None]):
             for opt in self.options:
                 stmt = stmt.options(opt)
 
-        return (await session.exec(stmt)).one_or_none()
+        return (await session.exec(stmt)).first()
 
 
 # =============================================================================
