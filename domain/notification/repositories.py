@@ -1,10 +1,11 @@
 from typing import Sequence
+from uuid import UUID
 
 from sqlmodel import desc
 
 from core.repositories.repository import Repository as Repo
 from core.repository.actions.insert import InsertMany
-from core.repository.actions.select import SelectMany
+from core.repository.actions.select import SelectMany, SelectOne
 from core.repository.repository import Repository
 
 from .models import Notification
@@ -37,6 +38,14 @@ class NotificationRepository(Repository):
                 order_by=[desc(Notification.created_at)],
                 limit=limit,
                 offset=offset,
+            )
+        )
+
+    async def get_by_id(self, id: UUID) -> Notification | None:
+        return await self.execute(
+            SelectOne(
+                model=Notification,
+                where=[Notification.id == id],
             )
         )
 
