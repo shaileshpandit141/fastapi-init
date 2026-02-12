@@ -1,3 +1,5 @@
+from uuid import UUID
+
 import pytest
 
 from core.repository.actions.insert import AsyncSession
@@ -41,3 +43,13 @@ async def test_list_notifications(async_session: AsyncSession) -> None:
     # Assertions
     assert len(results) <= 1
     assert results[0].user_id == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_get_notification_by_id(async_session: AsyncSession) -> None:
+    repo = NotificationRepository(async_session)
+    result = await repo.get_by_id(id=UUID("f0f3d6ca-cebe-4045-b255-cd531b573782"))
+
+    # Assertion
+    assert result is None
