@@ -1,7 +1,7 @@
 import pytest
 
 from core.repository import Repository
-from core.repository.actions.insert import AsyncSession, InsertMany
+from core.repository.actions.select import AsyncSession, SelectOne
 from domain.role.models import Role
 
 
@@ -9,12 +9,13 @@ from domain.role.models import Role
 @pytest.mark.integration
 async def test_repository_execute(async_session: AsyncSession) -> None:
     repo = Repository(async_session)
-    result = await repo.execute(
-        InsertMany(
+    role = await repo.execute(
+        SelectOne(
             model=Role,
-            data=[Role(name="something")],
+            where=[Role.name == "role-5"],
         )
     )
     await async_session.commit()
 
-    assert result[0].name == "something"
+    # Assertion
+    assert role.name == "role-5" # type: ignore
