@@ -1,4 +1,3 @@
-# select.py
 from typing import Any, Sequence
 
 from sqlmodel import SQLModel, select
