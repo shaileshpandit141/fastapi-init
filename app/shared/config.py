@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import PostgresDsn
+from pydantic import PostgresDsn, RedisDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # =============================================================================
@@ -59,4 +59,35 @@ class DatabaseSettings(BaseSettings):
             host=self.HOST,
             port=self.PORT,
             path=self.NAME,
+        )
+
+
+# =============================================================================
+# Redis configuration.
+# =============================================================================
+
+
+class RedisSettings(BaseSettings):
+    """
+    Redis configuration.
+    """
+
+    model_config = SettingsConfigDict(
+        env_prefix="REDIS_",
+        env_file=".env",
+        case_sensitive=False,
+        extra="ignore",
+    )
+
+    HOST: str = "localhost"
+    PORT: int = 6379
+    DB: int = 0
+
+    @property
+    def dsn(self) -> RedisDsn:
+        return RedisDsn.build(
+            scheme="redis",
+            host=self.HOST,
+            port=self.PORT,
+            path=str(self.DB),
         )
