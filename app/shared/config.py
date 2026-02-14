@@ -22,10 +22,33 @@ class AppSettings(BaseSettings):
     )
 
     # General
-    APP_NAME: str = "FastAPI-Init"
-    APP_ENV: Literal["local", "development", "staging", "production"] = "local"
+    NAME: str = "FastAPI-Init"
+    ENV: Literal["local", "development", "staging", "production"] = "local"
     API_V1_PREFIX: str = "/api/v1"
     DEBUG: bool = True
+
+
+# =============================================================================
+# CORS configuration.
+# =============================================================================
+
+
+class CORSSettings(BaseSettings):
+    """
+    CORS configuration.
+    """
+
+    model_config = SettingsConfigDict(
+        env_prefix="CORS_",
+        env_file=".env",
+        case_sensitive=False,
+        extra="ignore",
+    )
+
+    ALLOW_ORIGINS: list[str] = ["127.0.0.1", "localhost"]
+    ALLOW_METHODS: list[str] = ["*"]
+    ALLOW_HEADERS: list[str] = ["*"]
+    ALLOW_CREDENTIALS: bool = True
 
 
 # =============================================================================
@@ -198,6 +221,7 @@ class Settings:
 
     def __init__(self) -> None:
         self.app = AppSettings()
+        self.cors = CORSSettings()
         self.db = DatabaseSettings()
         self.redis = RedisSettings()
         self.jwt = JWTSettings()
