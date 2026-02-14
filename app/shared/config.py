@@ -1,7 +1,7 @@
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import EmailStr, Field, PostgresDsn, RedisDsn
+from pydantic import EmailStr, Field, RedisDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # =============================================================================
@@ -52,14 +52,17 @@ class DatabaseSettings(BaseSettings):
     NAME: str = "app"
 
     @property
-    def dsn(self) -> PostgresDsn:
-        return PostgresDsn.build(
-            scheme="postgresql+asyncpg",
-            username=self.USER,
-            password=self.PASSWORD,
-            host=self.HOST,
-            port=self.PORT,
-            path=self.NAME,
+    def async_dsn(self) -> str:
+        return (
+            f"postgresql+asyncpg://{self.USER}:{self.PASSWORD}"
+            f"@{self.HOST}:{self.PORT}/{self.NAME}"
+        )
+
+    @property
+    def sync_dsn(self) -> str:
+        return (
+            f"postgresql+psycopg://{self.USER}:{self.PASSWORD}"
+            f"@{self.HOST}:{self.PORT}/{self.NAME}"
         )
 
 
