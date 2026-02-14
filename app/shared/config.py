@@ -1,5 +1,6 @@
 from typing import Literal
 
+from pydantic import PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # =============================================================================
@@ -24,3 +25,38 @@ class AppSettings(BaseSettings):
     APP_ENV: Literal["local", "development", "staging", "production"] = "local"
     API_V1_PREFIX: str = "/api/v1"
     DEBUG: bool = True
+
+
+# =============================================================================
+# Database configuration.
+# =============================================================================
+
+
+class DatabaseSettings(BaseSettings):
+    """
+    Database configuration.
+    """
+
+    model_config = SettingsConfigDict(
+        env_prefix="DB_",
+        env_file=".env",
+        case_sensitive=False,
+        extra="ignore",
+    )
+
+    HOST: str = "localhost"
+    PORT: int = 5432
+    USER: str = "postgres"
+    PASSWORD: str = "postgres"
+    NAME: str = "app"
+
+    @property
+    def dsn(self) -> PostgresDsn:
+        return PostgresDsn.build(
+            scheme="postgresql+asyncpg",
+            username=self.USER,
+            password=self.PASSWORD,
+            host=self.HOST,
+            port=self.PORT,
+            path=self.NAME,
+        )
