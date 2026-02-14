@@ -1,8 +1,16 @@
-import sys
+from sys import stdout
 
 from .config import get_settings
 
+# =============================================================================
+# Creating Settings Instance.
+# =============================================================================
+
 settings = get_settings()
+
+# =============================================================================
+# Logger Config Dict.
+# =============================================================================
 
 LOGGING_CONFIG = {
     "version": 1,
@@ -15,7 +23,7 @@ LOGGING_CONFIG = {
     "handlers": {
         "default": {
             "class": "logging.StreamHandler",
-            "stream": sys.stdout,
+            "stream": stdout,
             "formatter": "default",
         },
     },

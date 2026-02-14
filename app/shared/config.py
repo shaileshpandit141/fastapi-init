@@ -24,7 +24,7 @@ class AppSettings(BaseSettings):
     # General
     NAME: str = "FastAPI-Init"
     ENV: Literal["local", "development", "staging", "production"] = "local"
-    API_V1_PREFIX: str = "/api/v1"
+    API_VERSION_PREFIX: str = "/api/v1"
     DEBUG: bool = True
 
 
