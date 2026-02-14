@@ -1,7 +1,7 @@
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import PostgresDsn, RedisDsn
+from pydantic import EmailStr, Field, PostgresDsn, RedisDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # =============================================================================
@@ -64,6 +64,74 @@ class DatabaseSettings(BaseSettings):
 
 
 # =============================================================================
+# Email configuration.
+# =============================================================================
+
+
+class EmailSettings(BaseSettings):
+    """
+    Email / SMTP configuration.
+    """
+
+    model_config = SettingsConfigDict(
+        env_prefix="EMAIL_",
+        env_file=".env",
+        case_sensitive=False,
+        extra="ignore",
+    )
+
+    # Provider mode
+    PROVIDER: Literal["smtp", "console", "disabled"] = "console"
+
+    # SMTP configuration
+    HOST: str = "localhost"
+    PORT: int = 1025
+    USERNAME: str | None = None
+    PASSWORD: str | None = None
+
+    USE_TLS: bool = True
+    USE_SSL: bool = False
+
+    # Sender defaults
+    FROM_EMAIL: EmailStr = "noreply@example.com"
+    FROM_NAME: str = "MyApp"
+
+    # Timeout (seconds)
+    TIMEOUT: int = Field(default=10, ge=1)
+
+    @property
+    def is_enabled(self) -> bool:
+        return self.PROVIDER != "disabled"
+
+    @property
+    def is_smtp(self) -> bool:
+        return self.PROVIDER == "smtp"
+
+
+# =============================================================================
+# JWT configuration.
+# =============================================================================
+
+
+class JWTSettings(BaseSettings):
+    """
+    JWT configuration.
+    """
+
+    model_config = SettingsConfigDict(
+        env_prefix="JWT_",
+        env_file=".env",
+        case_sensitive=False,
+        extra="ignore",
+    )
+
+    SECRET_KEY: str = "super-secret"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 7
+
+
+# =============================================================================
 # Redis configuration.
 # =============================================================================
 
@@ -92,29 +160,6 @@ class RedisSettings(BaseSettings):
             port=self.PORT,
             path=str(self.DB),
         )
-
-
-# =============================================================================
-# JWT configuration.
-# =============================================================================
-
-
-class JWTSettings(BaseSettings):
-    """
-    JWT configuration.
-    """
-
-    model_config = SettingsConfigDict(
-        env_prefix="JWT_",
-        env_file=".env",
-        case_sensitive=False,
-        extra="ignore",
-    )
-
-    SECRET_KEY: str = "super-secret"
-    ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 7
 
 
 # =============================================================================
@@ -154,6 +199,7 @@ class Settings:
         self.redis = RedisSettings()
         self.jwt = JWTSettings()
         self.celery = CelerySettings()
+        self.email = EmailSettings()
 
 
 # =============================================================================
