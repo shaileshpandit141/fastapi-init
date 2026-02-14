@@ -114,3 +114,24 @@ class JWTSettings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 7
+
+
+# =============================================================================
+# Celery / async messaging configuration.
+# =============================================================================
+
+
+class CelerySettings(BaseSettings):
+    """
+    Celery / async messaging configuration.
+    """
+
+    model_config = SettingsConfigDict(
+        env_prefix="CELERY_",
+        env_file=".env",
+        case_sensitive=False,
+        extra="ignore",
+    )
+
+    BROKER_URL: str = "redis://localhost:6379/1"
+    RESULT_BACKEND: str = "redis://localhost:6379/2"
