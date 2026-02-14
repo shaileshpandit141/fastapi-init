@@ -91,3 +91,26 @@ class RedisSettings(BaseSettings):
             port=self.PORT,
             path=str(self.DB),
         )
+
+
+# =============================================================================
+# JWT configuration.
+# =============================================================================
+
+
+class JWTSettings(BaseSettings):
+    """
+    JWT configuration.
+    """
+
+    model_config = SettingsConfigDict(
+        env_prefix="JWT_",
+        env_file=".env",
+        case_sensitive=False,
+        extra="ignore",
+    )
+
+    SECRET_KEY: str = "super-secret"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 7
