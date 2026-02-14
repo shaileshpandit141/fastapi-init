@@ -1,6 +1,7 @@
 from logging.config import dictConfig
 
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 
 from .shared.config import get_settings
 from .shared.exc_handlers import register_exception_handlers
@@ -41,3 +42,12 @@ register_exception_handlers(app)
 # =============================================================================
 
 include_middlewares(app)
+
+# =============================================================================
+# Redirect user to /docs endpoint
+# =============================================================================
+
+
+@app.get(path="/", include_in_schema=False)
+def root() -> RedirectResponse:
+    return RedirectResponse(url="/docs", status_code=307)
