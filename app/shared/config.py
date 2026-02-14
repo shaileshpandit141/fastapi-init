@@ -1,7 +1,7 @@
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import EmailStr, Field, RedisDsn
+from pydantic import EmailStr, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # =============================================================================
@@ -177,15 +177,20 @@ class RedisSettings(BaseSettings):
     HOST: str = "localhost"
     PORT: int = 6379
     DB: int = 0
+    PASSWORD: str | None = None
+
+    SSL: bool = False
+
+    SOCKET_TIMEOUT: int = 5
+    SOCKET_CONNECT_TIMEOUT: int = 5
+
+    MAX_CONNECTIONS: int = 10
 
     @property
-    def dsn(self) -> RedisDsn:
-        return RedisDsn.build(
-            scheme="redis",
-            host=self.HOST,
-            port=self.PORT,
-            path=str(self.DB),
-        )
+    def url(self) -> str:
+        scheme = "rediss" if self.SSL else "redis"
+        auth = f":{self.PASSWORD}@" if self.PASSWORD else ""
+        return f"{scheme}://{auth}{self.HOST}:{self.PORT}/{self.DB}"
 
 
 # =============================================================================
