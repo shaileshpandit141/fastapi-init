@@ -1,3 +1,4 @@
+from functools import lru_cache
 from typing import Literal
 
 from pydantic import PostgresDsn, RedisDsn
@@ -135,3 +136,34 @@ class CelerySettings(BaseSettings):
 
     BROKER_URL: str = "redis://localhost:6379/1"
     RESULT_BACKEND: str = "redis://localhost:6379/2"
+
+
+# =============================================================================
+# Central configuration container.
+# =============================================================================
+
+
+class Settings:
+    """
+    Central configuration container.
+    """
+
+    def __init__(self) -> None:
+        self.app = AppSettings()
+        self.db = DatabaseSettings()
+        self.redis = RedisSettings()
+        self.jwt = JWTSettings()
+        self.celery = CelerySettings()
+
+
+# =============================================================================
+# Cached settings instance.
+# =============================================================================
+
+
+@lru_cache
+def get_settings() -> Settings:
+    """
+    Cached settings instance.
+    """
+    return Settings()
