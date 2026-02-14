@@ -38,13 +38,13 @@ app = FastAPI(
 register_exception_handlers(app)
 
 # =============================================================================
-# Include all middlewares
+# Include All Middlewares.
 # =============================================================================
 
 include_middlewares(app)
 
 # =============================================================================
-# Redirect user to /docs endpoint
+# Redirect / Request to /docs Endpoint.
 # =============================================================================
 
 
