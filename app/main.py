@@ -1,7 +1,10 @@
-def main() -> None:
-    print("Hello from pyapi-init!")
+from fastapi import FastAPI
 
+from app.shared.config import get_settings
 
-if __name__ == "__main__":
-    main()
+settings = get_settings()
 
+app = FastAPI(
+    title=settings.app.APP_NAME,
+    debug=settings.app.DEBUG,
+)

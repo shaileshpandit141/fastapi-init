@@ -22,7 +22,7 @@ class AppSettings(BaseSettings):
     )
 
     # General
-    APP_NAME: str = "MyApp"
+    APP_NAME: str = "FastAPI-Init"
     APP_ENV: Literal["local", "development", "staging", "production"] = "local"
     API_V1_PREFIX: str = "/api/v1"
     DEBUG: bool = True
