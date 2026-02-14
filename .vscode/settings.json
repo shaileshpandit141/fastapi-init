@@ -1,0 +1,35 @@
+{
+  // -----------------------------
+  // File & Explorer Hygiene
+  // -----------------------------
+  "files.exclude": {
+    // "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/.ruff_cache": true,
+    "**/.ropeproject": true
+  },
+  // -----------------------------
+  // Global Editor Rules
+  // -----------------------------
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  // -----------------------------
+  // Python-Specific Behavior
+  // -----------------------------
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "postman.settings.dotenv-detection-notification-visibility": false
+}
