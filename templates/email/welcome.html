@@ -1,0 +1,12 @@
+{% extends "base.html" %} {% block body %}
+<div>
+  <h1>Welcome, {{ name }}!</h1>
+  <p>Your account has been created successfully.</p>
+  <a
+    href="{{ frontend_url | default("http://localhost:8000/") }}"
+    class="btn-primary"
+  >
+    Go to Dashboard
+  </a>
+</div>
+{% endblock body %}

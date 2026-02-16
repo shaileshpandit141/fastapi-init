@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>{{ subject }}</title>
+    <style>
+      {% include "styles/base.css" %}
+    </style>
+  </head>
+  <body>
+    <table class="email-wrapper">
+      <tr>
+        <td align="center">
+          <table class="email-container">
+            <tr>
+              <td class="email-body">
+                {% block body %}{% endblock body %}
+                <div class="footer-container">
+                  <div class="footer-horizontal-line"></div>
+                  <footer class="footer">
+                    © 2026 FastAPI Init. All rights reserved.
+                  </footer>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
