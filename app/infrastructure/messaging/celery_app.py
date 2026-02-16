@@ -20,6 +20,8 @@ celery_app = Celery(
     backend=celery_settings.RESULT_BACKEND,
 )
 
+celery_app.conf.task_always_eager = True
+celery_app.conf.task_eager_propagates = True
 
 # =============================================================================
 # Updating Celery Config With My Config.
