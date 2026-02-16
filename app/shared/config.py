@@ -194,13 +194,13 @@ class RedisSettings(BaseSettings):
 
 
 # =============================================================================
-# Celery / async messaging configuration.
+# Celery configuration.
 # =============================================================================
 
 
 class CelerySettings(BaseSettings):
     """
-    Celery / async messaging configuration.
+    Celery configuration.
     """
 
     model_config = SettingsConfigDict(
@@ -212,6 +212,13 @@ class CelerySettings(BaseSettings):
 
     BROKER_URL: str = "redis://localhost:6379/1"
     RESULT_BACKEND: str = "redis://localhost:6379/2"
+
+    TASK_SERIALIZER: str = "json"
+    RESULT_SERIALIZER: str = "json"
+    ACCEPT_CONTENT: list[str] = ["json"]
+
+    TIMEZONE: str = "UTC"
+    ENABLE_UTC: bool = True
 
 
 # =============================================================================
