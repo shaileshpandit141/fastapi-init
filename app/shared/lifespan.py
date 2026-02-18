@@ -36,7 +36,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     # Create Redis client using RedisSettings.dsn
     redis = from_url(
-        str(settings.redis.dsn),
+        url=settings.redis.url,
         encoding="utf-8",
         decode_responses=True,
     )
