@@ -1,15 +1,24 @@
 # pyright: reportUnknownVariableType=false
 
+from logging import getLogger
 from smtplib import SMTPException
 from typing import Any
 
 from celery import shared_task
 
-from ...email.models import EmailMessage
-from ...email.service import EmailService
+from app.infrastructure.email.assembler import EmailMessageDict, SmtpMessageAssembler
+from app.infrastructure.email.renderer import JinjaRenderer
+from app.infrastructure.email.smtp_client import SmtpEmailClient
 
 # =============================================================================
-# Send Email Task.
+# Getting Logger.
+# =============================================================================
+
+logger = getLogger(__name__)
+
+
+# =============================================================================
+# Celery Send Email Task.
 # =============================================================================
 
 
@@ -17,24 +26,34 @@ from ...email.service import EmailService
     bind=True,
     autoretry_for=(SMTPException,),
     retry_kwargs={"countdown": 60, "max_retries": 3},
+    retry_backoff=True,
+    retry_jitter=True,
+    ignore_result=True,
 )
-def send_email_task(self: Any, email_message: dict[str, Any]) -> str:
-
-    email = EmailMessage(**email_message)
-    email_service = EmailService()
+def send_email_task(self: Any, email_msg: EmailMessageDict) -> None:
+    assembler = SmtpMessageAssembler(JinjaRenderer())
+    message = assembler.assemble(email_msg)
+    email_client = SmtpEmailClient()
 
     try:
-        email_service.send(email)
-    except Exception as exc:
+        email_client.send(message)
+        logger.info(
+            "Email successfully sent",
+            extra={
+                "to": email_msg["to"],
+                "subject": email_msg["subject"],
+            },
+        )
+    except SMTPException as exc:
+        logger.warning(
+            "SMTP error while sending email. Retrying...",
+            extra={"to": email_msg["to"]},
+            exc_info=exc,
+        )
         raise self.retry(exc=exc)
-
-    return f"Email sent to {email.to}"
-
-
-# =============================================================================
-# Send Email Function.
-# =============================================================================
-
-
-def send_email(message: EmailMessage) -> None:
-    send_email_task.delay(message.model_dump())
+    except Exception as exc:
+        logger.exception(
+            "Unexpected error while sending email",
+            extra={"to": email_msg["to"]},
+            exc_info=exc,
+        )

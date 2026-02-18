@@ -4,26 +4,23 @@ from email.mime.multipart import MIMEMultipart
 from app.shared.config import get_settings
 
 # =============================================================================
-# Gatting Email Env Settings.
+# Gatting Env Settings.
 # =============================================================================
 
-email_settings = get_settings().email
-
+settings = get_settings()
 
 # =============================================================================
-# Function That Send Email Via SMTP.
+# Smtp Email Client For Sending The HTML Email.
 # =============================================================================
 
 
-def send_via_smtp(message: MIMEMultipart) -> None:
-    with smtplib.SMTP(email_settings.HOST, email_settings.PORT) as server:
-        if email_settings.USE_TLS:
-            server.starttls()
+class SmtpEmailClient:
+    def send(self, message: MIMEMultipart) -> None:
+        with smtplib.SMTP(settings.email.HOST, settings.email.PORT) as server:
+            if settings.email.USE_TLS:
+                server.starttls()
 
-        if email_settings.USERNAME and email_settings.PASSWORD:
-            server.login(
-                email_settings.USERNAME,
-                email_settings.PASSWORD,
-            )
+            if settings.email.USERNAME and settings.email.PASSWORD:
+                server.login(settings.email.USERNAME, settings.email.PASSWORD)
 
-        server.send_message(message)
+            server.send_message(message)
