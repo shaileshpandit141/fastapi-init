@@ -19,7 +19,7 @@ from starlette.status import (
     HTTP_503_SERVICE_UNAVAILABLE,
 )
 
-from ..shared.exceptions import HTTPError
+from .exceptions import HTTPError
 
 logger = getLogger(__name__)
 

@@ -9,7 +9,7 @@ from .core.exc_handlers import register_exception_handlers
 from .core.lifespan import lifespan
 from .core.logging import LOGGING_CONFIG
 from .core.middleware import include_middlewares
-from .infrastructure.rate_limit.limiter import limiter
+from .infra.rate_limit.limiter import limiter
 
 # =============================================================================
 # Creating Settings Instance.

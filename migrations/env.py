@@ -4,8 +4,8 @@ from alembic import context
 from sqlalchemy import create_engine, pool
 from sqlmodel import SQLModel
 
-from app.infrastructure.db.models import *  # noqa: F403
 from app.core.config import get_settings
+from app.domain import *  # noqa: F403
 
 # Creating Settings Instance.
 settings = get_settings()

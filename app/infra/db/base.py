@@ -5,7 +5,7 @@ from sqlalchemy import Column, DateTime, func
 from sqlmodel import Field, SQLModel
 from uuid6 import uuid7
 
-from app.shared.get_utc_now import get_utc_now
+from app.core.time import get_utc_now
 
 # =============================================================================
 # Int ID Model Mixin.

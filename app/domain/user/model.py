@@ -7,9 +7,9 @@ from pydantic import EmailStr
 from sqlalchemy import Column, String
 from sqlmodel import Field, SQLModel
 
-from app.shared.get_utc_now import get_utc_now
-
-from ..base import TimestampMixin, UUIDv7Mixin
+# from ..base import TimestampMixin, UUIDv7Mixin
+from app.infra.db.base import TimestampMixin, UUIDv7Mixin
+from app.core.time import get_utc_now
 
 
 class UserStatus(StrEnum):

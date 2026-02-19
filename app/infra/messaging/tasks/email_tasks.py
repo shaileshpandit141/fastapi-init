@@ -6,9 +6,9 @@ from typing import Any
 
 from celery import shared_task
 
-from app.infrastructure.email.assembler import EmailMessageDict, SmtpMessageAssembler
-from app.infrastructure.email.renderer import JinjaRenderer
-from app.infrastructure.email.smtp_client import SmtpEmailClient
+from app.infra.email.assembler import EmailMessageDict, SmtpMessageAssembler
+from app.infra.email.renderer import JinjaRenderer
+from app.infra.email.smtp_client import SmtpEmailClient
 
 # =============================================================================
 # Getting Logger.

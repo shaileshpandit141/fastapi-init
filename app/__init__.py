@@ -1,1 +1,1 @@
-from app.infrastructure.db.models import *  # noqa: F403
+from app.domain import *  # noqa: F403
