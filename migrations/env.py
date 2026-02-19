@@ -5,7 +5,7 @@ from sqlalchemy import create_engine, pool
 from sqlmodel import SQLModel
 
 from app.infrastructure.db.models import *  # noqa: F403
-from app.shared.config import get_settings
+from app.core.config import get_settings
 
 # Creating Settings Instance.
 settings = get_settings()

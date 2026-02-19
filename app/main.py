@@ -4,16 +4,12 @@ from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse
 
 from .api.router import router
+from .core.config import get_settings
+from .core.exc_handlers import register_exception_handlers
+from .core.lifespan import lifespan
+from .core.logging import LOGGING_CONFIG
+from .core.middleware import include_middlewares
 from .infrastructure.rate_limit.limiter import limiter
-from .shared.config import get_settings
-from .shared.exc_handlers import register_exception_handlers
-from .shared.lifespan import lifespan
-from .shared.logging import LOGGING_CONFIG
-from .shared.middleware import include_middlewares
-
-# from app.infrastructure.rate_limit.constants import RateLimits
-# from app.infrastructure.rate_limit.decorator import rate_limit
-
 
 # =============================================================================
 # Creating Settings Instance.

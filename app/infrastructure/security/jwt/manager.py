@@ -3,7 +3,7 @@ from typing import Any
 
 from redis.asyncio.client import Redis
 
-from app.shared.config import get_settings
+from app.core.config import get_settings
 
 from .blocklist import JwtBlocklist
 from .factory import JwtFactory

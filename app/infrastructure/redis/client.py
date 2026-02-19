@@ -3,7 +3,7 @@ from collections.abc import AsyncGenerator, Generator
 import redis
 import redis.asyncio as aioredis
 
-from app.shared.config import get_settings
+from app.core.config import get_settings
 
 # =============================================================================
 # Creating Settings Instance.

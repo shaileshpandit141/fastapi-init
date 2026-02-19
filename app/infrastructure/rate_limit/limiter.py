@@ -4,7 +4,7 @@ from typing import Callable
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from app.shared.config import get_settings
+from app.core.config import get_settings
 
 # =============================================================================
 # Getting All Env Settings.

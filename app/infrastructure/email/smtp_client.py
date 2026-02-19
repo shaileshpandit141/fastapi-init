@@ -1,7 +1,7 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 
-from app.shared.config import get_settings
+from app.core.config import get_settings
 
 # =============================================================================
 # Gatting Env Settings.

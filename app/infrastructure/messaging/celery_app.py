@@ -1,6 +1,6 @@
 from celery import Celery
 
-from app.shared.config import get_settings
+from app.core.config import get_settings
 
 # =============================================================================
 # Gatting Env Celery Settings.
