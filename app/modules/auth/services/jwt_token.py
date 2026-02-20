@@ -28,7 +28,7 @@ type VerifyFn = Callable[..., Awaitable[Mapping[str, Any]]]
 
 
 class JwtTokenService:
-    def __init__(self, session: AsyncSession, redis: Redis) -> None:
+    def __init__(self, redis: Redis, session: AsyncSession) -> None:
         self._session = session
         self._jwt_token_manager = JwtTokenManager(redis=redis)
         self._password_hasher = PasswordHasher()

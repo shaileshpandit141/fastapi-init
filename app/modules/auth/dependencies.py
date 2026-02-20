@@ -6,6 +6,7 @@ from app.adapters.db.session import AsyncSession, get_async_session
 from app.adapters.redis.client import get_async_redis
 
 from .services.current_user import CurrentUserService
+from .services.jwt_token import JwtTokenService
 
 # =============================================================================
 # Get Current User Service With User Request Token.
@@ -23,3 +24,15 @@ async def get_current_user_service(
     session: AsyncSession = Depends(get_async_session),
 ) -> CurrentUserService:
     return CurrentUserService(token=token, redis=redis, session=session)
+
+
+# =============================================================================
+# Get Jwt Token Service.
+# =============================================================================
+
+
+async def get_jwt_token_service(
+    redis: Redis = Depends(get_async_redis),
+    session: AsyncSession = Depends(get_async_session),
+) -> JwtTokenService:
+    return JwtTokenService(redis=redis, session=session)
