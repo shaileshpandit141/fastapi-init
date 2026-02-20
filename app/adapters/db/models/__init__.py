@@ -1,4 +1,5 @@
 from .permission import Permission
+from .role import Role
 from .user import User
 
 # =============================================================================
@@ -6,4 +7,4 @@ from .user import User
 # =============================================================================
 
 
-__all__ = ["User", "Permission"]
+__all__ = ["User", "Permission", "Role"]
