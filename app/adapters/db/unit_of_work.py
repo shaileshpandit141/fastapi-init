@@ -4,8 +4,6 @@ from typing import Any, Self
 from sqlmodel import Session
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from .exceptions import UnitOfWorkError
-
 # =============================================================================
 # Async Unit of Work Context
 # =============================================================================
@@ -29,7 +27,7 @@ class AsyncUnitOfWork:
                 await self.session.commit()
         except Exception as exc:
             self._logger.exception("UnitOfWork transaction failed")
-            raise UnitOfWorkError("Transaction failed") from exc
+            raise exc
         finally:
             await self.session.close()
 
@@ -57,6 +55,6 @@ class SyncUnitOfWork:
                 self.session.commit()
         except Exception as exc:
             self._logger.exception("UnitOfWork transaction failed")
-            raise UnitOfWorkError("Transaction failed") from exc
+            raise exc
         finally:
             self.session.close()

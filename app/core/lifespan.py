@@ -5,7 +5,7 @@ from logging import getLogger
 from fastapi import FastAPI
 from redis.asyncio import from_url  # type: ignore
 
-from app.infrastructure.db.session import async_engine, init_async_db
+from app.adapters.db.session import async_engine, init_async_db
 
 from .config import get_settings
 
@@ -63,7 +63,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
         try:
             if hasattr(app.state, "redis"):
-                await app.state.redis.close()
+                await app.state.redis.close() # type: ignore
                 logger.info("Redis connection closed.")
         except Exception as exc:
             logger.exception("Error closing Redis connection.", exc_info=exc)

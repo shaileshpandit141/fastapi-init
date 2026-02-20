@@ -1,9 +1,9 @@
-from app.core.exceptions import AppError
+from .permission import Permission
+from .user import User
 
 # =============================================================================
-# Unit of Work Error Exception.
+# Exposing all SQLModel models for migration autogeneration.
 # =============================================================================
 
 
-class UnitOfWorkError(AppError):
-    pass
+__all__ = ["User", "Permission"]

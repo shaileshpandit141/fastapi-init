@@ -1,1 +1,1 @@
-from app.modules import *  # noqa: F403
+from app.adapters.db.models import *  # noqa: F403

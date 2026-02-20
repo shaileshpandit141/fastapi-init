@@ -1,5 +1,3 @@
-# pyright: reportAssignmentType=false
-
 from datetime import datetime
 
 from pydantic import EmailStr
@@ -7,21 +5,29 @@ from sqlalchemy import Column, String
 from sqlmodel import Field, SQLModel
 
 from app.core.time import get_utc_now
-from app.infrastructure.db.base import TimestampMixin, UUIDv7Mixin
+from app.shared.enums.user import UserStatus
 
-from .enums import UserStatus
+from ._mixins import TimestampMixin, UUIDv7Mixin
 
 # =============================================================================
-# User Base Model.
+# User Base SQLModel.
 # =============================================================================
 
 
 class UserBase(SQLModel, table=False):
     email: EmailStr = Field(
         max_length=255,
-        sa_column=Column(String(255), unique=True, index=True, nullable=False),
+        sa_column=Column(
+            String(255),
+            unique=True,
+            index=True,
+            nullable=False,
+        ),
     )
-    status: UserStatus = Field(default=UserStatus.PENDING, nullable=False)
+    status: UserStatus = Field(
+        default=UserStatus.PENDING,
+        nullable=False,
+    )
 
     def activate(self) -> None:
         self.status = UserStatus.ACTIVE
@@ -37,7 +43,7 @@ class UserBase(SQLModel, table=False):
 
 
 # =============================================================================
-# User Email Verification Model.
+# User Email Verification SQLModel.
 # =============================================================================
 
 
@@ -59,7 +65,7 @@ class UserEmailVerification(SQLModel, table=False):
 
 
 class User(TimestampMixin, UserEmailVerification, UserBase, UUIDv7Mixin, table=True):
-    __tablename__ = "users"
+    __tablename__ = "users"  # type: ignore
 
     password_hash: str = Field(
         sa_column=Column(
