@@ -8,7 +8,7 @@ from sqlmodel import Field, Relationship, SQLModel
 from app.core.time import datetime, get_utc_now
 from app.shared.enums.permission import PermissionEnum
 from app.shared.enums.role import RoleEnum
-from app.shared.enums.user import UserStatus
+from app.shared.enums.user import UserStatusEnum
 
 from ._mixins import TimestampMixin, UUIDv7Mixin
 
@@ -30,22 +30,22 @@ class UserBase(SQLModel, table=False):
             nullable=False,
         ),
     )
-    status: UserStatus = Field(
-        default=UserStatus.PENDING,
+    status: UserStatusEnum = Field(
+        default=UserStatusEnum.PENDING,
         nullable=False,
     )
 
     def activate(self) -> None:
-        self.status = UserStatus.ACTIVE
+        self.status = UserStatusEnum.ACTIVE
 
     def suspend(self) -> None:
-        self.status = UserStatus.SUSPENDED
+        self.status = UserStatusEnum.SUSPENDED
 
     def ban(self) -> None:
-        self.status = UserStatus.BANNED
+        self.status = UserStatusEnum.BANNED
 
     def deactivate(self) -> None:
-        self.status = UserStatus.INACTIVE
+        self.status = UserStatusEnum.INACTIVE
 
 
 # =============================================================================

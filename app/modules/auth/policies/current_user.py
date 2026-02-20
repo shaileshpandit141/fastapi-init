@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from app.adapters.db.models.user import User
 from app.core.exceptions import AccessDeniedError
-from app.shared.enums.user import UserStatus
+from app.shared.enums.user import UserStatusEnum
 
 
 class UserState(ABC):
@@ -37,10 +37,10 @@ class BannedState(UserState):
         raise AccessDeniedError("Account has been banned.")
 
 
-CURRENT_USER_POLICY_MAP: dict[UserStatus, UserState] = {
-    UserStatus.ACTIVE: ActiveState(),
-    UserStatus.PENDING: PendingState(),
-    UserStatus.INACTIVE: InactiveState(),
-    UserStatus.SUSPENDED: SuspendedState(),
-    UserStatus.BANNED: BannedState(),
+CURRENT_USER_POLICY_MAP: dict[UserStatusEnum, UserState] = {
+    UserStatusEnum.ACTIVE: ActiveState(),
+    UserStatusEnum.PENDING: PendingState(),
+    UserStatusEnum.INACTIVE: InactiveState(),
+    UserStatusEnum.SUSPENDED: SuspendedState(),
+    UserStatusEnum.BANNED: BannedState(),
 }

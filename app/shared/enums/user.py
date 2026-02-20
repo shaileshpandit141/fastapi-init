@@ -5,7 +5,7 @@ from enum import StrEnum
 # =============================================================================
 
 
-class UserStatus(StrEnum):
+class UserStatusEnum(StrEnum):
     """
     User Status Enums
 
