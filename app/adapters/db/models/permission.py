@@ -1,9 +1,12 @@
-from typing import Any
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Column, String
 from sqlmodel import Field, Relationship, SQLModel
 
 from ._mixins import UUIDv7Mixin
+
+if TYPE_CHECKING:
+    from .role import Role
 
 # =============================================================================
 # Permission Base SQLModel.
@@ -37,4 +40,4 @@ class PermissionBase(SQLModel, table=False):
 class Permission(PermissionBase, UUIDv7Mixin, table=True):
     __tablename__ = "permissions"  # type: ignore
 
-    roles: list[Any] = Relationship(back_populates="permission")
+    roles: list["Role"] = Relationship(back_populates="permission")

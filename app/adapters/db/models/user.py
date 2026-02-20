@@ -1,13 +1,16 @@
-from datetime import datetime
+from typing import TYPE_CHECKING
 
 from pydantic import EmailStr
 from sqlalchemy import Column, String
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 
-from app.core.time import get_utc_now
+from app.core.time import datetime, get_utc_now
 from app.shared.enums.user import UserStatus
 
 from ._mixins import TimestampMixin, UUIDv7Mixin
+
+if TYPE_CHECKING:
+    from .user_role import UserRole
 
 # =============================================================================
 # User Base SQLModel.
@@ -72,4 +75,11 @@ class User(TimestampMixin, UserEmailVerification, UserBase, UUIDv7Mixin, table=T
             String(255),
             nullable=False,
         )
+    )
+
+    roles: list["UserRole"] = Relationship(
+        back_populates="user",
+        sa_relationship_kwargs={
+            "cascade": "all, delete-orphan",
+        },
     )
