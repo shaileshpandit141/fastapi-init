@@ -3,6 +3,8 @@ from typing import TYPE_CHECKING
 from sqlalchemy import Column, String
 from sqlmodel import Field, Relationship, SQLModel
 
+from app.shared.enums.permission import PermissionEnum
+
 from ._mixins import UUIDv7Mixin
 
 if TYPE_CHECKING:
@@ -14,7 +16,7 @@ if TYPE_CHECKING:
 
 
 class PermissionBase(SQLModel, table=False):
-    code: str = Field(
+    code: PermissionEnum = Field(
         max_length=50,
         sa_column=Column(
             String(50),

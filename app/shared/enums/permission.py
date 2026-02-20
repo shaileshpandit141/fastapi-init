@@ -1,11 +1,11 @@
-from enum import StrEnum
+from ._base import LabeledEnum
 
 # =============================================================================
 # Permission Enums.
 # =============================================================================
 
 
-class PermissionEnum(StrEnum):
-    USER_CREATE = "user:create"
-    USER_UPDATE = "user:update"
-    USER_DELETE = "user:delete"
+class PermissionEnum(LabeledEnum):
+    USER_CREATE = ("user:create", "Create user")
+    USER_UPDATE = ("user:update", "Update user")
+    USER_DELETE = ("user:delete", "Delete user")
