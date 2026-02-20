@@ -1,1 +1,1 @@
-from app.domain import *  # noqa: F403
+from app.modules import *  # noqa: F403

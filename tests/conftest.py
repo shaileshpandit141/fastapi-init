@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from app.infra.db.session import get_async_session
+from app.infrastructure.db.session import get_async_session
 from app.main import app
 
 # =============================================================================
