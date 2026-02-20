@@ -25,5 +25,5 @@ class UserRoleBase(SQLModel, table=False):
 class UserRole(UserRoleBase, table=True):
     __tablename__ = "user_roles"  # type: ignore
 
-    user: "User" = Relationship(back_populates="roles")
-    role: "Role" = Relationship(back_populates="users")
+    user: "User" = Relationship(back_populates="user_roles")
+    role: "Role" = Relationship(back_populates="user_roles")

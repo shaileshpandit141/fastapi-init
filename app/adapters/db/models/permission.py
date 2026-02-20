@@ -1,14 +1,10 @@
-from typing import TYPE_CHECKING
-
 from sqlalchemy import Column, String
 from sqlmodel import Field, Relationship, SQLModel
 
 from app.shared.enums.permission import PermissionEnum
 
 from ._mixins import UUIDv7Mixin
-
-if TYPE_CHECKING:
-    from .role import Role
+from .role_permission import RolePermission
 
 # =============================================================================
 # Permission Base SQLModel.
@@ -42,4 +38,9 @@ class PermissionBase(SQLModel, table=False):
 class Permission(PermissionBase, UUIDv7Mixin, table=True):
     __tablename__ = "permissions"  # type: ignore
 
-    roles: list["Role"] = Relationship(back_populates="permission")
+    role_permissions: list["RolePermission"] = Relationship(
+        back_populates="permission",
+        sa_relationship_kwargs={
+            "cascade": "all, delete-orphan",
+        },
+    )

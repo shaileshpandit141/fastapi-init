@@ -27,5 +27,5 @@ class RolePermissionBase(SQLModel, table=False):
 class RolePermission(RolePermissionBase, table=True):
     __tablename__ = "role_permissions"  # type: ignore
 
-    role: "Role" = Relationship(back_populates="permissions")
-    permission: "Permission" = Relationship(back_populates="roles")
+    role: "Role" = Relationship(back_populates="role_permissions")
+    permission: "Permission" = Relationship(back_populates="role_permissions")

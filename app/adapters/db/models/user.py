@@ -49,13 +49,28 @@ class UserBase(SQLModel, table=False):
 
 
 # =============================================================================
-# User Email Verification SQLModel.
+# User Model With Table.
 # =============================================================================
 
 
-class UserEmailVerification(SQLModel, table=False):
+class User(TimestampMixin, UserBase, UUIDv7Mixin, table=True):
+    __tablename__ = "users"  # type: ignore
+
     is_email_verified: bool = Field(default=False, nullable=False)
     email_verified_at: datetime | None = Field(default=None)
+    password_hash: str = Field(
+        sa_column=Column(
+            String(255),
+            nullable=False,
+        )
+    )
+
+    user_roles: list["UserRole"] = Relationship(
+        back_populates="user",
+        sa_relationship_kwargs={
+            "cascade": "all, delete-orphan",
+        },
+    )
 
     def mark_email_verified(self) -> None:
         if self.is_email_verified:
@@ -64,49 +79,26 @@ class UserEmailVerification(SQLModel, table=False):
         self.is_email_verified = True
         self.email_verified_at = get_utc_now()
 
-
-# =============================================================================
-# User Model With Table.
-# =============================================================================
-
-
-class User(TimestampMixin, UserEmailVerification, UserBase, UUIDv7Mixin, table=True):
-    __tablename__ = "users"  # type: ignore
-
-    password_hash: str = Field(
-        sa_column=Column(
-            String(255),
-            nullable=False,
-        )
-    )
-
-    roles: list["UserRole"] = Relationship(
-        back_populates="user",
-        sa_relationship_kwargs={
-            "cascade": "all, delete-orphan",
-        },
-    )
-
     @cached_property
-    def _role_names(self) -> set[RoleEnum]:
-        return {ur.role.name for ur in self.roles}
+    def role_names(self) -> set[RoleEnum]:
+        return {ur.role.name for ur in self.user_roles}
 
     def is_superadmin(self) -> bool:
-        return RoleEnum.SUPERADMIN in self._role_names
+        return RoleEnum.SUPERADMIN in self.role_names
 
     def has_role(self, role_name: RoleEnum) -> bool:
         if self.is_superadmin():
             return True
 
-        return role_name in self._role_names
+        return role_name in self.role_names
 
     @cached_property
-    def _permission(self) -> set[PermissionEnum]:
+    def permission_codes(self) -> set[PermissionEnum]:
         permissions: set[PermissionEnum] = set()
 
-        for user_role in self.roles:
-            for permission in user_role.role.permissions:
-                permissions.add(permission.code)
+        for ur in self.user_roles:
+            for rp in ur.role.role_permissions:
+                permissions.add(rp.permission.code)
 
         return permissions
 
@@ -114,4 +106,4 @@ class User(TimestampMixin, UserEmailVerification, UserBase, UUIDv7Mixin, table=T
         if self.is_superadmin():
             return True
 
-        return permission in self._permission
+        return permission in self.permission_codes

@@ -6,10 +6,10 @@ from sqlmodel import Field, Relationship, SQLModel
 from app.shared.enums.role import RoleEnum
 
 from ._mixins import UUIDv7Mixin
+from .role_permission import RolePermission
 
 if TYPE_CHECKING:
-    from .permission import Permission
-    from .user import User
+    from .user_role import UserRole
 
 # =============================================================================
 # Role Base SQLModel.
@@ -43,5 +43,10 @@ class RoleBase(SQLModel, table=False):
 class Role(RoleBase, UUIDv7Mixin, table=True):
     __tablename__ = "roles"  # type: ignore
 
-    users: list["User"] = Relationship(back_populates="role")
-    permissions: list["Permission"] = Relationship(back_populates="role")
+    user_roles: list["UserRole"] = Relationship(back_populates="role")
+    role_permissions: list["RolePermission"] = Relationship(
+        back_populates="role",
+        sa_relationship_kwargs={
+            "cascade": "all, delete-orphan",
+        },
+    )
