@@ -27,5 +27,11 @@ class RolePermissionBase(SQLModel, table=False):
 class RolePermission(RolePermissionBase, table=True):
     __tablename__ = "role_permissions"  # type: ignore
 
-    role: "Role" = Relationship(back_populates="role_permissions")
-    permission: "Permission" = Relationship(back_populates="role_permissions")
+    role: "Role" = Relationship(
+        back_populates="role_permissions",
+        sa_relationship_kwargs={"lazy": "selectin"},
+    )
+    permission: "Permission" = Relationship(
+        back_populates="role_permissions",
+        sa_relationship_kwargs={"lazy": "selectin"},
+    )

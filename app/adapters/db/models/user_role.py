@@ -25,5 +25,11 @@ class UserRoleBase(SQLModel, table=False):
 class UserRole(UserRoleBase, table=True):
     __tablename__ = "user_roles"  # type: ignore
 
-    user: "User" = Relationship(back_populates="user_roles")
-    role: "Role" = Relationship(back_populates="user_roles")
+    user: "User" = Relationship(
+        back_populates="user_roles",
+        sa_relationship_kwargs={"lazy": "selectin"},
+    )
+    role: "Role" = Relationship(
+        back_populates="user_roles",
+        sa_relationship_kwargs={"lazy": "selectin"},
+    )

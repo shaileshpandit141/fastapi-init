@@ -44,5 +44,6 @@ class Permission(PermissionBase, UUIDv7Mixin, table=True):
         back_populates="permission",
         sa_relationship_kwargs={
             "cascade": "all, delete-orphan",
+            "lazy": "selectin",
         },
     )

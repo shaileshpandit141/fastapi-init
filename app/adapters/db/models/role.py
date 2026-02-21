@@ -50,5 +50,6 @@ class Role(RoleBase, UUIDv7Mixin, table=True):
         back_populates="role",
         sa_relationship_kwargs={
             "cascade": "all, delete-orphan",
+            "lazy": "selectin",
         },
     )

@@ -76,6 +76,7 @@ class User(TimestampMixin, UserBase, UUIDv7Mixin, table=True):
         back_populates="user",
         sa_relationship_kwargs={
             "cascade": "all, delete-orphan",
+            "lazy": "selectin",
         },
     )
 
