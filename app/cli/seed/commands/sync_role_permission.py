@@ -32,14 +32,14 @@ ROLE_PERMISSION_MAP: dict[RoleEnum, list[PermissionEnum]] = {
 # =============================================================================
 
 
-@command()
-def sync_role_permission() -> None:
+@command(name="sync-role-permission")
+def sync_role_permission_command() -> None:
     """Sync role-permission relationships based on the predefined ROLE_PERMISSION_MAP."""
 
     with SyncSessionLocal() as session:
         try:
             roles = session.exec(select(Role)).all()
-            role_by_enum: dict[RoleEnum, Role] = {role.name: role for role in roles}
+            role_by_enum: dict[str, Role] = {role.name: role for role in roles}
 
             # Load all permissions
             permissions = session.exec(select(Permission)).all()
@@ -61,7 +61,7 @@ def sync_role_permission() -> None:
             # Sync per role
             for role_enum, expected_permissions in ROLE_PERMISSION_MAP.items():
 
-                role = role_by_enum.get(role_enum)
+                role = role_by_enum.get(role_enum.value)
                 if not role:
                     continue  # role missing, skip safely
 

@@ -10,8 +10,8 @@ from app.shared.enums.permission import PermissionEnum
 # =============================================================================
 
 
-@command()
-def permissions() -> None:
+@command(name="permissions")
+def permission_command() -> None:
     """Seed permissions into the database."""
 
     with SyncSessionLocal() as session:

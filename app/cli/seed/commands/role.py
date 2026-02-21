@@ -10,8 +10,8 @@ from app.shared.enums.role import RoleEnum
 # =============================================================================
 
 
-@command()
-def roles() -> None:
+@command(name="roles")
+def role_command() -> None:
     """Seed roles into the database."""
 
     with SyncSessionLocal() as session:

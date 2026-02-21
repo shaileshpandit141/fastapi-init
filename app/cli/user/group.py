@@ -3,18 +3,18 @@ import click
 from .commands.create import create_user_command
 
 # =============================================================================
-# Seed Data Command Group
+# User management group.
 # =============================================================================
 
 
-@click.group()
-def user_command_group() -> None:
+@click.group(name="user")
+def user_group() -> None:
     """Users management command."""
     pass
 
 
 # =============================================================================
-# Register sub commands to seed command.
+# Register sub commands to user group.
 # =============================================================================
 
-user_command_group.add_command(create_user_command, name="create")
+user_group.add_command(create_user_command, name="create")
