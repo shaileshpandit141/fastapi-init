@@ -10,7 +10,7 @@ from .sync_role_permission import sync_role_permission
 
 
 @click.group()
-def seed() -> None:
+def seed_command() -> None:
     """Seed initial data into the database."""
     pass
 
@@ -19,6 +19,6 @@ def seed() -> None:
 # Register sub commands to seed command.
 # =============================================================================
 
-seed.add_command(permissions, name="permissions")
-seed.add_command(roles, name="roles")
-seed.add_command(sync_role_permission, name="sync-role-permission")
+seed_command.add_command(permissions, name="permissions")
+seed_command.add_command(roles, name="roles")
+seed_command.add_command(sync_role_permission, name="sync-role-permission")

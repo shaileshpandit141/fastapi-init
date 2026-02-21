@@ -4,7 +4,8 @@ from click import group
 
 from app.adapters.db.session import init_sync_db
 
-from .seeders._command import seed
+from .seed._command import seed_command
+from .user._command import user_command
 
 # =============================================================================
 # Check DB Connection.
@@ -28,7 +29,7 @@ def wait_for_db(retries: int = 5) -> None:
 
 
 @group()
-def cli() -> None:
+def main_command() -> None:
     """A command-line interface to manage FastAPI-Init app."""
 
     wait_for_db()
@@ -38,12 +39,12 @@ def cli() -> None:
 # Adding All Sub Commands here.
 # =============================================================================
 
-cli.add_command(seed, name="seed")
-
+main_command.add_command(seed_command, name="seed")
+main_command.add_command(user_command, name="user")
 
 # =============================================================================
 # Run cli app command.
 # =============================================================================
 
 if __name__ == "__main__":
-    cli()
+    main_command()
