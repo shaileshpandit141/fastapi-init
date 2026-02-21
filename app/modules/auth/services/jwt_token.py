@@ -9,7 +9,6 @@ from app.adapters.security.jwt.exceptions import JwtError
 from app.adapters.security.jwt.manager import JwtTokenManager
 from app.adapters.security.password.hasher import PasswordHasher
 from app.core.exceptions import AccessDeniedError, BadRequestError
-from app.shared.enums.user import UserStatusEnum
 from app.shared.response.schemas import DetailResponse
 
 type VerifyFn = Callable[..., Awaitable[Mapping[str, Any]]]
@@ -34,16 +33,13 @@ class JwtTokenService:
         if not user:
             raise BadRequestError(detail="User not found.")
 
-        if user.status == UserStatusEnum.INACTIVE:
-            raise AccessDeniedError(detail="Inactive user.")
-
         if not user.is_email_verified:
             raise AccessDeniedError(
                 detail="Please verify your email to continue.",
             )
 
-        if not self._hasher.verify_password(
-            plain_password=password,
+        if not self._hasher.verify(
+            password=password,
             hashed_password=user.password_hash,
         ):
             raise BadRequestError(detail="Incorrect email password.")

@@ -22,11 +22,6 @@ class PendingState(UserState):
         raise AccessDeniedError("Account not activated yet.")
 
 
-class InactiveState(UserState):
-    def ensure_access(self, user: "User") -> None:
-        raise AccessDeniedError("Account is inactive.")
-
-
 class SuspendedState(UserState):
     def ensure_access(self, user: "User") -> None:
         raise AccessDeniedError("Account is suspended.")
@@ -40,7 +35,6 @@ class BannedState(UserState):
 CURRENT_USER_POLICY_MAP: dict[UserStatusEnum, UserState] = {
     UserStatusEnum.ACTIVE: ActiveState(),
     UserStatusEnum.PENDING: PendingState(),
-    UserStatusEnum.INACTIVE: InactiveState(),
     UserStatusEnum.SUSPENDED: SuspendedState(),
     UserStatusEnum.BANNED: BannedState(),
 }
