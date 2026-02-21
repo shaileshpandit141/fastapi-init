@@ -7,18 +7,18 @@ from enum import StrEnum
 
 class UserStatusEnum(StrEnum):
     """
-    User Status Enums
+    Represents the lifecycle state of a user account.
 
-    Fields:
-        - PENDING: Just signed up, not verified yet.
-        - ACTIVE: Fully active user.
-        - INACTIVE: User chose to deactivate their account.
-        - SUSPENDED: Temporarily blocked by admin.
-        - BANNED: Permanently banned.
+    Members:
+        PENDING: User has signed up but not yet verified.
+        ACTIVE: User account is fully active.
+        DEACTIVATED: User voluntarily deactivated their account.
+        SUSPENDED: User is temporarily restricted by an administrator.
+        BANNED: User is permanently blocked from the system.
     """
 
     PENDING = "pending"
     ACTIVE = "active"
-    INACTIVE = "inactive"
+    DEACTIVATED = "deactivated"
     SUSPENDED = "suspended"
     BANNED = "banned"

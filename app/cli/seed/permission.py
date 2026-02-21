@@ -24,7 +24,7 @@ def permissions() -> None:
                     session.add(
                         Permission(
                             code=perm,
-                            description=perm.description,
+                            description=perm.label,
                         )
                     )
         except Exception as exc:

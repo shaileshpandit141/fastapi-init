@@ -6,6 +6,7 @@ from sqlalchemy import Column, Enum, String
 from sqlmodel import Field, Relationship, SQLModel
 
 from app.core.time import datetime, get_utc_now
+from app.shared.enums._base import get_enum_values
 from app.shared.enums.permission import PermissionEnum
 from app.shared.enums.role import RoleEnum
 from app.shared.enums.user import UserStatusEnum
@@ -36,6 +37,7 @@ class UserBase(SQLModel, table=False):
             Enum(
                 UserStatusEnum,
                 name="user_status_enum",
+                values_callable=get_enum_values,
             ),
             index=True,
             nullable=False,
@@ -52,7 +54,7 @@ class UserBase(SQLModel, table=False):
         self.status = UserStatusEnum.BANNED
 
     def deactivate(self) -> None:
-        self.status = UserStatusEnum.INACTIVE
+        self.status = UserStatusEnum.DEACTIVATED
 
 
 # =============================================================================
@@ -88,7 +90,7 @@ class User(TimestampMixin, UserBase, UUIDv7Mixin, table=True):
         self.email_verified_at = get_utc_now()
 
     @cached_property
-    def role_names(self) -> set[RoleEnum]:
+    def role_names(self) -> set[str]:
         return {ur.role.name for ur in self.user_roles}
 
     def is_superadmin(self) -> bool:

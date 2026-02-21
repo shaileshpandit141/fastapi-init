@@ -1,9 +1,7 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Column, Enum, String
+from sqlalchemy import Column, String
 from sqlmodel import Field, Relationship, SQLModel
-
-from app.shared.enums.role import RoleEnum
 
 from ._mixins import UUIDv7Mixin
 from .role_permission import RolePermission
@@ -17,22 +15,20 @@ if TYPE_CHECKING:
 
 
 class RoleBase(SQLModel, table=False):
-    name: RoleEnum = Field(
+    name: str = Field(
+        max_length=100,
         sa_column=Column(
-            Enum(
-                RoleEnum,
-                name="role_enum",
-            ),
+            String(100),
             index=True,
             unique=True,
             nullable=False,
         ),
     )
-    description: str | None = Field(
-        default=None,
+    description: str = Field(
         max_length=255,
         sa_column=Column(
             String(255),
+            nullable=False,
         ),
     )
 

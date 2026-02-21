@@ -23,8 +23,8 @@ def roles() -> None:
                 if role not in existing_names:
                     session.add(
                         Role(
-                            name=role,
-                            description=role.description,
+                            name=role.value,
+                            description=role.label,
                         )
                     )
         except Exception as exc:
