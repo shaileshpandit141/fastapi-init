@@ -5,7 +5,7 @@ from click import group
 from app.adapters.db.session import init_sync_db
 
 from .seed._command import seed_command
-from .user._command import user_command
+from .user.group import user_command_group
 
 # =============================================================================
 # Check DB Connection.
@@ -40,7 +40,7 @@ def main_command() -> None:
 # =============================================================================
 
 main_command.add_command(seed_command, name="seed")
-main_command.add_command(user_command, name="user")
+main_command.add_command(user_command_group, name="user")
 
 # =============================================================================
 # Run cli app command.
