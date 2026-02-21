@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String
+from sqlalchemy import Column, Enum, String
 from sqlmodel import Field, Relationship, SQLModel
 
 from app.shared.enums.permission import PermissionEnum
@@ -13,11 +13,13 @@ from .role_permission import RolePermission
 
 class PermissionBase(SQLModel, table=False):
     code: PermissionEnum = Field(
-        max_length=50,
         sa_column=Column(
-            String(50),
-            unique=True,
+            Enum(
+                PermissionEnum,
+                name="permission_enum",
+            ),
             index=True,
+            unique=True,
             nullable=False,
         ),
     )

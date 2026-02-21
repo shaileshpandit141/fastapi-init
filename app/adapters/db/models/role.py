@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Column, String
+from sqlalchemy import Column, Enum, String
 from sqlmodel import Field, Relationship, SQLModel
 
 from app.shared.enums.role import RoleEnum
@@ -18,11 +18,13 @@ if TYPE_CHECKING:
 
 class RoleBase(SQLModel, table=False):
     name: RoleEnum = Field(
-        max_length=50,
         sa_column=Column(
-            String(50),
-            unique=True,
+            Enum(
+                RoleEnum,
+                name="role_enum",
+            ),
             index=True,
+            unique=True,
             nullable=False,
         ),
     )

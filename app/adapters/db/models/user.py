@@ -2,7 +2,7 @@ from functools import cached_property
 from typing import TYPE_CHECKING
 
 from pydantic import EmailStr
-from sqlalchemy import Column, String
+from sqlalchemy import Column, Enum, String
 from sqlmodel import Field, Relationship, SQLModel
 
 from app.core.time import datetime, get_utc_now
@@ -25,14 +25,21 @@ class UserBase(SQLModel, table=False):
         max_length=255,
         sa_column=Column(
             String(255),
-            unique=True,
             index=True,
+            unique=True,
             nullable=False,
         ),
     )
     status: UserStatusEnum = Field(
         default=UserStatusEnum.PENDING,
-        nullable=False,
+        sa_column=Column(
+            Enum(
+                UserStatusEnum,
+                name="user_status_enum",
+            ),
+            index=True,
+            nullable=False,
+        ),
     )
 
     def activate(self) -> None:
