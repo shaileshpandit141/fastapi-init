@@ -19,22 +19,12 @@ from starlette.status import (
     HTTP_503_SERVICE_UNAVAILABLE,
 )
 
-from .exceptions import HTTPError
+# =============================================================================
+# Getting logger for this file.
+# =============================================================================
+
 
 logger = getLogger(__name__)
-
-# =============================================================================
-# App Exceptions (highest priority).
-# =============================================================================
-
-
-async def app_exception_handler(request: Request, exc: HTTPError) -> JSONResponse:
-    logger.debug(msg="App http exception error", exc_info=exc)
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={"detail": exc.detail},
-    )
-
 
 # =============================================================================
 # Rate Limit Exceeded.
@@ -141,9 +131,10 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
             "method": request.method,
         },
     )
+    message = exc.args[0] if exc.args else "An unexpected error occurred"
     return JSONResponse(
         status_code=HTTP_500_INTERNAL_SERVER_ERROR,
-        content={"detail": "Something went wrong"},
+        content={"detail": message},
     )
 
 
@@ -153,7 +144,6 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
 
 
 exception_handler_list: list[tuple[Any, Any]] = [
-    (HTTPError, app_exception_handler),
     (RateLimitExceeded, rate_limit_exceeded),
     (JWTError, jwt_exception_handler),
     (PermissionError, permission_denie_handler),

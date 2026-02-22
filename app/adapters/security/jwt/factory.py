@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from jose import jwt
 
-from app.core.time import get_utc_now
+from app.shared.time import get_utc_now
 
 # =============================================================================
 # Jwt Factory Class That Create Jwt Tokens.

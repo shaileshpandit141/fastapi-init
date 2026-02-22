@@ -7,8 +7,8 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from app.adapters.db.models.user import User
 from app.adapters.security.jwt.exceptions import JwtError
 from app.adapters.security.jwt.manager import JwtTokenManager
-from app.core.exceptions import AccessDeniedError, UnauthorizedError
 
+from ..exceptions import AccessDeniedError, UnauthorizedError
 from ..policies.current_user import CURRENT_USER_POLICY_MAP
 
 # =============================================================================
@@ -28,7 +28,7 @@ class CurrentUserService:
         try:
             claims = await jwt_token_manager.verify_access_token(self.token)
         except JwtError:
-            raise UnauthorizedError(detail="Invalid or expired access token.")
+            raise UnauthorizedError("Invalid or expired access token.")
 
         user = (
             await self.session.exec(
@@ -39,7 +39,7 @@ class CurrentUserService:
         ).one_or_none()
 
         if user is None:
-            raise UnauthorizedError(detail="Invalid access token.")
+            raise UnauthorizedError("Invalid access token.")
 
         return user
 

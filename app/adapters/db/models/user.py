@@ -5,7 +5,7 @@ from pydantic import EmailStr
 from sqlalchemy import Column, Enum, String
 from sqlmodel import Field, Relationship, SQLModel
 
-from app.core.time import datetime, get_utc_now
+from app.shared.time import datetime, get_utc_now
 from app.shared.enums._base import get_enum_values
 from app.shared.enums.permission import PermissionEnum
 from app.shared.enums.role import RoleEnum

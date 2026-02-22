@@ -5,11 +5,12 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.adapters.db.models.user import User
-from app.adapters.security.jwt.exceptions import JwtError
+from app.adapters.security.jwt.exceptions import InvalidTokenError, JwtError
 from app.adapters.security.jwt.manager import JwtTokenManager
 from app.adapters.security.password.hasher import PasswordHasher
-from app.core.exceptions import AccessDeniedError, BadRequestError
 from app.shared.response.schemas import DetailResponse
+
+from ..exceptions import AccessDeniedError, UserNotFoundError
 
 type VerifyFn = Callable[..., Awaitable[Mapping[str, Any]]]
 
@@ -31,18 +32,16 @@ class JwtTokenService:
         user = (await self._session.exec(stmt)).one_or_none()
 
         if not user:
-            raise BadRequestError(detail="User not found.")
+            raise UserNotFoundError("User not found.")
 
         if not user.is_email_verified:
-            raise AccessDeniedError(
-                detail="Please verify your email to continue.",
-            )
+            raise AccessDeniedError("Please verify your email to continue.")
 
         if not self._hasher.verify(
             password=password,
             hashed_password=user.password_hash,
         ):
-            raise BadRequestError(detail="Incorrect email password.")
+            raise UserNotFoundError("Incorrect email password.")
 
         return {
             "access_token": self._jwt.create_access_token(claims={"id": str(user.id)}),
@@ -56,7 +55,7 @@ class JwtTokenService:
         try:
             claims = await self._jwt.verify_refresh_token(token=refresh_token)
         except JwtError:
-            raise BadRequestError(detail="Invalid or expire refresh token.")
+            raise InvalidTokenError("Invalid or expire refresh token.")
 
         return {
             "access_token": self._jwt.create_access_token(claims={"id": claims["id"]}),

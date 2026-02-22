@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
 
 from app.adapters.db.models.user import User
-from app.core.exceptions import AccessDeniedError
 from app.shared.enums.user import UserStatusEnum
+
+from ..exceptions import AccessDeniedError
 
 
 class UserState(ABC):

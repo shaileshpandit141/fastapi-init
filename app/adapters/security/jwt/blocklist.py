@@ -1,6 +1,6 @@
 from redis.asyncio.client import Redis
 
-from app.core.time import get_utc_now
+from app.shared.time import get_utc_now
 
 # =============================================================================
 # Jwt Constants
