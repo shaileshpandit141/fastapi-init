@@ -5,9 +5,9 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.adapters.db.models.user import User
-from app.adapters.security.jwt.exceptions import InvalidTokenError, JwtError
-from app.adapters.security.jwt.manager import JwtTokenManager
-from app.adapters.security.password.hasher import PasswordHasher
+from app.adapters.jwt.exceptions import InvalidTokenError, JwtError
+from app.adapters.jwt.manager import JwtTokenManager
+from app.adapters.password.hasher import PasswordHasher
 from app.core.exceptions.http import AccessDeniedError
 from app.modules.auth.exceptions import UserNotFoundError
 from app.shared.response.schemas import DetailResponse
