@@ -8,9 +8,9 @@ from app.adapters.db.models.user import User
 from app.adapters.security.jwt.exceptions import InvalidTokenError, JwtError
 from app.adapters.security.jwt.manager import JwtTokenManager
 from app.adapters.security.password.hasher import PasswordHasher
+from app.core.exceptions.http import AccessDeniedError
+from app.modules.auth.exceptions import UserNotFoundError
 from app.shared.response.schemas import DetailResponse
-
-from ..exceptions import AccessDeniedError, UserNotFoundError
 
 type VerifyFn = Callable[..., Awaitable[Mapping[str, Any]]]
 

@@ -1,11 +1,11 @@
-from app.core.exceptions import AppError
+from app.core.exceptions.domain import DomainError
 
 # =============================================================================
 # Jwt Errors
 # =============================================================================
 
 
-class JwtError(AppError):
+class JwtError(DomainError):
     """Base JWT-related exception"""
 
     pass

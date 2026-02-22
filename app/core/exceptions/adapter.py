@@ -1,9 +1,11 @@
+from ._base import AppError
+
 # =============================================================================
-# Base application error.
+# Adapter level error.
 # =============================================================================
 
 
-class AppError(Exception):
-    """Base class for all application errors."""
+class AdapterError(AppError):
+    """Base adapter errors."""
 
     pass

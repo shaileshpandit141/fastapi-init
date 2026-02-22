@@ -1,27 +1,9 @@
-from app.core.exceptions import AppError
-
-# =============================================================================
-# Access denied error.
-# =============================================================================
-
-
-class AccessDeniedError(AppError):
-    pass
-
-
-# =============================================================================
-# Unauthorized error.
-# =============================================================================
-
-
-class UnauthorizedError(AppError):
-    pass
-
+from app.core.exceptions.domain import DomainError
 
 # =============================================================================
 # User not found error.
 # =============================================================================
 
 
-class UserNotFoundError(AppError):
+class UserNotFoundError(DomainError):
     pass
