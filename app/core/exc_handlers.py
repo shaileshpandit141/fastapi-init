@@ -3,21 +3,21 @@
 from logging import getLogger
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.exceptions import RequestValidationError
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from jose import JWTError
-from pydantic import ValidationError
 from redis.exceptions import RedisError
 from slowapi.errors import RateLimitExceeded
 from starlette.status import (
+    HTTP_400_BAD_REQUEST,
     HTTP_401_UNAUTHORIZED,
-    HTTP_403_FORBIDDEN,
-    HTTP_422_UNPROCESSABLE_CONTENT,
     HTTP_429_TOO_MANY_REQUESTS,
     HTTP_500_INTERNAL_SERVER_ERROR,
     HTTP_503_SERVICE_UNAVAILABLE,
 )
+
+from .exceptions._base import AppError
+from .exceptions.http import HttpError
 
 # =============================================================================
 # Getting logger for this file.
@@ -25,6 +25,32 @@ from starlette.status import (
 
 
 logger = getLogger(__name__)
+
+# =============================================================================
+# App Http level exceptions.
+# =============================================================================
+
+
+async def app_error_handler(request: Request, exc: AppError) -> JSONResponse:
+    logger.debug(msg="App error", exc_info=exc)
+    return JSONResponse(
+        status_code=HTTP_400_BAD_REQUEST,
+        content={"detail": exc.detail},
+    )
+
+
+# =============================================================================
+# App Http level exceptions.
+# =============================================================================
+
+
+async def app_http_error_handler(request: Request, exc: HttpError) -> JSONResponse:
+    logger.debug(msg="App http error", exc_info=exc)
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail},
+    )
+
 
 # =============================================================================
 # Rate Limit Exceeded.
@@ -44,7 +70,7 @@ def rate_limit_exceeded(request: Request, exc: RateLimitExceeded) -> JSONRespons
 # =============================================================================
 
 
-async def jwt_exception_handler(request: Request, exc: JWTError) -> JSONResponse:
+async def jose_jwt_error_handler(request: Request, exc: JWTError) -> JSONResponse:
     logger.debug(msg="Jose jwt error", exc_info=exc)
     return JSONResponse(
         status_code=HTTP_401_UNAUTHORIZED,
@@ -53,41 +79,11 @@ async def jwt_exception_handler(request: Request, exc: JWTError) -> JSONResponse
 
 
 # =============================================================================
-# Permission Error.
-# =============================================================================
-
-
-async def permission_denie_handler(
-    request: Request, exc: PermissionError
-) -> JSONResponse:
-    logger.debug(msg="Permission denied error", exc_info=exc)
-    return JSONResponse(
-        status_code=HTTP_403_FORBIDDEN,
-        content={"detail": "Access denied"},
-    )
-
-
-# =============================================================================
-# Validation Errors (FastAPI / Pydantic).
-# =============================================================================
-
-
-async def validation_exception_handler(
-    request: Request, exc: RequestValidationError
-) -> JSONResponse:
-    logger.debug(msg="Validation error", exc_info=exc)
-    return JSONResponse(
-        status_code=HTTP_422_UNPROCESSABLE_CONTENT,
-        content={"detail": exc.errors()},
-    )
-
-
-# =============================================================================
 # Redis Exception Handler.
 # =============================================================================
 
 
-async def redis_exception_handler(request: Request, exc: RedisError) -> JSONResponse:
+async def redis_error_handler(request: Request, exc: RedisError) -> JSONResponse:
     logger.debug(msg="Redis error", exc_info=exc)
     return JSONResponse(
         status_code=HTTP_503_SERVICE_UNAVAILABLE,
@@ -96,33 +92,11 @@ async def redis_exception_handler(request: Request, exc: RedisError) -> JSONResp
 
 
 # =============================================================================
-# HTTPException (fallback for routers / deps).
-# =============================================================================
-
-
-async def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
-    logger.debug(msg="Http exception error", exc_info=exc)
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={"detail": exc.detail},
-    )
-
-
-async def pydantic_validation_handler(
-    request: Request, exc: ValidationError
-) -> JSONResponse:
-    return JSONResponse(
-        status_code=HTTP_422_UNPROCESSABLE_CONTENT,
-        content={"detail": exc.errors()},
-    )
-
-
-# =============================================================================
 # Catch-all (500).
 # =============================================================================
 
 
-async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+async def unhandled_error_handler(request: Request, exc: Exception) -> JSONResponse:
     logger.debug(
         msg="Unhandled exception",
         exc_info=exc,
@@ -142,15 +116,13 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
 # =============================================================================
 
 
-exception_handler_list: list[tuple[Any, Any]] = [
+error_handlers: list[tuple[Any, Any]] = [
+    (AppError, app_error_handler),
+    (HttpError, app_http_error_handler),
     (RateLimitExceeded, rate_limit_exceeded),
-    (JWTError, jwt_exception_handler),
-    (PermissionError, permission_denie_handler),
-    (RequestValidationError, validation_exception_handler),
-    (RedisError, redis_exception_handler),
-    (HTTPException, http_exception_handler),
-    (ValidationError, pydantic_validation_handler),
-    (Exception, unhandled_exception_handler),
+    (JWTError, jose_jwt_error_handler),
+    (RedisError, redis_error_handler),
+    (Exception, unhandled_error_handler),
 ]
 
 
@@ -160,5 +132,5 @@ exception_handler_list: list[tuple[Any, Any]] = [
 
 
 def register_exception_handlers(app: FastAPI) -> None:
-    for exc_handler in exception_handler_list:
-        app.add_exception_handler(exc_handler[0], exc_handler[1])
+    for error_handler in error_handlers:
+        app.add_exception_handler(error_handler[0], error_handler[1])
