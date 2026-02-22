@@ -131,10 +131,9 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
             "method": request.method,
         },
     )
-    message = exc.args[0] if exc.args else "An unexpected error occurred"
     return JSONResponse(
         status_code=HTTP_500_INTERNAL_SERVER_ERROR,
-        content={"detail": message},
+        content={"detail": "An unexpected error occurred"},
     )
 
 
