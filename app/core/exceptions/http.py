@@ -31,8 +31,8 @@ class UnauthorizedError(HttpError, status_code=401):
 # =============================================================================
 
 
-class AccessDeniedError(HttpError, status_code=403):
-    """Base access denied errors."""
+class PermissionDeniedError(HttpError, status_code=403):
+    """Base permission denied errors."""
 
     pass
 

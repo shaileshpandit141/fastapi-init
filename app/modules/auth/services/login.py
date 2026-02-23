@@ -8,7 +8,7 @@ from app.adapters.db.models.user import User
 from app.adapters.jwt.exceptions import InvalidTokenError, JwtError
 from app.adapters.jwt.manager import JwtTokenManager
 from app.adapters.password.hasher import PasswordHasher
-from app.core.exceptions.http import AccessDeniedError
+from app.core.exceptions.http import PermissionDeniedError
 from app.modules.auth.exceptions import UserNotFoundError
 from app.shared.response.schemas import DetailResponse
 
@@ -35,7 +35,7 @@ class JwtTokenService:
             raise UserNotFoundError("User not found.")
 
         if not user.is_email_verified:
-            raise AccessDeniedError("Please verify your email to continue.")
+            raise PermissionDeniedError("Please verify your email to continue.")
 
         if not self._hasher.verify(
             password=password,
