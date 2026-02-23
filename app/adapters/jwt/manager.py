@@ -1,5 +1,6 @@
 from datetime import timedelta
-from typing import Any
+from enum import StrEnum
+from typing import Any, Mapping
 
 from redis.asyncio.client import Redis
 
@@ -10,12 +11,17 @@ from .factory import JwtFactory
 from .verifier import JwtVerifier
 
 # =============================================================================
-# Jwt Constants
+# Token Constants
 # =============================================================================
 
 
 ACCESS_SUBJECT = "access"
 REFRESH_SUBJECT = "refresh"
+
+
+class TokenTypeEnum(StrEnum):
+    ACCESS = "access"
+    REFRESH = "refresh"
 
 
 # =============================================================================
@@ -37,7 +43,15 @@ class JwtTokenManager:
         self.secret_key = settings.jwt.SECRET_KEY
         self.algorithm = settings.jwt.ALGORITHM
 
-    def create_access_token(self, claims: dict[str, Any]) -> str:
+    def create_token(self, type: TokenTypeEnum, claims: Mapping[str, Any]) -> str:
+        if type == TokenTypeEnum.ACCESS:
+            return self.create_access_token(claims)
+        elif type == TokenTypeEnum.REFRESH:
+            return self.create_refresh_token(claims)
+        else:
+            raise ValueError("Invalid token type")
+
+    def create_access_token(self, claims: Mapping[str, Any]) -> str:
         return JwtFactory.create_token(
             claims=claims,
             subject=ACCESS_SUBJECT,
@@ -48,7 +62,7 @@ class JwtTokenManager:
             ),
         )
 
-    def create_refresh_token(self, claims: dict[str, Any]) -> str:
+    def create_refresh_token(self, claims: Mapping[str, Any]) -> str:
         return JwtFactory.create_token(
             claims=claims,
             subject=REFRESH_SUBJECT,
