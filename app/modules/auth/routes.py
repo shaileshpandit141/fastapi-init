@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
-from .dependencies import JwtTokenService, get_jwt_token_service
+from .dependencies import LoginService, get_login_service
 from .schemas.login import UserLogin
 
 router = APIRouter(prefix="/auth", tags=["Auth Endpoints"])
@@ -11,13 +11,12 @@ router = APIRouter(prefix="/auth", tags=["Auth Endpoints"])
     path="/login",
     summary="Issue new jwt tokens",
     description="Issue new jwt tokens to make requests on protected routes.",
-    response_model=UserLogin,
 )
 async def login(
     form_in: OAuth2PasswordRequestForm = Depends(),
-    service: JwtTokenService = Depends(get_jwt_token_service),
+    service: LoginService = Depends(get_login_service),
 ) -> UserLogin:
-    tokens = await service.create_jwt_token(
+    tokens = await service.login(
         email=form_in.username,
         password=form_in.password,
     )
