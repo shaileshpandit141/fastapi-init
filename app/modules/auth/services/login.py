@@ -6,13 +6,59 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.adapters.db.models.user import User
 from app.adapters.jwt.exceptions import InvalidTokenError, JwtError
-from app.adapters.jwt.manager import JwtTokenManager
+from app.adapters.jwt.manager import JwtTokenManager, TokenTypeEnum
 from app.adapters.password.hasher import PasswordHasher
 from app.core.exceptions.http import PermissionDeniedError
 from app.modules.auth.exceptions import UserNotFoundError
 from app.shared.response.schemas import DetailResponse
 
+from ..policies.login import LoginPolicy
+
 type VerifyFn = Callable[..., Awaitable[Mapping[str, Any]]]
+
+
+class LoginService:
+    def __init__(
+        self,
+        redis: Redis,
+        session: AsyncSession,
+        policy: LoginPolicy,
+        jwt_manager: JwtTokenManager,
+        hasher: PasswordHasher,
+    ) -> None:
+        self.session = session
+        self.redis = redis
+        self.policy = policy
+        self.jwt_manager = jwt_manager
+        self.hasher = hasher
+
+    async def login(self, email: str, password: str) -> dict[str, str]:
+
+        # Check if user exists.
+        stmt = select(User).where(User.email == email)
+        user = (await self.session.exec(stmt)).one_or_none()
+        if user is None:
+            raise UserNotFoundError("User not found.")
+
+        # Check if password is correct.
+        if not self.hasher.verify(
+            password=password,
+            hashed_password=user.password_hash,
+        ):
+            raise UserNotFoundError("Invalid email or password.")
+
+        # Enforce login policy.
+        self.policy.enforce_can_login(user)
+
+        return {
+            "access_token": self.jwt_manager.create_token(
+                TokenTypeEnum.ACCESS, {"id": str(user.id)}
+            ),
+            "refresh_token": self.jwt_manager.create_token(
+                TokenTypeEnum.REFRESH, {"id": str(user.id)}
+            ),
+            "token_type": "Bearer",
+        }
 
 
 # =============================================================================
