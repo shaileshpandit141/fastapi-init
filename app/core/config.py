@@ -1,6 +1,7 @@
 from functools import lru_cache
 from typing import Literal
 
+from cryptography.fernet import Fernet
 from pydantic import EmailStr, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -139,6 +140,26 @@ class EmailSettings(BaseSettings):
 # =============================================================================
 
 
+class EncryptionSettings(BaseSettings):
+    """
+    Encryption configuration.
+    """
+
+    model_config = SettingsConfigDict(
+        env_prefix="Encryption_",
+        env_file=".env",
+        case_sensitive=False,
+        extra="ignore",
+    )
+
+    KEY: str = Fernet.generate_key().decode()
+
+
+# =============================================================================
+# JWT configuration.
+# =============================================================================
+
+
 class JWTSettings(BaseSettings):
     """
     JWT configuration.
@@ -236,6 +257,7 @@ class Settings:
         self.cors = CORSSettings()
         self.db = DatabaseSettings()
         self.redis = RedisSettings()
+        self.encryption = EncryptionSettings()
         self.jwt = JWTSettings()
         self.celery = CelerySettings()
         self.email = EmailSettings()
