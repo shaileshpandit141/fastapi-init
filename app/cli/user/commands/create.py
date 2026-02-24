@@ -6,7 +6,7 @@ from app.adapters.db.models.role import Role
 from app.adapters.db.models.user import User
 from app.adapters.db.models.user_role import UserRole
 from app.adapters.db.session import SyncSessionLocal
-from app.adapters.security.password.hasher import PasswordHasher
+from app.adapters.security.providers import get_hasher
 from app.shared.enums.user import UserStatusEnum
 
 # =============================================================================
@@ -28,7 +28,7 @@ def create_user_command(email: str, password: str) -> None:
     Create a new user with the given role.
     """
 
-    hasher = PasswordHasher()
+    hasher = get_hasher()
 
     with SyncSessionLocal() as session:
         try:
@@ -52,7 +52,7 @@ def create_user_command(email: str, password: str) -> None:
             # Create the user with the selected role.
             user = User(
                 email=email,
-                password_hash=hasher.hash_password(password),
+                password_hash=hasher.hash(password),
                 status=UserStatusEnum.ACTIVE,
             )
 

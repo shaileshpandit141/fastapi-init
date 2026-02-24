@@ -8,6 +8,7 @@ from app.adapters.db.models.user import User
 from app.adapters.jwt.exceptions import InvalidTokenError, JwtError
 from app.adapters.jwt.manager import JwtTokenManager, TokenTypeEnum
 from app.adapters.password.hasher import PasswordHasher
+from app.adapters.security.hashing import Argon2Hasher
 from app.core.exceptions.http import PermissionDeniedError
 from app.modules.auth.exceptions import UserNotFoundError
 from app.shared.response.schemas import DetailResponse
@@ -23,14 +24,14 @@ class LoginService:
         redis: Redis,
         session: AsyncSession,
         policy: LoginPolicy,
+        hasher: Argon2Hasher,
         jwt_manager: JwtTokenManager,
-        hasher: PasswordHasher,
     ) -> None:
         self.session = session
         self.redis = redis
         self.policy = policy
-        self.jwt_manager = jwt_manager
         self.hasher = hasher
+        self.jwt_manager = jwt_manager
 
     async def login(self, email: str, password: str) -> dict[str, str]:
 
@@ -42,8 +43,8 @@ class LoginService:
 
         # Check if password is correct.
         if not self.hasher.verify(
-            password=password,
-            hashed_password=user.password_hash,
+            value=password,
+            hashed=user.password_hash,
         ):
             raise UserNotFoundError("Invalid email or password.")
 

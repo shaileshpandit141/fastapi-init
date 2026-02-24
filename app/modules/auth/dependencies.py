@@ -3,11 +3,11 @@ from redis.asyncio import Redis
 
 from app.adapters.db.session import AsyncSession, get_async_session
 from app.adapters.jwt.manager import JwtTokenManager
-from app.adapters.password.hasher import PasswordHasher
 from app.adapters.redis.client import get_async_redis
+from app.adapters.security.providers import get_hasher
 
-from .services.login import JwtTokenService, LoginService
 from .policies.login import LoginPolicy
+from .services.login import JwtTokenService, LoginService
 
 
 async def get_login_service(
@@ -18,8 +18,8 @@ async def get_login_service(
         redis=redis,
         session=session,
         policy=LoginPolicy(),
+        hasher=get_hasher(),
         jwt_manager=JwtTokenManager(redis),
-        hasher=PasswordHasher(),
     )
 
 
