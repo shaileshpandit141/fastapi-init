@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Body, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
 from .dependencies import LoginService, get_login_service
-from .schemas.login import UserLogin
+from .schemas.login import RefreshToken, UserLogin
 
 router = APIRouter(prefix="/auth", tags=["Auth Endpoints"])
 
@@ -20,5 +20,17 @@ async def login(
         email=form_in.username,
         password=form_in.password,
     )
-
     return UserLogin(**tokens)
+
+
+@router.post(
+    path="/refresh",
+    summary="Refresh access token",
+    description="Refresh access token using a valid refresh token.",
+)
+async def refresh_token(
+    refresh_token: str = Body(..., embed=True),
+    service: LoginService = Depends(get_login_service),
+) -> RefreshToken:
+    tokens = await service.refresh_token(refresh_token)
+    return RefreshToken(**tokens)

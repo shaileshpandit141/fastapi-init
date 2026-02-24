@@ -89,5 +89,13 @@ class JwtTokenManager:
             algorithm=self.algorithm,
         )
 
+    async def verify_token(self, type: TokenTypeEnum, token: str) -> dict[str, Any]:
+        if type == TokenTypeEnum.ACCESS:
+            return await self.verify_access_token(token)
+        elif type == TokenTypeEnum.REFRESH:
+            return await self.verify_refresh_token(token)
+        else:
+            raise ValueError("Invalid token type")
+
     async def revoke_token(self, jti: str, exp: int) -> None:
         await self.blocklist.revoke(jti=jti, exp=exp)

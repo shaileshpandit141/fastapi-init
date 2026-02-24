@@ -61,6 +61,22 @@ class LoginService:
             "token_type": "Bearer",
         }
 
+    async def refresh_token(self, refresh_token: str) -> dict[str, str]:
+        try:
+            claims = await self.jwt_manager.verify_token(
+                TokenTypeEnum.REFRESH, refresh_token
+            )
+        except JwtError:
+            raise InvalidTokenError("Invalid or expired refresh token.")
+
+        return {
+            "access_token": self.jwt_manager.create_token(
+                TokenTypeEnum.ACCESS, {"id": claims["id"]}
+            ),
+            "refresh_token": refresh_token,
+            "token_type": "Bearer",
+        }
+
 
 # =============================================================================
 # Jwt Token Service.

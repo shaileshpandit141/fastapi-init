@@ -9,3 +9,12 @@ class UserLogin(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str
+
+
+# =============================================================================
+# Refresh Token Schema.
+# =============================================================================
+
+
+class RefreshToken(UserLogin):
+    pass
