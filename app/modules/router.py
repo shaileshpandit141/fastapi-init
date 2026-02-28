@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from app.core.config import get_settings
 
-from .auth.routes import router as auth_router
+from .auth.router import router as auth_router
 
 # =============================================================================
 # Creating Settings Instance.
