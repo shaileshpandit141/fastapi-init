@@ -1,10 +1,16 @@
 from fastapi import APIRouter, Body, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
+from app.shared.response.schemas import DetailResponse
+
 from .dependencies import LoginService, get_login_service
 from .schemas.login import RefreshToken, UserLogin
 
 router = APIRouter(prefix="/auth", tags=["Auth Endpoints"])
+
+# =============================================================================
+# User login endpoint.
+# =============================================================================
 
 
 @router.post(
@@ -23,6 +29,11 @@ async def login(
     return UserLogin(**tokens)
 
 
+# =============================================================================
+# Token refresh endpoint.
+# =============================================================================
+
+
 @router.post(
     path="/refresh",
     summary="Refresh access token",
@@ -34,3 +45,22 @@ async def refresh_token(
 ) -> RefreshToken:
     tokens = await service.refresh_token(refresh_token)
     return RefreshToken(**tokens)
+
+
+# =============================================================================
+# User logout endpoint.
+# =============================================================================
+
+
+@router.post(
+    path="/logout",
+    summary="Logout authenticated user",
+    description="Blacklist access and refresh token.",
+)
+async def logout(
+    access_token: str = Body(..., embed=True),
+    refresh_token: str = Body(..., embed=True),
+    service: LoginService = Depends(get_login_service),
+) -> DetailResponse:
+    message = await service.revoke_token(access_token, refresh_token)
+    return DetailResponse(**message)
