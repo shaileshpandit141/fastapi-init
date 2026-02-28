@@ -6,21 +6,21 @@ from app.shared.datetime.utc_now import get_utc_now
 # Jwt Constants
 # =============================================================================
 
-BLOCKLIST_PREFIX = "blocklist:"
+BLACKLIST_PREFIX = "blacklist:"
 
 # =============================================================================
-# Blocklist Created Token Using Redis.
+# Blacklist Created Token Using Redis.
 # =============================================================================
 
 
-class JwtBlocklist:
+class JwtBlacklist:
     def __init__(self, redis: Redis) -> None:
         self.redis = redis
 
     async def revoke(self, jti: str, exp: int) -> None:
         ttl = max(exp - int(get_utc_now().timestamp()), 0)
         if ttl > 0:
-            await self.redis.set(f"{BLOCKLIST_PREFIX}{jti}", "1", ex=ttl)
+            await self.redis.set(f"{BLACKLIST_PREFIX}{jti}", "1", ex=ttl)
 
     async def is_revoked(self, jti: str) -> bool:
-        return bool(await self.redis.get(f"{BLOCKLIST_PREFIX}{jti}"))
+        return bool(await self.redis.get(f"{BLACKLIST_PREFIX}{jti}"))

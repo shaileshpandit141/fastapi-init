@@ -4,7 +4,7 @@ from typing import Any
 from jose import ExpiredSignatureError, jwt
 from jose import JWTError as JoseJWTError
 
-from .blocklist import JwtBlocklist
+from .blacklist import JwtBlacklist
 from .exceptions import ExpiredTokenError, InvalidTokenError, RevokedTokenError
 
 # =============================================================================
@@ -21,8 +21,8 @@ logger = getLogger(__name__)
 
 
 class JwtVerifier:
-    def __init__(self, blocklist: JwtBlocklist) -> None:
-        self.blocklist = blocklist
+    def __init__(self, blacklist: JwtBlacklist) -> None:
+        self.blacklist = blacklist
 
     async def verify_token(
         self, *, token: str, expected_sub: str, secret_key: str, algorithm: str
@@ -60,5 +60,5 @@ class JwtVerifier:
             raise InvalidTokenError("Jwt verification failed because subject mismatch.")
 
     async def _validate_not_revoked(self, claims: dict[str, Any]) -> None:
-        if await self.blocklist.is_revoked(jti=claims["jti"]):
+        if await self.blacklist.is_revoked(jti=claims["jti"]):
             raise RevokedTokenError("Jwt verification failed because token revoked.")

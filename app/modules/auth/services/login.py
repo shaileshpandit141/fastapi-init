@@ -61,7 +61,7 @@ class LoginService:
     async def refresh_token(self, refresh_token: str) -> dict[str, str]:
         try:
             claims = await self.jwt_manager.verify_token(
-                TokenTypeEnum.REFRESH, refresh_token
+                refresh_token, TokenTypeEnum.REFRESH
             )
         except JwtError:
             raise InvalidTokenError("Invalid or expired refresh token.")
