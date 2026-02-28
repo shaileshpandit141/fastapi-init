@@ -60,7 +60,7 @@ async def async_session(
 
 
 @pytest.fixture
-async def client(async_session: AsyncSession) -> AsyncGenerator[AsyncClient, Any]:
+async def async_client(async_session: AsyncSession) -> AsyncGenerator[AsyncClient, Any]:
     async def get_async_test_session() -> AsyncGenerator[AsyncSession, Any]:
         yield async_session
 
