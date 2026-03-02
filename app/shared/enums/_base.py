@@ -1,7 +1,7 @@
 from enum import Enum
 
 # =============================================================================
-# Function to convert enum to list of vlaues.
+# Function to convert enum to list of values.
 # =============================================================================
 
 

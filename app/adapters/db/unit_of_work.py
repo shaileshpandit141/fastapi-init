@@ -17,19 +17,25 @@ class AsyncUnitOfWork:
     async def __aenter__(self) -> Self:
         return self
 
-    async def __aexit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+    async def __aexit__(self, exc_type: Any, *_) -> None:
         try:
             if exc_type:
                 self._logger.warning("Rolling back due to exception: %s", exc_type)
-                await self.session.rollback()
+                await self.rollback()
             else:
                 self._logger.debug("Committing transaction")
-                await self.session.commit()
+                await self.commit()
         except Exception as exc:
             self._logger.exception("UnitOfWork transaction failed")
             raise exc
         finally:
             await self.session.close()
+
+    async def commit(self) -> None:
+        await self.session.commit()
+
+    async def rollback(self) -> None:
+        await self.session.rollback()
 
 
 # =============================================================================
@@ -45,16 +51,22 @@ class SyncUnitOfWork:
     def __enter__(self) -> Self:
         return self
 
-    def __exit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+    def __exit__(self, exc_type: Any, *_) -> None:
         try:
             if exc_type:
                 self._logger.warning("Rolling back due to exception: %s", exc_type)
-                self.session.rollback()
+                self.rollback()
             else:
                 self._logger.debug("Committing transaction")
-                self.session.commit()
+                self.commit()
         except Exception as exc:
             self._logger.exception("UnitOfWork transaction failed")
             raise exc
         finally:
             self.session.close()
+
+    def commit(self) -> None:
+        self.session.commit()
+
+    def rollback(self) -> None:
+        self.session.rollback()

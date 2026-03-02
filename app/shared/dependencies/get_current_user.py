@@ -6,8 +6,8 @@ from sqlmodel import UUID, select
 from app.adapters.db.models.user import User
 from app.adapters.db.session import AsyncSession, get_async_session
 from app.adapters.redis.client import get_async_redis
-from app.adapters.security.jwt.exceptions import JwtError
-from app.adapters.security.jwt.manager import JwtTokenManager
+from app.adapters.jwt.exceptions import JwtError
+from app.adapters.jwt.manager import JwtTokenManager, TokenTypeEnum
 
 # =============================================================================
 # Get current user function.
@@ -27,7 +27,7 @@ async def get_current_user(
     jwt_token_manager = JwtTokenManager(redis)
 
     try:
-        claims = await jwt_token_manager.verify_access_token(token)
+        claims = await jwt_token_manager.verify_token(token, TokenTypeEnum.ACCESS)
     except JwtError:
         raise HTTPException(status_code=401, detail="Invalid or expired access token.")
 
