@@ -55,15 +55,16 @@ class QueryBus:
 
     async def dispatch(self, query: Query, actor: Actor) -> Any:  # noqa: ANN401
         handler = self._handlers.get(type(query))
-        if handler is None:
-            msg = f"No handler registered for {type(query).__name__}"
-            raise ValueError(msg)
-
         policy = self._policies.get(type(query))
-        if policy is None:
-            msg = f"No policy registered for {type(query).__name__}"
-            raise ValueError(msg)
 
+        # Check handler or policy it register or not.
+        if not handler or not policy:
+            raise ValueError(
+                f"Handler or policy not registered for {type(query).__name__}"
+            )
+
+        # Check actor certified query policy or not.
         await policy(query, actor)
 
+        # Call handler method to handle query.
         return await handler(query)

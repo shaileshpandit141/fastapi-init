@@ -35,7 +35,7 @@ class CommandPolicy[C: Command, A: Actor](Protocol):
 
 
 # =============================================================================
-# Command bus to handle all things.
+# Command bus to handle all action.
 # =============================================================================
 
 
@@ -53,17 +53,19 @@ class CommandBus:
         self._handlers[command] = handler
         self._policies[command] = policy
 
-    async def dispatch(self, command: Command, actor: Actor) -> Any:  # noqa: ANN401
+    async def dispatch(self, command: Command, actor: Actor) -> Any:
         handler = self._handlers.get(type(command))
-        if handler is None:
-            msg = f"No handler registered for {type(command).__name__}"
-            raise ValueError(msg)
-
         policy = self._policies.get(type(command))
-        if policy is None:
-            msg = f"No policy registered for {type(command).__name__}"
-            raise ValueError(msg)
 
+        # Check handler or policy it register or not.
+        if not handler or not policy:
+            raise ValueError(
+                f"Handler or policy not registered for {type(command).__name__}"
+            )
+
+        # Check actor certified query policy or not.
         await policy(command, actor)
 
-        return await handler(command)
+        # async with self._uow_factory() as uow:
+        result = await handler(command)
+        return result

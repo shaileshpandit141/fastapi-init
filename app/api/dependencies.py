@@ -1,7 +1,7 @@
 from functools import lru_cache
 
-from app.application.bus.command_bus import CommandBus
-from app.application.bus.query_bus import QueryBus
+from app.application.buses.command_bus import CommandBus
+from app.application.buses.query_bus import QueryBus
 
 # =============================================================================
 # Get command bus dependency.
