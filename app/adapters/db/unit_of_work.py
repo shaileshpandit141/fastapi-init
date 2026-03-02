@@ -13,6 +13,7 @@ class AsyncUnitOfWork:
     def __init__(self, session: AsyncSession) -> None:
         self._logger = getLogger(self.__class__.__name__)
         self.session = session
+        self.events: list[Any] = []
 
     async def __aenter__(self) -> Self:
         return self
@@ -47,6 +48,7 @@ class SyncUnitOfWork:
     def __init__(self, session: Session) -> None:
         self._logger = getLogger(self.__class__.__name__)
         self.session = session
+        self.events: list[Any] = []
 
     def __enter__(self) -> Self:
         return self
