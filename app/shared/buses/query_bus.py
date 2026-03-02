@@ -13,7 +13,7 @@ class QueryBus:
         self._handlers[query] = handler
         self._policies[query] = policy
 
-    async def dispatch(self, query: Query, actor: Actor) -> Any:
+    async def dispatch(self, query: Query, actor: Actor | None = None) -> Any:
         handler = self._handlers.get(type(query))
         policy = self._policies.get(type(query))
 

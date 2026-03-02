@@ -12,5 +12,12 @@
     "**/.venv": true,
     "**/.mypy_cache": true
   },
-  "cSpell.words": ["ASGI", "Encryptor", "Fernet", "sessionmaker", "Slowapi"]
+  "cSpell.words": [
+    "ASGI",
+    "Encryptor",
+    "Fernet",
+    "sessionmaker",
+    "Slowapi",
+    "superadmin"
+  ]
 }

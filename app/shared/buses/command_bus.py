@@ -22,7 +22,7 @@ class CommandBus:
         self._handlers[command] = handler
         self._policies[command] = policy
 
-    async def dispatch(self, command: Command, actor: Actor) -> Any:
+    async def dispatch(self, command: Command, actor: Actor | None = None) -> Any:
         handler = self._handlers.get(type(command))
         policy = self._policies.get(type(command))
 
@@ -32,8 +32,8 @@ class CommandBus:
         await policy(command, actor)
 
         async with self._uow_factory() as uow:
-            result = await handler(command, uow)
-            await uow.commit()
+            result = await handler(command)
+            await uow.session.flush()
 
             # Publish domain events AFTER commit
             await self._event_bus.publish(uow.events)

@@ -1,9 +1,11 @@
 from typing import Any, Protocol, runtime_checkable, Self
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 
 @runtime_checkable
 class UnitOfWork(Protocol):
     events: list[Any]
+    session: AsyncSession
 
     async def __aenter__(self) -> Self: ...
     async def __aexit__(self, exc_type: Any, *_) -> None: ...

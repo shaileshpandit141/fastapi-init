@@ -9,7 +9,7 @@ from .core.exc_handlers import register_exception_handlers
 from .core.lifespan import lifespan
 from .core.logging import LOGGING_CONFIG
 from .core.middleware import include_middlewares
-from .modules.router import router
+from .api.router import router
 
 # =============================================================================
 # Creating Settings Instance.

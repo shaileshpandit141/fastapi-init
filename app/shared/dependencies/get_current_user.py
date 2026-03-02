@@ -27,9 +27,15 @@ async def get_current_user(
     jwt_token_manager = JwtTokenManager(redis)
 
     try:
-        claims = await jwt_token_manager.verify_token(token, TokenTypeEnum.ACCESS)
+        claims = await jwt_token_manager.verify_token(
+            token,
+            TokenTypeEnum.ACCESS,
+        )
     except JwtError:
-        raise HTTPException(status_code=401, detail="Invalid or expired access token.")
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid or expired access token.",
+        )
 
     user = (
         await session.exec(
@@ -40,6 +46,9 @@ async def get_current_user(
     ).one_or_none()
 
     if user is None:
-        raise HTTPException(status_code=401, detail="Invalid access token.")
+        raise HTTPException(
+            status_code=404,
+            detail="User not found.",
+        )
 
     return user
