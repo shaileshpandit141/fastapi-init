@@ -1,7 +1,4 @@
 {
-  // =============================================================================
-  // File & Explorer Hygiene
-  // =============================================================================
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,
@@ -12,30 +9,8 @@
     "**/.pytest_cache": true,
     "**/.ruff_cache": true,
     "**/.ropeproject": true,
-    "**/.venv": true
+    "**/.venv": true,
+    "**/.mypy_cache": true
   },
-  // =============================================================================
-  // Global Editor Rules
-  // =============================================================================
-  "editor.tabSize": 2,
-  "editor.insertSpaces": true,
-  "editor.detectIndentation": false,
-  "files.trimTrailingWhitespace": true,
-  "files.insertFinalNewline": true,
-  // =============================================================================
-  // Python-Specific Behavior
-  // =============================================================================
-  "[python]": {
-    "editor.formatOnSave": true,
-    "editor.codeActionsOnSave": {
-      "source.organizeImports": "explicit"
-    },
-    "editor.defaultFormatter": "ms-python.black-formatter"
-  },
-  "cSpell.words": [
-    "ASGI",
-    "Encryptor",
-    "Fernet",
-    "sessionmaker"
-  ]
+  "cSpell.words": ["ASGI", "Encryptor", "Fernet", "sessionmaker", "Slowapi"]
 }
