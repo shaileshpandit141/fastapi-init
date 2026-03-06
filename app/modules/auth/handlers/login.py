@@ -6,11 +6,19 @@ from app.adapters.db.models.user import User
 from app.adapters.jwt.manager import TokenTypeEnum
 from app.adapters.jwt.providers import get_jwt_token_manager
 from app.adapters.security.providers import get_hasher
+from app.core.exceptions.domain import DomainError
 from app.core.exceptions.http import PermissionDeniedError
-from app.modules.auth.exceptions import UserNotFoundError
 from app.shared.enums.user import UserStatusEnum
 
 from ..commands.login import LoginCommand
+
+# =============================================================================
+# User not found error.
+# =============================================================================
+
+
+class UserNotFoundError(DomainError):
+    pass
 
 
 class LoginHandler:

@@ -7,12 +7,12 @@ from redis.asyncio.client import Redis
 from app.adapters.db.session import get_async_session
 from app.adapters.db.unit_of_work import AsyncSession, AsyncUnitOfWork
 from app.adapters.redis.client import get_async_redis
-from app.application.auth.commands.login import LoginCommand
-from app.application.auth.handlers.login import LoginHandler
-from app.application.auth.policies.login import LoginPolicy
-from app.application.user.handlers.list import ListUserHandler
-from app.application.user.policies.list import ListUserPolicy
-from app.application.user.queries.list import ListUserQuery
+from app.modules.auth.commands.login import LoginCommand
+from app.modules.auth.handlers.login import LoginHandler
+from app.modules.auth.policies.login import LoginPolicy
+from app.modules.user.handlers.list import ListUserHandler
+from app.modules.user.policies.list import ListUserPolicy
+from app.modules.user.queries.list import ListUserQuery
 from app.shared.buses.command_bus import CommandBus
 from app.shared.buses.event_bus import EventBus
 from app.shared.buses.query_bus import QueryBus

@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends
 
-from app.application.user.queries.list import ListUserQuery
-from app.shared.buses.query_bus import QueryBus
-from ..schemas.user import UserRead
 from app.adapters.db.models.user import User
+from app.modules.user.queries.list import ListUserQuery
+from app.shared.buses.query_bus import QueryBus
 from app.shared.dependencies.get_current_user import get_current_user
+
 from ..dependencies import get_query_bus
+from ..schemas.user import UserRead
 
 router = APIRouter(prefix="/users", tags=["User Endpoints"])
 

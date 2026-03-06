@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
-from app.application.auth.commands.login import LoginCommand
+from app.modules.auth.commands.login import LoginCommand
 from app.shared.buses.command_bus import CommandBus
+
 from ..dependencies import get_command_bus
 from ..schemas.login import Login
 
