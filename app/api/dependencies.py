@@ -8,8 +8,11 @@ from app.adapters.db.session import get_async_session
 from app.adapters.db.unit_of_work import AsyncSession, AsyncUnitOfWork
 from app.adapters.redis.client import get_async_redis
 from app.modules.auth.commands.login import LoginCommand
+from app.modules.auth.commands.refresh_token import RefreshTokenCommand
 from app.modules.auth.handlers.login import LoginHandler
+from app.modules.auth.handlers.refresh_token import RefreshTokenHandler
 from app.modules.auth.policies.login import LoginPolicy
+from app.modules.auth.policies.refresh_token import RefreshTokenPolicy
 from app.modules.user.handlers.list import ListUserHandler
 from app.modules.user.policies.list import ListUserPolicy
 from app.modules.user.queries.list import ListUserQuery
@@ -48,6 +51,12 @@ def get_command_bus(
         LoginCommand,
         policy=LoginPolicy(),
         handler=LoginHandler(redis, session),
+    )
+
+    bus.register(
+        RefreshTokenCommand,
+        policy=RefreshTokenPolicy(),
+        handler=RefreshTokenHandler(redis, session),
     )
 
     return bus
