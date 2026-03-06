@@ -1,20 +1,11 @@
 from pydantic import BaseModel
 
 # =============================================================================
-# Login User Related Schema.
+# TokenRead User Related Schema.
 # =============================================================================
 
 
-class Login(BaseModel):
+class TokenRead(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str
-
-
-# =============================================================================
-# Refresh Token Schema.
-# =============================================================================
-
-
-class RefreshToken(Login):
-    pass
