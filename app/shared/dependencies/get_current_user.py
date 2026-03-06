@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from redis.asyncio import Redis
-from sqlmodel import UUID, select
+from sqlmodel import select
 
 from app.adapters.db.models.user import User
 from app.adapters.db.session import AsyncSession, get_async_session
@@ -40,7 +40,7 @@ async def get_current_user(
     user = (
         await session.exec(
             select(User).where(
-                User.id == UUID(claims["id"]),
+                User.id == claims["id"],
             )
         )
     ).one_or_none()

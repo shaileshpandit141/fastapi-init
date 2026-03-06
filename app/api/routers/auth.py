@@ -23,9 +23,10 @@ async def login(
     bus: CommandBus = Depends(get_command_bus),
 ) -> Login:
     tokens = await bus.dispatch(
-        LoginCommand(
+        actor=None,
+        command=LoginCommand(
             email=form.username,
             password=form.password,
-        )
+        ),
     )
     return Login(**tokens)

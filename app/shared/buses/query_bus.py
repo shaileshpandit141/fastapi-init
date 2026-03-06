@@ -1,7 +1,8 @@
 from typing import Any
 
-from app.shared.protocols.actor import Actor
+from app.adapters.db.models.user import User
 from app.shared.protocols.query import Query
+from app.shared.protocols.handlers import QueryHandler, QueryPolicy
 
 
 class QueryBus:
@@ -9,18 +10,23 @@ class QueryBus:
         self._handlers: dict[type, Any] = {}
         self._policies: dict[type, Any] = {}
 
-    def register(self, query: type, handler: Any, policy: Any) -> None:
-        self._handlers[query] = handler
+    def register(
+        self,
+        query: type,
+        *,
+        policy: QueryPolicy,
+        handler: QueryHandler,
+    ) -> None:
         self._policies[query] = policy
+        self._handlers[query] = handler
 
-    async def dispatch(self, query: Query, actor: Actor | None = None) -> Any:
-        handler = self._handlers.get(type(query))
+    async def dispatch(self, actor: User | None, query: Query) -> Any:
         policy = self._policies.get(type(query))
+        handler = self._handlers.get(type(query))
 
         if not handler or not policy:
             raise ValueError(f"No handler for {type(query).__name__}")
 
-        await policy(query, actor)
-        result = await handler(query)
+        await policy(actor, query)
 
-        return result
+        return await handler(query)

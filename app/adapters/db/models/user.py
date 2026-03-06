@@ -94,13 +94,13 @@ class User(TimestampMixin, UserBase, UUIDv7Mixin, table=True):
         return {ur.role.name for ur in self.user_roles}
 
     def is_superadmin(self) -> bool:
-        return RoleEnum.SUPERADMIN in self.role_names
+        return RoleEnum.SUPERADMIN.value in self.role_names
 
     def has_role(self, role_name: RoleEnum) -> bool:
         if self.is_superadmin():
             return True
 
-        return role_name in self.role_names
+        return role_name.value in self.role_names
 
     @cached_property
     def permission_codes(self) -> set[PermissionEnum]:

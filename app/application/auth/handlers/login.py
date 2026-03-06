@@ -1,19 +1,21 @@
 from redis.asyncio.client import Redis
 from sqlmodel import select
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.adapters.db.models.user import User
 from app.adapters.jwt.manager import TokenTypeEnum
 from app.adapters.jwt.providers import get_jwt_token_manager
+from app.adapters.security.providers import get_hasher
 from app.core.exceptions.http import PermissionDeniedError
 from app.modules.auth.exceptions import UserNotFoundError
 from app.shared.enums.user import UserStatusEnum
-from ..login import LoginCommand
-from sqlmodel.ext.asyncio.session import AsyncSession
-from app.adapters.security.providers import get_hasher
+
+from ..commands.login import LoginCommand
 
 
-class LoginCommandHandler:
+class LoginHandler:
     def __init__(self, redis: Redis, session: AsyncSession) -> None:
+        self.redis = redis
         self.session = session
         self.hasher = get_hasher()
         self.jwt_manager = get_jwt_token_manager(redis)
