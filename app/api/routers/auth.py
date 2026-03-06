@@ -2,11 +2,14 @@ from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.modules.auth.commands.login import LoginCommand
+from app.modules.auth.commands.logout import LogoutCommand
 from app.modules.auth.commands.refresh_token import RefreshTokenCommand
 from app.shared.buses.command_bus import CommandBus
+from app.shared.response.schemas import DetailResponse
 
 from ..dependencies import get_command_bus
 from ..schemas.login import TokenRead
+from ..schemas.logout import Logout
 from ..schemas.refresh_token import RefreshToken
 
 router = APIRouter(prefix="/auth", tags=["Auth Endpoints"])
@@ -56,3 +59,27 @@ async def refresh_token(
         ),
     )
     return TokenRead(**tokens)
+
+
+# =============================================================================
+# User logout endpoint.
+# =============================================================================
+
+
+@router.post(
+    path="/logout",
+    summary="Logout authenticated user",
+    description="Blacklist access and refresh token.",
+)
+async def logout(
+    payload: Logout,
+    bus: CommandBus = Depends(get_command_bus),
+) -> DetailResponse:
+    message = await bus.dispatch(
+        actor=None,
+        command=LogoutCommand(
+            refresh_token=payload.refresh_token,
+            access_token=payload.access_token,
+        ),
+    )
+    return DetailResponse(**message)
