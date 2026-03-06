@@ -29,7 +29,7 @@ class RefreshTokenHandler:
     async def __call__(self, command: RefreshTokenCommand) -> dict[str, str]:
         try:
             claims = await self.jwt_manager.verify_token(
-                command.token, TokenTypeEnum.REFRESH
+                command.refresh_token, TokenTypeEnum.REFRESH
             )
         except JwtError:
             raise InvalidTokenError("Invalid or expired refresh token.")
@@ -38,6 +38,6 @@ class RefreshTokenHandler:
             "access_token": self.jwt_manager.create_token(
                 TokenTypeEnum.ACCESS, {"id": claims["id"]}
             ),
-            "refresh_token": command.token,
+            "refresh_token": command.refresh_token,
             "token_type": "Bearer",
         }
