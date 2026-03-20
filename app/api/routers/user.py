@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends
 
 from app.adapters.db.models.user import User
@@ -21,16 +23,15 @@ router = APIRouter(prefix="/users", tags=["User Endpoints"])
     description="List users only access by admin.",
 )
 async def list_user(
+    actor: Annotated[User, Depends(get_current_user)],
+    bus: Annotated[QueryBus, Depends(get_query_bus)],
     limit: int = 20,
     offset: int = 0,
-    actor: User = Depends(get_current_user),
-    bus: QueryBus = Depends(get_query_bus),
 ) -> list[UserRead]:
-    users = await bus.dispatch(
+    return await bus.dispatch(
         actor=actor,
         query=ListUserQuery(
             limit=limit,
             offset=offset,
         ),
     )
-    return users

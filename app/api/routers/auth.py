@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
@@ -25,8 +27,8 @@ router = APIRouter(prefix="/auth", tags=["Auth Endpoints"])
     description="Issue new jwt tokens to make requests on protected routes.",
 )
 async def login(
-    form: OAuth2PasswordRequestForm = Depends(),
-    bus: CommandBus = Depends(get_command_bus),
+    form: Annotated[OAuth2PasswordRequestForm, Depends()],
+    bus: Annotated[CommandBus, Depends(get_command_bus)],
 ) -> TokenRead:
     tokens = await bus.dispatch(
         actor=None,
@@ -50,7 +52,7 @@ async def login(
 )
 async def refresh_token(
     payload: RefreshToken,
-    bus: CommandBus = Depends(get_command_bus),
+    bus: Annotated[CommandBus, Depends(get_command_bus)],
 ) -> TokenRead:
     tokens = await bus.dispatch(
         actor=None,
@@ -73,7 +75,7 @@ async def refresh_token(
 )
 async def logout(
     payload: Logout,
-    bus: CommandBus = Depends(get_command_bus),
+    bus: Annotated[CommandBus, Depends(get_command_bus)],
 ) -> DetailResponse:
     message = await bus.dispatch(
         actor=None,
