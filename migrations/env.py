@@ -11,7 +11,7 @@ from app.core.config import get_settings
 settings = get_settings()
 
 # Databse url base on env.
-DATABASE_URL = settings.db.sync_dsn
+DATABASE_URL = settings.db.sync_url
 
 
 # this is the Alembic Config object, which provides

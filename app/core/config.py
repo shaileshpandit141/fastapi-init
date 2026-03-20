@@ -1,9 +1,32 @@
 from functools import lru_cache
-from typing import Literal
+from typing import Literal, TypedDict
 
 from cryptography.fernet import Fernet
 from pydantic import EmailStr, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# =============================================================================
+# Type dict for common config.
+# =============================================================================
+
+
+class CommonConfigDict(TypedDict):
+    env_file: str
+    env_file_encoding: str
+    case_sensitive: bool
+    extra: Literal["allow", "ignore", "forbid"] | None
+
+
+# =============================================================================
+# Common settings dict.
+# =============================================================================
+
+common_config: CommonConfigDict = {
+    "env_file": ".env",
+    "env_file_encoding": "utf-8",
+    "case_sensitive": False,
+    "extra": "ignore",
+}
 
 # =============================================================================
 # Core application settings.
@@ -16,15 +39,12 @@ class AppSettings(BaseSettings):
     """
 
     model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        case_sensitive=False,
-        extra="ignore",
+        env_prefix="APP_",
+        **common_config,
     )
 
-    # General
     NAME: str = "FastAPI-Init"
-    ENV: Literal["local", "development", "staging", "production"] = "local"
+    ENV: Literal["development", "production"] = "development"
     API_VERSION_PREFIX: str = "/api/v1"
     DEBUG: bool = True
 
@@ -41,9 +61,7 @@ class CORSSettings(BaseSettings):
 
     model_config = SettingsConfigDict(
         env_prefix="CORS_",
-        env_file=".env",
-        case_sensitive=False,
-        extra="ignore",
+        **common_config,
     )
 
     ALLOW_ORIGINS: list[str] = ["127.0.0.1", "localhost"]
@@ -64,9 +82,7 @@ class DatabaseSettings(BaseSettings):
 
     model_config = SettingsConfigDict(
         env_prefix="DB_",
-        env_file=".env",
-        case_sensitive=False,
-        extra="ignore",
+        **common_config,
     )
 
     HOST: str = "localhost"
@@ -76,14 +92,14 @@ class DatabaseSettings(BaseSettings):
     NAME: str = "app"
 
     @property
-    def async_dsn(self) -> str:
+    def async_url(self) -> str:
         return (
             f"postgresql+asyncpg://{self.USER}:{self.PASSWORD}"
             f"@{self.HOST}:{self.PORT}/{self.NAME}"
         )
 
     @property
-    def sync_dsn(self) -> str:
+    def sync_url(self) -> str:
         return (
             f"postgresql+psycopg://{self.USER}:{self.PASSWORD}"
             f"@{self.HOST}:{self.PORT}/{self.NAME}"
@@ -102,28 +118,18 @@ class EmailSettings(BaseSettings):
 
     model_config = SettingsConfigDict(
         env_prefix="EMAIL_",
-        env_file=".env",
-        case_sensitive=False,
-        extra="ignore",
+        **common_config,
     )
 
-    # Provider mode
     PROVIDER: Literal["smtp", "console", "disabled"] = "console"
-
-    # SMTP configuration
     HOST: str = "localhost"
     PORT: int = 1025
     USERNAME: str | None = None
     PASSWORD: str | None = None
-
     USE_TLS: bool = True
     USE_SSL: bool = False
-
-    # Sender defaults
     FROM_EMAIL: EmailStr = "noreply@example.com"
-    FROM_NAME: str = "MyApp"
-
-    # Timeout (seconds)
+    FROM_NAME: str = "FastAPI-Init"
     TIMEOUT: int = Field(default=10, ge=1)
 
     @property
@@ -147,9 +153,7 @@ class EncryptionSettings(BaseSettings):
 
     model_config = SettingsConfigDict(
         env_prefix="Encryption_",
-        env_file=".env",
-        case_sensitive=False,
-        extra="ignore",
+        **common_config,
     )
 
     KEY: str = Fernet.generate_key().decode()
@@ -167,12 +171,10 @@ class JWTSettings(BaseSettings):
 
     model_config = SettingsConfigDict(
         env_prefix="JWT_",
-        env_file=".env",
-        case_sensitive=False,
-        extra="ignore",
+        **common_config,
     )
 
-    SECRET_KEY: str = "super-secret"
+    SECRET_KEY: str = Fernet.generate_key().decode()
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 7
@@ -190,28 +192,22 @@ class RedisSettings(BaseSettings):
 
     model_config = SettingsConfigDict(
         env_prefix="REDIS_",
-        env_file=".env",
-        case_sensitive=False,
-        extra="ignore",
+        **common_config,
     )
 
     HOST: str = "localhost"
     PORT: int = 6379
     DB: int = 0
     PASSWORD: str | None = None
-
     SSL: bool = False
-
     SOCKET_TIMEOUT: int = 5
     SOCKET_CONNECT_TIMEOUT: int = 5
-
     MAX_CONNECTIONS: int = 10
 
     @property
     def url(self) -> str:
-        scheme = "rediss" if self.SSL else "redis"
         auth = f":{self.PASSWORD}@" if self.PASSWORD else ""
-        return f"{scheme}://{auth}{self.HOST}:{self.PORT}/{self.DB}"
+        return f"{'redis'}://{auth}{self.HOST}:{self.PORT}/{self.DB}"
 
 
 # =============================================================================
@@ -226,18 +222,14 @@ class CelerySettings(BaseSettings):
 
     model_config = SettingsConfigDict(
         env_prefix="CELERY_",
-        env_file=".env",
-        case_sensitive=False,
-        extra="ignore",
+        **common_config,
     )
 
     BROKER_URL: str = "redis://localhost:6379/1"
     RESULT_BACKEND: str = "redis://localhost:6379/2"
-
     TASK_SERIALIZER: str = "json"
     RESULT_SERIALIZER: str = "json"
     ACCEPT_CONTENT: list[str] = ["json"]
-
     TIMEZONE: str = "UTC"
     ENABLE_UTC: bool = True
 

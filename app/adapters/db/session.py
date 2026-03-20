@@ -17,13 +17,13 @@ settings = get_settings()
 
 
 async_engine = create_async_engine(
-    url=settings.db.async_dsn,
+    url=settings.db.async_url,
     echo=settings.app.DEBUG,
     pool_pre_ping=True,
 )
 
 sync_engine = create_engine(
-    url=settings.db.sync_dsn,
+    url=settings.db.sync_url,
     echo=settings.app.DEBUG,
     pool_pre_ping=True,
 )
